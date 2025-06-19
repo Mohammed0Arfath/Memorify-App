@@ -48,8 +48,9 @@ export function analyzeEmotion(text: string): Emotion {
     maxScore = 1;
   }
 
-  const config = emotionConfig[bestMatch];
-  const intensity = Math.min(1, Math.max(0.3, maxScore / 3));
+  const rawIntensity = maxScore / 5;
+  const intensity = rawIntensity > 0 ? Math.min(1, rawIntensity) : 0.1; // allow 0.1 for almost no match
+
 
   return {
     primary: bestMatch,
