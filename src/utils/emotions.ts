@@ -44,11 +44,11 @@ export function analyzeEmotion(text: string): Emotion {
   const config = emotionConfig[bestMatch];
   const intensityRaw = maxScore / 5;
   const intensity = intensityRaw > 1 ? 1 : intensityRaw === 0 ? 0.1 : intensityRaw;
-  
+
   return {
     primary: bestMatch,
     intensity,
     color: config.color,
     emoji: config.emoji,
   };
-
+}
