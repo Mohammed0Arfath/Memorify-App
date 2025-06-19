@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, BookOpen, Calendar, Sparkles, Menu, X, User, LogOut } from 'lucide-react';
+import { MessageCircle, BookOpen, Calendar, Sparkles, Menu, X, User, LogOut, Brain } from 'lucide-react';
 import { ChatInterface } from './components/ChatInterface';
 import { DiaryTimeline } from './components/DiaryTimeline';
 import { CalendarView } from './components/CalendarView';
+import { AgentBoard } from './components/AgentBoard';
 import { AuthWrapper } from './components/AuthWrapper';
 import { ViewMode, DiaryEntry, ChatMessage } from './types';
 import { generateDiaryEntry, analyzeEmotionWithAI } from './utils/mockAI';
 import { DiaryService } from './services/diaryService';
+import { AgentService } from './services/agentService';
 import { supabase } from './lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -28,6 +30,7 @@ function AppContent({ user }: AppProps) {
   useEffect(() => {
     if (user) {
       loadEntries();
+      runInitialAgentLoop();
     }
   }, [user]);
 
@@ -56,6 +59,16 @@ function AppContent({ user }: AppProps) {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runInitialAgentLoop = async () => {
+    try {
+      // Run agent loop on app load to check for triggers
+      const loadedEntries = await DiaryService.getEntries();
+      await AgentService.runAgentLoop(loadedEntries);
+    } catch (error) {
+      console.warn('Agent loop failed on startup:', error);
     }
   };
 
@@ -129,6 +142,12 @@ function AppContent({ user }: AppProps) {
       try {
         const savedEntry = await DiaryService.createEntry(newEntry);
         setEntries(prev => [savedEntry, ...prev]);
+        
+        // Run agent loop after new entry to update memories and check triggers
+        setTimeout(() => {
+          AgentService.runAgentLoop([savedEntry, ...entries]).catch(console.warn);
+        }, 1000);
+        
       } catch (error) {
         console.error('Error saving to Supabase:', error);
         // Fallback to localStorage
@@ -175,6 +194,7 @@ function AppContent({ user }: AppProps) {
     { id: 'chat' as ViewMode, icon: MessageCircle, label: 'Chat', color: 'text-blue-600' },
     { id: 'timeline' as ViewMode, icon: BookOpen, label: 'Timeline', color: 'text-emerald-600' },
     { id: 'calendar' as ViewMode, icon: Calendar, label: 'Calendar', color: 'text-purple-600' },
+    { id: 'agent' as ViewMode, icon: Brain, label: 'AI Companion', color: 'text-pink-600' },
   ];
 
   const renderContent = () => {
@@ -196,6 +216,8 @@ function AppContent({ user }: AppProps) {
         return <DiaryTimeline entries={entries} />;
       case 'calendar':
         return <CalendarView entries={entries} onDateSelect={handleDateSelect} />;
+      case 'agent':
+        return <AgentBoard entries={entries} onRefresh={loadEntries} />;
       default:
         return <ChatInterface onGenerateEntry={handleGenerateEntry} currentEmotion={currentEmotion} />;
     }
@@ -217,7 +239,7 @@ function AppContent({ user }: AppProps) {
                   Memorify
                 </h1>
                 <p className="text-xs text-gray-500 leading-none">
-                  Your AI-powered journal
+                  Your AI-powered companion
                   {import.meta.env.VITE_TOGETHER_API_KEY && (
                     <span className="ml-1 text-green-600">• Together.ai Enhanced</span>
                   )}
@@ -360,6 +382,10 @@ function AppContent({ user }: AppProps) {
                     Math.ceil((new Date().getTime() - new Date(entries[entries.length - 1].date).getTime()) / (1000 * 60 * 60 * 24))
                   } days journaling
                 </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                <span>AI companion active</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />

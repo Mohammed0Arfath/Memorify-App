@@ -1,5 +1,6 @@
 import { TOGETHER_CONFIG } from '../config/together';
-import { ChatMessage, Emotion } from '../types';
+import { ChatMessage, Emotion, DiaryEntry } from '../types';
+import { AgentSettings, WeeklyInsight } from '../types/agent';
 import { analyzeEmotion } from './emotions';
 
 export class TogetherService {
@@ -190,29 +191,123 @@ Intensity should be between 0.1 and 1.0. Only include secondary if there's a cle
     return analyzeEmotion(text);
   }
 
-  private createEmotionObject(primary: string, intensity: number, secondary?: string): Emotion {
-    const emotionConfig = {
-      joy: { color: '#F59E0B', emoji: '😊' },
-      gratitude: { color: '#10B981', emoji: '🙏' },
-      calm: { color: '#6366F1', emoji: '😌' },
-      melancholy: { color: '#6B7280', emoji: '😔' },
-      anxiety: { color: '#EF4444', emoji: '😰' },
-      excitement: { color: '#EC4899', emoji: '🤩' },
-      reflection: { color: '#8B5CF6', emoji: '🤔' },
-      hope: { color: '#06B6D4', emoji: '🌟' },
-      nostalgia: { color: '#D97706', emoji: '🍂' },
-      contentment: { color: '#059669', emoji: '☺️' },
-    };
+  // New Agent-specific methods
+  async generateCheckinMessage(triggerType: string, context: any, settings: AgentSettings): Promise<string> {
+    try {
+      const personalityPrompts = {
+        therapist: "You are a warm, professional therapist who cares deeply about your client's wellbeing. Use gentle, supportive language.",
+        poet: "You are a poetic soul who sees beauty in emotions and expresses care through lyrical, metaphorical language.",
+        coach: "You are an encouraging life coach who motivates and empowers. Use uplifting, action-oriented language.",
+        friend: "You are a caring, understanding friend who listens without judgment. Use casual, warm, friendly language.",
+        philosopher: "You are a wise philosopher who helps people find deeper meaning. Use thoughtful, contemplative language."
+      };
 
-    const config = emotionConfig[primary as keyof typeof emotionConfig] || emotionConfig.reflection;
-    
-    return {
-      primary: primary as any,
-      intensity: Math.max(0.1, Math.min(1.0, intensity)),
-      secondary: secondary as any,
-      color: config.color,
-      emoji: config.emoji,
-    };
+      const systemPrompt = `${personalityPrompts[settings.personality_type]}
+
+Generate a personalized check-in message based on the trigger type and context. Keep it warm, genuine, and under 150 words. Make it feel like you truly care about this person's wellbeing.
+
+Trigger: ${triggerType}
+Context: ${JSON.stringify(context)}`;
+
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Create a caring check-in message for this situation.` }
+      ];
+
+      const data = await this.makeRequest(messages, { maxTokens: 200, temperature: 0.8 });
+      return data.choices[0]?.message?.content || "How are you doing today?";
+    } catch (error) {
+      console.warn('Together.ai Check-in Generation Error:', error);
+      throw error;
+    }
+  }
+
+  async generateWeeklyInsight(entries: DiaryEntry[]): Promise<Partial<WeeklyInsight>> {
+    try {
+      const entriesText = entries.map(entry => 
+        `Date: ${entry.date.toDateString()}\nEmotion: ${entry.emotion.primary}\nEntry: ${entry.generatedEntry.slice(0, 200)}...`
+      ).join('\n\n');
+
+      const systemPrompt = `You are an expert at analyzing emotional patterns and personal growth. Analyze the provided diary entries from the past week and return insights in JSON format.
+
+Return ONLY a JSON object with this structure:
+{
+  "dominant_emotions": ["emotion1", "emotion2"],
+  "emotion_distribution": {"joy": 3, "reflection": 2},
+  "key_themes": ["theme1", "theme2"],
+  "growth_observations": ["observation1", "observation2"],
+  "recommended_actions": ["action1", "action2"],
+  "mood_trend": "improving|declining|stable",
+  "generated_visual_prompt": "artistic description for mood visualization"
+}`;
+
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Analyze these diary entries:\n\n${entriesText}` }
+      ];
+
+      const data = await this.makeRequest(messages, { maxTokens: 500, temperature: 0.7 });
+      const response = data.choices[0]?.message?.content;
+      
+      if (response) {
+        try {
+          return JSON.parse(response);
+        } catch (parseError) {
+          console.warn('Failed to parse AI weekly insight response');
+        }
+      }
+    } catch (error) {
+      console.warn('Together.ai Weekly Insight Error:', error);
+      throw error;
+    }
+
+    // Fallback
+    throw new Error('Failed to generate weekly insight');
+  }
+
+  async extractMemoryPatterns(text: string, emotion: Emotion): Promise<Array<{type: string, content: string, importance: number}>> {
+    try {
+      const systemPrompt = `You are an expert at identifying patterns, preferences, and important insights from personal reflections. 
+
+Analyze the text and extract meaningful patterns. Return ONLY a JSON array with this structure:
+[
+  {
+    "type": "pattern|preference|milestone|concern",
+    "content": "description of the pattern/preference/etc",
+    "importance": 0.8
+  }
+]
+
+Focus on:
+- Behavioral patterns (things they do regularly)
+- Preferences (things they like/dislike)
+- Concerns (worries or challenges)
+- Milestones (achievements or important moments)
+
+Importance should be 0.1-1.0 based on how significant this insight is.`;
+
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Extract patterns from this reflection (emotion: ${emotion.primary}):\n\n${text}` }
+      ];
+
+      const data = await this.makeRequest(messages, { maxTokens: 300, temperature: 0.6 });
+      const response = data.choices[0]?.message?.content;
+      
+      if (response) {
+        try {
+          return JSON.parse(response);
+        } catch (parseError) {
+          console.warn('Failed to parse AI pattern extraction response');
+        }
+      }
+    } catch (error) {
+      console.warn('Together.ai Pattern Extraction Error:', error);
+      throw error;
+    }
+
+    // Fallback
+    throw new Error('Failed to extract patterns');
   }
 
   async generateImagePrompt(emotion: Emotion, diaryContent: string): Promise<string> {
@@ -244,6 +339,31 @@ The image should be abstract and emotionally resonant.`;
       console.warn('Together.ai Image Prompt Error:', error);
       throw error;
     }
+  }
+
+  private createEmotionObject(primary: string, intensity: number, secondary?: string): Emotion {
+    const emotionConfig = {
+      joy: { color: '#F59E0B', emoji: '😊' },
+      gratitude: { color: '#10B981', emoji: '🙏' },
+      calm: { color: '#6366F1', emoji: '😌' },
+      melancholy: { color: '#6B7280', emoji: '😔' },
+      anxiety: { color: '#EF4444', emoji: '😰' },
+      excitement: { color: '#EC4899', emoji: '🤩' },
+      reflection: { color: '#8B5CF6', emoji: '🤔' },
+      hope: { color: '#06B6D4', emoji: '🌟' },
+      nostalgia: { color: '#D97706', emoji: '🍂' },
+      contentment: { color: '#059669', emoji: '☺️' },
+    };
+
+    const config = emotionConfig[primary as keyof typeof emotionConfig] || emotionConfig.reflection;
+    
+    return {
+      primary: primary as any,
+      intensity: Math.max(0.1, Math.min(1.0, intensity)),
+      secondary: secondary as any,
+      color: config.color,
+      emoji: config.emoji,
+    };
   }
 }
 

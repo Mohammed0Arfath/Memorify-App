@@ -35,4 +35,4 @@ export type EmotionType =
   | 'nostalgia' 
   | 'contentment';
 
-export type ViewMode = 'chat' | 'timeline' | 'calendar';
+export type ViewMode = 'chat' | 'timeline' | 'calendar' | 'agent';
