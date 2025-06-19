@@ -14,7 +14,7 @@ export const emotionConfig: Record<EmotionType, { color: string; emoji: string; 
 };
 
 export function analyzeEmotion(text: string): Emotion {
-  const cleanedText = text.toLowerCase().replace(/[^\w\s]/gi, ''); // remove punctuation
+  const cleanedText = text.toLowerCase().replace(/[^\w\s]/gi, ''); // Remove punctuation
   const words = cleanedText.split(/\s+/);
 
   const emotionKeywords: Record<EmotionType, string[]> = {
@@ -30,27 +30,20 @@ export function analyzeEmotion(text: string): Emotion {
     contentment: ['satisfied', 'fulfilled', 'peaceful', 'enough', 'balanced', 'steady'],
   };
 
-  let bestMatch: EmotionType | null = null;
+  let bestMatch: EmotionType = 'reflection';
   let maxScore = 0;
 
   Object.entries(emotionKeywords).forEach(([emotion, keywords]) => {
     const score = keywords.reduce((acc, keyword) => acc + (words.includes(keyword) ? 1 : 0), 0);
-
     if (score > maxScore) {
       bestMatch = emotion as EmotionType;
       maxScore = score;
     }
   });
 
-  // Fallback if nothing matched
-  if (!bestMatch || maxScore === 0) {
-    bestMatch = 'reflection';
-    maxScore = 1;
-  }
-
-  const rawIntensity = maxScore / 5;
-  const intensity = rawIntensity > 0 ? Math.min(1, rawIntensity) : 0.1; // allow 0.1 for almost no match
-
+  // Always define `config` before using it!
+  const config = emotionConfig[bestMatch];
+  const intensity = Math.min(1, Math.max(0.3, maxScore / 3));
 
   return {
     primary: bestMatch,
