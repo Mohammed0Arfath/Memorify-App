@@ -41,14 +41,14 @@ export function analyzeEmotion(text: string): Emotion {
     }
   });
 
-  // Always define `config` before using it!
   const config = emotionConfig[bestMatch];
-  const intensity = Math.min(1, Math.max(0.3, maxScore / 3));
-
+  const intensityRaw = maxScore / 5;
+  const intensity = intensityRaw > 1 ? 1 : intensityRaw === 0 ? 0.1 : intensityRaw;
+  
   return {
     primary: bestMatch,
     intensity,
     color: config.color,
     emoji: config.emoji,
   };
-}
+
