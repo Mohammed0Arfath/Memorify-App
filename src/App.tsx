@@ -224,9 +224,9 @@ function AppContent({ user }: AppProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -361,14 +361,14 @@ function AppContent({ user }: AppProps) {
         />
       )}
 
-      {/* Main Content */}
-      <main className="flex-1">
+      {/* Main Content - This now takes up the remaining space */}
+      <main className="flex-1 min-h-0">
         {renderContent()}
       </main>
 
       {/* Stats Footer (visible when there are entries) */}
       {entries.length > 0 && (
-        <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4">
+        <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
               <div className="flex items-center gap-2">
