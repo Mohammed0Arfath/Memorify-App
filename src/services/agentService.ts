@@ -4,6 +4,9 @@ import { DiaryEntry } from '../types';
 import { togetherService } from '../utils/togetherService';
 
 export class AgentService {
+  // Add a static flag to prevent concurrent agent loops
+  private static isRunningAgentLoop = false;
+
   // Memory Management
   static async createMemory(memory: Omit<AgentMemory, 'id' | 'user_id' | 'created_at' | 'last_accessed' | 'access_count'>): Promise<AgentMemory> {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -54,6 +57,24 @@ export class AgentService {
   static async createCheckin(checkin: Omit<AgentCheckin, 'id' | 'user_id' | 'created_at' | 'is_read'>): Promise<AgentCheckin> {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) throw new Error('User not authenticated');
+
+    // Check if a similar check-in already exists in the last 24 hours
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    
+    const { data: existingCheckins, error: checkError } = await supabase
+      .from('agent_checkins')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('trigger_type', checkin.trigger_type)
+      .gte('created_at', oneDayAgo)
+      .limit(1);
+
+    if (checkError) {
+      console.warn('Error checking for existing check-ins:', checkError);
+    } else if (existingCheckins && existingCheckins.length > 0) {
+      console.log(`Skipping duplicate check-in of type '${checkin.trigger_type}' - already exists in last 24 hours`);
+      throw new Error('DUPLICATE_CHECKIN');
+    }
 
     const { data, error } = await supabase
       .from('agent_checkins')
@@ -202,17 +223,47 @@ export class AgentService {
 
   // Agent Loop Functions
   static async runAgentLoop(entries: DiaryEntry[]): Promise<void> {
-    const settings = await this.getSettings();
-    
-    if (!settings.is_agentic_mode_enabled) return;
+    // Prevent concurrent agent loops
+    if (this.isRunningAgentLoop) {
+      console.log('Agent loop already running, skipping...');
+      return;
+    }
 
-    // Check for triggers
-    await this.checkInactivityTrigger(entries, settings);
-    await this.checkEmotionalPatterns(entries, settings);
-    await this.checkMilestones(entries, settings);
-    
-    // Update memories based on recent entries
-    await this.updateMemoriesFromEntries(entries.slice(0, 5)); // Last 5 entries
+    this.isRunningAgentLoop = true;
+
+    try {
+      const settings = await this.getSettings();
+      
+      if (!settings.is_agentic_mode_enabled) {
+        console.log('Agentic mode disabled, skipping agent loop');
+        return;
+      }
+
+      // Check for triggers with error handling for each
+      await this.safeCheckTrigger(() => this.checkInactivityTrigger(entries, settings), 'inactivity');
+      await this.safeCheckTrigger(() => this.checkEmotionalPatterns(entries, settings), 'emotional_pattern');
+      await this.safeCheckTrigger(() => this.checkMilestones(entries, settings), 'milestone');
+      
+      // Update memories based on recent entries
+      await this.safeCheckTrigger(() => this.updateMemoriesFromEntries(entries.slice(0, 5)), 'memory_update');
+      
+    } catch (error) {
+      console.error('Agent loop error:', error);
+    } finally {
+      this.isRunningAgentLoop = false;
+    }
+  }
+
+  private static async safeCheckTrigger(triggerFn: () => Promise<void>, triggerName: string): Promise<void> {
+    try {
+      await triggerFn();
+    } catch (error) {
+      if (error instanceof Error && error.message === 'DUPLICATE_CHECKIN') {
+        console.log(`Skipped duplicate ${triggerName} check-in`);
+      } else {
+        console.warn(`${triggerName} trigger failed:`, error);
+      }
+    }
   }
 
   private static async checkInactivityTrigger(entries: DiaryEntry[], settings: AgentSettings): Promise<void> {
