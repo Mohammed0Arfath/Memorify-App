@@ -316,27 +316,135 @@ export class AgentService {
   }
 
   private static async checkMilestones(entries: DiaryEntry[], settings: AgentSettings): Promise<void> {
+    if (entries.length === 0) return;
+
+    // Calculate consecutive journaling days
+    const consecutiveDays = this.calculateConsecutiveDays(entries);
+    const totalEntries = entries.length;
+
+    // Define milestones with both consecutive days and total entries
     const milestones = [
-      { count: 7, message: "You've been journaling for a week! 🌟" },
-      { count: 30, message: "30 days of reflection - incredible dedication! 🎉" },
-      { count: 100, message: "100 entries! You're building a beautiful story of growth 📚" }
+      { 
+        type: 'consecutive_days', 
+        count: 7, 
+        message: "You've journaled for 7 consecutive days! 🌟 That's an amazing streak!" 
+      },
+      { 
+        type: 'consecutive_days', 
+        count: 14, 
+        message: "Two weeks of consistent journaling! 🎉 Your dedication is inspiring!" 
+      },
+      { 
+        type: 'consecutive_days', 
+        count: 30, 
+        message: "30 days straight! 🏆 You've built an incredible habit!" 
+      },
+      { 
+        type: 'total_entries', 
+        count: 10, 
+        message: "You've created 10 diary entries! 📚 Your journey is taking shape!" 
+      },
+      { 
+        type: 'total_entries', 
+        count: 25, 
+        message: "25 entries of reflection and growth! 🌱 What a beautiful collection!" 
+      },
+      { 
+        type: 'total_entries', 
+        count: 50, 
+        message: "50 diary entries! 📖 You're building an incredible story of self-discovery!" 
+      },
+      { 
+        type: 'total_entries', 
+        count: 100, 
+        message: "100 entries! 🎊 You've created a treasure trove of personal insights!" 
+      }
     ];
 
-    const currentCount = entries.length;
-    const milestone = milestones.find(m => m.count === currentCount);
+    // Check for consecutive days milestones
+    const consecutiveMilestone = milestones.find(m => 
+      m.type === 'consecutive_days' && m.count === consecutiveDays
+    );
     
-    if (milestone) {
+    if (consecutiveMilestone) {
+      console.log(`Milestone reached: ${consecutiveDays} consecutive days`);
       const message = await this.generateCheckinMessage('milestone', { 
-        count: currentCount,
-        achievement: milestone.message 
+        count: consecutiveDays,
+        type: 'consecutive_days',
+        achievement: consecutiveMilestone.message 
       }, settings);
       
       await this.createCheckin({
         trigger_type: 'milestone',
         message,
-        emotional_context: `Milestone: ${currentCount} entries`
+        emotional_context: `Milestone: ${consecutiveDays} consecutive days`
+      });
+      return; // Only trigger one milestone at a time
+    }
+
+    // Check for total entries milestones
+    const totalMilestone = milestones.find(m => 
+      m.type === 'total_entries' && m.count === totalEntries
+    );
+    
+    if (totalMilestone) {
+      console.log(`Milestone reached: ${totalEntries} total entries`);
+      const message = await this.generateCheckinMessage('milestone', { 
+        count: totalEntries,
+        type: 'total_entries',
+        achievement: totalMilestone.message 
+      }, settings);
+      
+      await this.createCheckin({
+        trigger_type: 'milestone',
+        message,
+        emotional_context: `Milestone: ${totalEntries} total entries`
       });
     }
+  }
+
+  private static calculateConsecutiveDays(entries: DiaryEntry[]): number {
+    if (entries.length === 0) return 0;
+
+    // Sort entries by date (most recent first)
+    const sortedEntries = [...entries].sort((a, b) => b.date.getTime() - a.date.getTime());
+    
+    let consecutiveDays = 0;
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Start of today
+    
+    // Check if there's an entry for today or yesterday to start the streak
+    const mostRecentEntry = sortedEntries[0];
+    const mostRecentDate = new Date(mostRecentEntry.date);
+    mostRecentDate.setHours(0, 0, 0, 0);
+    
+    const daysDiff = Math.floor((currentDate.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // If the most recent entry is more than 1 day old, no current streak
+    if (daysDiff > 1) {
+      return 0;
+    }
+    
+    // Start checking from the most recent entry date
+    let checkDate = new Date(mostRecentDate);
+    
+    for (const entry of sortedEntries) {
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0);
+      
+      // If this entry matches the date we're checking
+      if (entryDate.getTime() === checkDate.getTime()) {
+        consecutiveDays++;
+        // Move to the previous day
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else if (entryDate.getTime() < checkDate.getTime()) {
+        // There's a gap in the streak
+        break;
+      }
+      // If entryDate > checkDate, continue to next entry (multiple entries same day)
+    }
+    
+    return consecutiveDays;
   }
 
   private static async updateMemoriesFromEntries(entries: DiaryEntry[]): Promise<void> {
