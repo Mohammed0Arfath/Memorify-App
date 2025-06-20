@@ -288,8 +288,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         )}
 
-        {/* Messages - Scrollable area that takes remaining space */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
+        {/* Messages - Scrollable area with better height management */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0" style={{ maxHeight: 'calc(100vh - 400px)' }}>
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -328,9 +328,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         </div>
 
-        {/* Input Area - Fixed at bottom with proper spacing */}
-        <div className="p-6 border-t border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0">
-          <div className="flex gap-3 mb-4">
+        {/* Input Area - Fixed at bottom with reduced spacing */}
+        <div className="px-6 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0">
+          <div className="flex gap-3 mb-3">
             <div className="flex-1 relative">
               <textarea
                 ref={inputRef}
