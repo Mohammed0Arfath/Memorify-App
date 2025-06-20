@@ -175,20 +175,35 @@ export class AgentService {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) throw new Error('User not authenticated');
 
+    // Calculate proper week boundaries
     const now = new Date();
-    const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const weekEnd = now;
+    const currentDayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    // Calculate the start of the current week (Sunday)
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - currentDayOfWeek);
+    weekStart.setHours(0, 0, 0, 0);
+    
+    // Calculate the end of the current week (Saturday)
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
 
-    // Analyze entries from the past week
-    const weekEntries = entries.filter(entry => 
-      entry.date >= weekStart && entry.date <= weekEnd
-    );
+    console.log(`Generating weekly insight for: ${weekStart.toDateString()} to ${weekEnd.toDateString()}`);
+
+    // Filter entries for the current week
+    const weekEntries = entries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate >= weekStart && entryDate <= weekEnd;
+    });
+
+    console.log(`Found ${weekEntries.length} entries for this week`);
 
     if (weekEntries.length === 0) {
-      throw new Error('No entries found for the past week');
+      throw new Error('No entries found for the current week');
     }
 
-    // Generate insights using AI
+    // Generate comprehensive insights
     const insight = await this.analyzeWeeklyPatterns(weekEntries);
 
     const { data, error } = await supabase
@@ -503,27 +518,170 @@ export class AgentService {
     try {
       return await togetherService.generateWeeklyInsight(entries);
     } catch (error) {
-      // Fallback analysis
+      console.warn('AI weekly insight generation failed, using enhanced fallback analysis');
+      
+      // Enhanced fallback analysis with more sophisticated logic
       const emotions = entries.map(e => e.emotion.primary);
       const emotionCounts = emotions.reduce((acc, emotion) => {
         acc[emotion] = (acc[emotion] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
 
+      // Get dominant emotions (top 3)
       const dominantEmotions = Object.entries(emotionCounts)
         .sort(([,a], [,b]) => b - a)
         .slice(0, 3)
         .map(([emotion]) => emotion);
 
+      // Extract themes from diary content
+      const allContent = entries.map(e => e.generatedEntry + ' ' + e.summary).join(' ').toLowerCase();
+      const themes = this.extractThemesFromContent(allContent);
+
+      // Generate growth observations based on emotional patterns
+      const growthObservations = this.generateGrowthObservations(entries, emotionCounts);
+
+      // Generate recommended actions based on patterns
+      const recommendedActions = this.generateRecommendedActions(dominantEmotions, entries.length);
+
+      // Determine mood trend
+      const moodTrend = this.calculateMoodTrend(entries);
+
       return {
         dominant_emotions: dominantEmotions,
         emotion_distribution: emotionCounts,
-        key_themes: ['reflection', 'growth'],
-        growth_observations: ['Continued commitment to self-reflection'],
-        recommended_actions: ['Keep up the great work with journaling'],
-        mood_trend: 'stable'
+        key_themes: themes,
+        growth_observations: growthObservations,
+        recommended_actions: recommendedActions,
+        mood_trend: moodTrend
       };
     }
+  }
+
+  private static extractThemesFromContent(content: string): string[] {
+    const themeKeywords = {
+      'relationships': ['friend', 'family', 'love', 'relationship', 'partner', 'social', 'connection'],
+      'work': ['work', 'job', 'career', 'project', 'meeting', 'colleague', 'professional'],
+      'health': ['exercise', 'sleep', 'tired', 'energy', 'healthy', 'wellness', 'body'],
+      'creativity': ['creative', 'art', 'music', 'write', 'design', 'imagination', 'inspire'],
+      'learning': ['learn', 'study', 'read', 'knowledge', 'skill', 'understand', 'discover'],
+      'mindfulness': ['meditation', 'present', 'mindful', 'breath', 'awareness', 'calm', 'peace'],
+      'challenges': ['difficult', 'struggle', 'problem', 'challenge', 'stress', 'overcome'],
+      'gratitude': ['grateful', 'thankful', 'appreciate', 'blessed', 'fortunate', 'positive'],
+      'goals': ['goal', 'plan', 'future', 'dream', 'ambition', 'achieve', 'progress'],
+      'nature': ['nature', 'outdoor', 'walk', 'garden', 'sky', 'weather', 'natural']
+    };
+
+    const foundThemes: string[] = [];
+    
+    Object.entries(themeKeywords).forEach(([theme, keywords]) => {
+      const matches = keywords.filter(keyword => content.includes(keyword)).length;
+      if (matches >= 2) { // Require at least 2 keyword matches
+        foundThemes.push(theme);
+      }
+    });
+
+    // If no themes found, use default based on emotions
+    if (foundThemes.length === 0) {
+      foundThemes.push('self-reflection', 'personal growth');
+    }
+
+    return foundThemes.slice(0, 4); // Limit to 4 themes
+  }
+
+  private static generateGrowthObservations(entries: DiaryEntry[], emotionCounts: Record<string, number>): string[] {
+    const observations: string[] = [];
+    
+    // Analyze emotional diversity
+    const emotionTypes = Object.keys(emotionCounts).length;
+    if (emotionTypes >= 4) {
+      observations.push('You experienced a rich variety of emotions this week, showing emotional depth and awareness');
+    }
+
+    // Check for positive emotions
+    const positiveEmotions = ['joy', 'gratitude', 'excitement', 'hope', 'contentment'];
+    const positiveCount = positiveEmotions.filter(e => emotionCounts[e] > 0).length;
+    if (positiveCount >= 2) {
+      observations.push('You cultivated multiple positive emotional states, indicating good emotional balance');
+    }
+
+    // Check for reflection
+    if (emotionCounts['reflection'] > 0) {
+      observations.push('Your commitment to self-reflection is evident and valuable for personal growth');
+    }
+
+    // Analyze entry frequency
+    if (entries.length >= 5) {
+      observations.push('Your consistent journaling practice this week shows dedication to self-awareness');
+    } else if (entries.length >= 3) {
+      observations.push('You maintained a good journaling rhythm this week');
+    }
+
+    // Check for emotional processing
+    const challengingEmotions = ['anxiety', 'melancholy'];
+    const challengingCount = challengingEmotions.filter(e => emotionCounts[e] > 0).length;
+    if (challengingCount > 0 && positiveCount > 0) {
+      observations.push('You navigated both challenging and positive emotions, showing emotional resilience');
+    }
+
+    return observations.slice(0, 3); // Limit to 3 observations
+  }
+
+  private static generateRecommendedActions(dominantEmotions: string[], entryCount: number): string[] {
+    const actions: string[] = [];
+
+    // Based on dominant emotions
+    if (dominantEmotions.includes('anxiety')) {
+      actions.push('Consider incorporating breathing exercises or mindfulness practices into your routine');
+    }
+    
+    if (dominantEmotions.includes('gratitude')) {
+      actions.push('Continue your gratitude practice - perhaps expand it to include gratitude letters or sharing appreciation with others');
+    }
+    
+    if (dominantEmotions.includes('excitement')) {
+      actions.push('Channel your excitement into creative projects or new learning opportunities');
+    }
+    
+    if (dominantEmotions.includes('melancholy')) {
+      actions.push('Gentle self-care activities like nature walks or connecting with supportive friends might be helpful');
+    }
+    
+    if (dominantEmotions.includes('reflection')) {
+      actions.push('Your reflective nature is a strength - consider setting aside time for deeper contemplation or meditation');
+    }
+
+    // Based on journaling frequency
+    if (entryCount < 3) {
+      actions.push('Try to maintain a more consistent journaling practice to deepen your self-awareness');
+    } else if (entryCount >= 5) {
+      actions.push('Your consistent journaling is excellent - consider exploring different writing prompts or formats');
+    }
+
+    // General wellness actions
+    actions.push('Remember to celebrate small wins and practice self-compassion in your journey');
+
+    return actions.slice(0, 3); // Limit to 3 actions
+  }
+
+  private static calculateMoodTrend(entries: DiaryEntry[]): 'improving' | 'declining' | 'stable' {
+    if (entries.length < 2) return 'stable';
+
+    // Sort entries by date
+    const sortedEntries = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+    
+    // Calculate average intensity for first half vs second half
+    const midpoint = Math.floor(sortedEntries.length / 2);
+    const firstHalf = sortedEntries.slice(0, midpoint);
+    const secondHalf = sortedEntries.slice(midpoint);
+    
+    const firstHalfAvg = firstHalf.reduce((sum, entry) => sum + entry.emotion.intensity, 0) / firstHalf.length;
+    const secondHalfAvg = secondHalf.reduce((sum, entry) => sum + entry.emotion.intensity, 0) / secondHalf.length;
+    
+    const difference = secondHalfAvg - firstHalfAvg;
+    
+    if (difference > 0.1) return 'improving';
+    if (difference < -0.1) return 'declining';
+    return 'stable';
   }
 
   private static async extractPatterns(text: string, emotion: any): Promise<Array<{type: string, content: string, importance: number}>> {
