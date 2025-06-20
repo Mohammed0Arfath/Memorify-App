@@ -169,7 +169,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -181,7 +181,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
       {/* API Key Warning */}
       {apiKeyMissing && (
-        <div className="mx-6 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 flex-shrink-0">
           <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm">
             <p className="text-amber-800 font-medium mb-1">Together.ai API Key Not Configured</p>
@@ -204,7 +204,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
       {/* Quota Exceeded Warning */}
       {quotaExceeded && !apiKeyMissing && (
-        <div className="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3 flex-shrink-0">
           <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm">
             <p className="text-red-800 font-medium mb-1">Together.ai API Quota Exceeded</p>
@@ -225,7 +225,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0">
+      <div className="flex items-center justify-between py-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
@@ -245,7 +245,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
       {/* Photo Preview */}
       {selectedPhoto && (
-        <div className="mx-6 mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex-shrink-0">
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex-shrink-0">
           <div className="flex items-start gap-3">
             <div className="relative">
               <img 
@@ -269,99 +269,103 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
       )}
 
       {/* Messages - This is the main scrollable area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-          >
+      <div className="flex-1 overflow-y-auto py-6 space-y-4 min-h-0">
+        <div className="max-w-3xl mx-auto space-y-4">
+          {messages.map((message) => (
             <div
-              className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
-                message.isUser
-                  ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
-              }`}
+              key={message.id}
+              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
             >
-              <p className="text-sm leading-relaxed">{message.text}</p>
-              <span className={`text-xs mt-2 block ${
-                message.isUser ? 'text-blue-100' : 'text-gray-400'
-              }`}>
-                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            </div>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div
+                className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
+                  message.isUser
+                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
+                    : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                }`}
+              >
+                <p className="text-sm leading-relaxed">{message.text}</p>
+                <span className={`text-xs mt-2 block ${
+                  message.isUser ? 'text-blue-100' : 'text-gray-400'
+                }`}>
+                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+          ))}
+          
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Input Area - Fixed at bottom */}
-      <div className="p-6 border-t border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0">
-        <div className="flex gap-3">
-          <div className="flex-1 relative">
-            <textarea
-              ref={inputRef}
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Share what's on your mind..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
-              rows={2}
-              disabled={isTyping}
-            />
+      <div className="py-6 border-t border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex gap-3">
+            <div className="flex-1 relative">
+              <textarea
+                ref={inputRef}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Share what's on your mind..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
+                rows={2}
+                disabled={isTyping}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handleSendMessage}
+                disabled={!inputText.trim() || isTyping}
+                className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="p-3 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Upload photo"
+              >
+                {isUploading ? (
+                  <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Image className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={handleSendMessage}
-              disabled={!inputText.trim() || isTyping}
-              className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-            >
-              <Send className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="p-3 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Upload photo"
-            >
-              {isUploading ? (
-                <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                <Image className="w-5 h-5" />
-              )}
-            </button>
-          </div>
+          
+          {messages.filter(msg => msg.isUser).length > 0 && (
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={handleGenerateEntry}
+                disabled={isTyping || isGeneratingEntry}
+                className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isGeneratingEntry ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Generating Entry...
+                  </div>
+                ) : (
+                  'Generate Diary Entry ✨'
+                )}
+              </button>
+            </div>
+          )}
         </div>
-        
-        {messages.filter(msg => msg.isUser).length > 0 && (
-          <div className="mt-4 flex justify-center">
-            <button
-              onClick={handleGenerateEntry}
-              disabled={isTyping || isGeneratingEntry}
-              className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isGeneratingEntry ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Generating Entry...
-                </div>
-              ) : (
-                'Generate Diary Entry ✨'
-              )}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
