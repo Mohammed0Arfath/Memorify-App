@@ -51,11 +51,10 @@ export function analyzeEmotion(text: string): Emotion {
   const rawIntensity = maxScore / 5;
   const intensity = rawIntensity > 0 ? Math.min(1, rawIntensity) : 0.1; // allow 0.1 for almost no match
 
-
   return {
     primary: bestMatch,
     intensity,
-    color: config.color,
-    emoji: config.emoji,
+    color: emotionConfig[bestMatch].color,
+    emoji: emotionConfig[bestMatch].emoji,
   };
 }

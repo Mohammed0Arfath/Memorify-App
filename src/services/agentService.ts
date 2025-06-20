@@ -289,6 +289,9 @@ export class AgentService {
   }
 
   private static async updateMemoriesFromEntries(entries: DiaryEntry[]): Promise<void> {
+    // Define allowed memory types based on database schema
+    const allowedMemoryTypes = ['pattern', 'preference', 'milestone', 'concern'];
+    
     for (const entry of entries) {
       // Extract patterns and preferences
       const userMessages = entry.chatMessages.filter(m => m.isUser).map(m => m.text).join(' ');
@@ -298,12 +301,17 @@ export class AgentService {
           const patterns = await this.extractPatterns(userMessages, entry.emotion);
           
           for (const pattern of patterns) {
-            await this.createMemory({
-              memory_type: pattern.type as any,
-              content: pattern.content,
-              emotional_context: [entry.emotion.primary],
-              importance_score: pattern.importance
-            });
+            // Validate memory type before creating memory
+            if (allowedMemoryTypes.includes(pattern.type)) {
+              await this.createMemory({
+                memory_type: pattern.type as any,
+                content: pattern.content,
+                emotional_context: [entry.emotion.primary],
+                importance_score: pattern.importance
+              });
+            } else {
+              console.warn(`Skipping memory creation: invalid memory type '${pattern.type}'`);
+            }
           }
         } catch (error) {
           console.warn('Failed to extract patterns from entry:', error);
