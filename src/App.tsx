@@ -397,6 +397,23 @@ function AppContent({ user }: AppProps) {
           </div>
         </footer>
       )}
+
+      {/* Bolt.new Attribution Footer */}
+      <div className="bg-gray-50 border-t border-gray-200 py-2 flex-shrink-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-xs text-center text-gray-500">
+            Built with ❤️ using{' '}
+            <a 
+              href="https://bolt.new" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 underline"
+            >
+              Bolt.new
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
