@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DiaryEntry as DiaryEntryType } from '../types';
 import { DiaryEntry } from './DiaryEntry';
 import { Search, Filter, Calendar } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface DiaryTimelineProps {
   entries: DiaryEntryType[];
@@ -11,6 +12,18 @@ export const DiaryTimeline: React.FC<DiaryTimelineProps> = ({ entries }) => {
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [emotionFilter, setEmotionFilter] = useState<string>('all');
+  const [username, setUsername] = useState<string>('');
+
+  // Get username from Supabase auth
+  React.useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        setUsername(user.email);
+      }
+    };
+    getUser();
+  }, []);
 
   const filteredEntries = entries.filter(entry => {
     const matchesSearch = entry.generatedEntry.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -40,7 +53,7 @@ export const DiaryTimeline: React.FC<DiaryTimelineProps> = ({ entries }) => {
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-2">Your Journey</h2>
-        <p className="text-gray-600">Reflecting on your emotional landscape through time</p>
+        <p className="text-gray-600">Reflecting on your emotional landscape through time with personalized video messages</p>
       </div>
 
       {/* Filters */}
@@ -85,6 +98,7 @@ export const DiaryTimeline: React.FC<DiaryTimelineProps> = ({ entries }) => {
               entry={entry}
               isExpanded={expandedEntry === entry.id}
               onToggleExpand={() => handleToggleExpand(entry.id)}
+              username={username}
             />
           </div>
         ))}

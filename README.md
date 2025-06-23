@@ -1,6 +1,6 @@
-# Memorify - Smart Diary App with AI Assistant & Voice Chat
+# Memorify - Smart Diary App with AI Assistant, Voice Chat & Personalized Video Messages
 
-A beautiful, emotionally intelligent diary app powered by Together.ai's advanced AI models (including Llama 3, Mixtral, and more) that helps users reflect on their day through conversational AI and voice interactions.
+A beautiful, emotionally intelligent diary app powered by Together.ai's advanced AI models (including Llama 3, Mixtral, and more) that helps users reflect on their day through conversational AI, voice interactions, and personalized AI-generated video messages.
 
 ## ✨ Features
 
@@ -8,6 +8,13 @@ A beautiful, emotionally intelligent diary app powered by Together.ai's advanced
 - **Advanced AI Models**: Chat with an empathetic AI companion using Together.ai's powerful models (Llama 3 70B, Mixtral 8x7B, and more)
 - **Voice Chat Integration**: Real-time voice conversations with ElevenLabs Conversational AI
 - **Intelligent Responses**: Context-aware responses that encourage deeper reflection
+
+### 🎥 Personalized AI Video Messages
+- **Tavus Integration**: Generate personalized AI video messages based on diary entries and emotional insights
+- **Emotion-Responsive Videos**: Video tone, pace, and background adapt to detected emotions
+- **Supportive Companion**: Videos feel like a caring friend providing empathetic feedback
+- **Download & Replay**: Save and revisit your personalized video messages
+- **Smart Fallbacks**: Inspirational quotes with emotion-colored backgrounds when video quota is exceeded
 
 ### 📝 Smart Diary Generation
 - **Automatic Entry Creation**: Transform your conversations into beautifully written diary entries
@@ -23,7 +30,7 @@ A beautiful, emotionally intelligent diary app powered by Together.ai's advanced
 - **Milestone Tracking**: Celebrates journaling streaks and entry milestones
 
 ### 📊 Advanced Analytics
-- **Timeline View**: Browse your reflections with emotion-colored cards and detailed analysis
+- **Timeline View**: Browse your reflections with emotion-colored cards, detailed analysis, and video messages
 - **Calendar Integration**: Navigate through your emotional journey by date
 - **Emotion Tracking**: Visual indicators and intensity measurements
 - **Growth Insights**: AI-generated observations about your personal development
@@ -66,7 +73,22 @@ VITE_TOGETHER_TEMPERATURE=0.7
 
 3. Replace `your_together_api_key_here` with your actual Together.ai API key
 
-### 3. Configure Supabase (Database & Auth)
+### 3. Configure Tavus API (Video Generation)
+
+1. Get your Tavus API key from [Tavus](https://tavusapi.com/)
+   - Sign up and create a replica for personalized video generation
+   - Get your replica ID from the dashboard
+2. Add Tavus credentials to your `.env` file:
+
+```env
+# Tavus API Configuration
+VITE_TAVUS_API_KEY=your_tavus_api_key_here
+VITE_TAVUS_REPLICA_ID=your_replica_id_here
+```
+
+3. Replace with your actual Tavus API key and replica ID
+
+### 4. Configure Supabase (Database & Auth)
 
 1. Create a Supabase project at [supabase.com](https://supabase.com)
 2. Add your Supabase credentials to the `.env` file:
@@ -81,7 +103,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    - Go to your Supabase dashboard → SQL Editor
    - Run the migration files from `supabase/migrations/` in order
 
-### 4. Configure ElevenLabs Voice Chat (Optional)
+### 5. Configure ElevenLabs Voice Chat (Optional)
 
 The app includes ElevenLabs Conversational AI for voice interactions. The default agent ID is pre-configured, but you can:
 
@@ -89,7 +111,7 @@ The app includes ElevenLabs Conversational AI for voice interactions. The defaul
 2. Update the agent ID in the VoiceChat component
 3. Customize the voice personality and responses
 
-### 5. Start the Development Server
+### 6. Start the Development Server
 
 ```bash
 npm run dev
@@ -103,11 +125,19 @@ npm run dev
 3. **Voice Conversations**: Use the microphone button to start voice chats with the AI
 4. **Add Photos**: Upload photos to your conversations for richer diary entries
 
-### Creating Entries
+### Creating Entries with Video Messages
 1. **Chat with AI**: Have meaningful conversations about your day, feelings, and experiences
 2. **Generate Entry**: Click "Generate Diary Entry" to transform your chat into a beautiful reflection
-3. **Review Timeline**: Browse your emotional journey in the Timeline view
-4. **Track Patterns**: Use the Calendar view to see your mood patterns over time
+3. **Watch Video Message**: Each entry automatically generates a personalized AI video message
+4. **Review Timeline**: Browse your emotional journey with video messages in the Timeline view
+5. **Track Patterns**: Use the Calendar view to see your mood patterns over time
+
+### AI Video Messages
+1. **Automatic Generation**: Videos are created automatically based on your diary entries and emotions
+2. **Emotion-Responsive**: Video tone, pace, and background adapt to your detected emotional state
+3. **Personalized Content**: Each video feels like a supportive friend providing empathetic feedback
+4. **Download & Save**: Save your favorite video messages for future viewing
+5. **Fallback Mode**: When video quota is exceeded, receive beautiful inspirational quotes instead
 
 ### AI Companion Features
 1. **Proactive Check-ins**: Your AI companion will reach out when it notices patterns or milestones
@@ -133,6 +163,14 @@ The app uses Together.ai's unified API for access to state-of-the-art AI models:
 - **Emotion Analysis**: Advanced emotion detection beyond simple keyword matching
 - **Agent Features**: Proactive check-ins, weekly insights, and memory management
 
+### Tavus Video Integration
+
+- **Personalized Videos**: AI-generated video messages based on diary content and emotions
+- **Emotion-Responsive**: Video style adapts to detected emotional state
+- **Custom Backgrounds**: Different visual themes for different emotions
+- **Adaptive Pacing**: Video speed and tone match emotional intensity
+- **Fallback System**: Graceful degradation to inspirational quotes when quota exceeded
+
 ### ElevenLabs Voice Integration
 
 - **Real-time Voice Chat**: Natural voice conversations with AI
@@ -153,10 +191,11 @@ The app uses Together.ai's unified API for access to state-of-the-art AI models:
 
 ### Fallback System
 
-If the Together.ai API key is not configured, the app gracefully falls back to:
+If APIs are not configured, the app gracefully falls back to:
 - Mock AI responses for demonstration
 - Rule-based emotion analysis
 - Template-based diary generation
+- Inspirational quotes instead of videos
 - Local storage for data persistence
 
 ## 🗄️ Database Schema
@@ -184,14 +223,16 @@ The app uses Supabase PostgreSQL with comprehensive tables:
 | `VITE_TOGETHER_MODEL` | Together.ai model to use | `meta-llama/Llama-3-70b-chat-hf` | No |
 | `VITE_TOGETHER_MAX_TOKENS` | Maximum tokens per request | `1000` | No |
 | `VITE_TOGETHER_TEMPERATURE` | Response creativity (0-1) | `0.7` | No |
+| `VITE_TAVUS_API_KEY` | Your Tavus API key | - | For video generation |
+| `VITE_TAVUS_REPLICA_ID` | Your Tavus replica ID | - | For video generation |
 | `VITE_SUPABASE_URL` | Your Supabase project URL | - | Yes |
 | `VITE_SUPABASE_ANON_KEY` | Your Supabase anonymous key | - | Yes |
 
 ## 🔒 Security Notes
 
-⚠️ **Important**: This implementation uses the Together.ai API directly from the browser for demonstration purposes. In a production environment, you should:
+⚠️ **Important**: This implementation uses APIs directly from the browser for demonstration purposes. In a production environment, you should:
 
-1. Create a backend API to handle Together.ai requests
+1. Create a backend API to handle external API requests
 2. Store API keys securely on the server
 3. Implement proper authentication and rate limiting
 4. Use environment variables on the server side
@@ -216,6 +257,7 @@ The built files will be in the `dist` directory, ready for deployment.
 
 ### AI & Voice
 - **Together.ai API** for advanced AI models and conversations
+- **Tavus API** for personalized AI video generation
 - **ElevenLabs Conversational AI** for voice chat capabilities
 - **Custom emotion analysis** with AI-powered insights
 
@@ -235,7 +277,7 @@ The built files will be in the `dist` directory, ready for deployment.
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Test with both Together.ai API and fallback modes
+4. Test with both API integrations and fallback modes
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Submit a pull request
@@ -255,10 +297,14 @@ MIT License - feel free to use this project for personal or commercial purposes.
 ## 🙏 Acknowledgments
 
 - **Together.ai** for providing access to state-of-the-art AI models
+- **Tavus** for revolutionary AI video generation technology
 - **ElevenLabs** for revolutionary voice AI technology
 - **Supabase** for the excellent backend-as-a-service platform
 - **React & Tailwind** communities for amazing development tools
+- **Bolt.new** for the incredible development platform
 
 ---
 
-**Memorify** - Transform your thoughts into beautiful reflections with the power of AI 🌟
+**Memorify** - Transform your thoughts into beautiful reflections with the power of AI and personalized video messages 🌟
+
+*Built with ❤️ using [Bolt.new](https://bolt.new)*
