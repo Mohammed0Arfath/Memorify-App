@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image, Sparkles, AlertCircle, AlertTriangle, X, Mic, Video } from 'lucide-react';
+import { Send, Image, Sparkles, AlertCircle, AlertTriangle, X, Mic } from 'lucide-react';
 import { ChatMessage, DiaryEntry } from '../types';
 import { generateAIResponse, analyzeEmotionWithAI } from '../utils/mockAI';
 import { EmotionIndicator } from './EmotionIndicator';
 import { VoiceChat } from './VoiceChat';
-import { VideoMessageModal } from './VideoMessageModal';
 
 interface ChatInterfaceProps {
   onGenerateEntry: (messages: ChatMessage[], photo?: string) => void;
@@ -29,8 +28,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showVoiceChat, setShowVoiceChat] = useState(false);
-  const [showVideoPreview, setShowVideoPreview] = useState(false);
-  const [generatedEntry, setGeneratedEntry] = useState<DiaryEntry | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -164,26 +161,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
     
     try {
       await onGenerateEntry(messages, selectedPhoto || undefined);
-      
-      // Create a temporary entry for video preview
-      const tempEntry: DiaryEntry = {
-        id: Date.now().toString(),
-        date: new Date(),
-        chatMessages: messages,
-        generatedEntry: "Your diary entry is being generated...",
-        emotion: detectedEmotion || {
-          primary: 'reflection',
-          intensity: 0.7,
-          color: '#8B5CF6',
-          emoji: '🤔'
-        },
-        photo: selectedPhoto || undefined,
-        summary: "A day of reflection and growth."
-      };
-      
-      setGeneratedEntry(tempEntry);
-      setShowVideoPreview(true);
-      
       // Reset photo after generating entry
       setSelectedPhoto(null);
     } catch (error) {
@@ -268,7 +245,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                 AI Companion {!apiKeyMissing && !quotaExceeded && <span className="text-xs text-green-600">(Together.ai Powered)</span>}
                 {quotaExceeded && <span className="text-xs text-red-600">(Fallback Mode)</span>}
               </h2>
-              <p className="text-sm text-gray-500">Your reflective writing partner with video messages</p>
+              <p className="text-sm text-gray-500">Your reflective writing partner</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -391,7 +368,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           
           {/* Generate Entry Button */}
           {messages.filter(msg => msg.isUser).length > 0 && (
-            <div className="flex justify-center gap-3">
+            <div className="flex justify-center">
               <button
                 onClick={handleGenerateEntry}
                 disabled={isTyping || isGeneratingEntry}
@@ -406,23 +383,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                   'Generate Diary Entry ✨'
                 )}
               </button>
-              
-              {/* Video Preview Button */}
-              {detectedEmotion && (
-                <button
-                  onClick={() => {
-                    if (generatedEntry) {
-                      setShowVideoPreview(true);
-                    }
-                  }}
-                  disabled={!generatedEntry}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  title="Preview video message"
-                >
-                  <Video className="w-4 h-4" />
-                  Video Message
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -434,15 +394,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         onToggle={toggleVoiceChat}
         agentId="agent_01jy6v3xvyfj1rcac32g1xx25x"
       />
-
-      {/* Video Message Modal */}
-      {generatedEntry && (
-        <VideoMessageModal
-          entry={generatedEntry}
-          isVisible={showVideoPreview}
-          onClose={() => setShowVideoPreview(false)}
-        />
-      )}
     </>
   );
 };

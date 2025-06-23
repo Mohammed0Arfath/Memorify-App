@@ -239,12 +239,9 @@ function AppContent({ user }: AppProps) {
                   Memorify
                 </h1>
                 <p className="text-xs text-gray-500 leading-none">
-                  Your AI-powered companion with video messages
+                  Your AI-powered companion
                   {import.meta.env.VITE_TOGETHER_API_KEY && (
                     <span className="ml-1 text-green-600">• Together.ai Enhanced</span>
-                  )}
-                  {import.meta.env.VITE_TAVUS_API_KEY && (
-                    <span className="ml-1 text-purple-600">• Tavus Video</span>
                   )}
                 </p>
               </div>
@@ -394,7 +391,6 @@ function AppContent({ user }: AppProps) {
                 <Sparkles className="w-4 h-4" />
                 <span>
                   {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
-                  {import.meta.env.VITE_TAVUS_API_KEY && ' + Video messages'}
                 </span>
               </div>
             </div>
