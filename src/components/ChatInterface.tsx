@@ -11,14 +11,7 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, currentEmotion }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      text: "Hello! I'm here to help you reflect on your day. What's on your mind?",
-      isUser: false,
-      timestamp: new Date(),
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isGeneratingEntry, setIsGeneratingEntry] = useState(false);
@@ -28,6 +21,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showVoiceChat, setShowVoiceChat] = useState(false);
+  const [hasStartedConversation, setHasStartedConversation] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -94,6 +88,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
   const handleSendMessage = async () => {
     if (!inputText.trim() || isTyping) return;
+
+    // Add welcome message when starting first conversation
+    if (!hasStartedConversation) {
+      const welcomeMessage: ChatMessage = {
+        id: 'welcome',
+        text: "Hello! I'm here to help you reflect on your day and explore your thoughts and feelings. What's on your mind today?",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
+      setHasStartedConversation(true);
+    }
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -290,42 +296,84 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
         {/* Messages - Scrollable area with better height management */}
         <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0" style={{ maxHeight: 'calc(100vh - 400px)' }}>
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
-                    message.isUser
-                      ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
-                      : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
-                  }`}
-                >
-                  <p className="text-sm leading-relaxed">{message.text}</p>
-                  <span className={`text-xs mt-2 block ${
-                    message.isUser ? 'text-blue-100' : 'text-gray-400'
-                  }`}>
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
+                <Sparkles className="w-8 h-8 text-white" />
               </div>
-            ))}
-            
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Start Your Reflection Journey</h3>
+              <p className="text-gray-600 mb-6 max-w-md">
+                Share your thoughts, feelings, and experiences. I'm here to listen and help you process your day through meaningful conversation.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
+                <button
+                  onClick={() => setInputText("I had an interesting day today...")}
+                  className="p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-left transition-colors"
+                >
+                  <p className="text-sm font-medium text-blue-800">Reflect on your day</p>
+                  <p className="text-xs text-blue-600">Share what happened today</p>
+                </button>
+                <button
+                  onClick={() => setInputText("I'm feeling...")}
+                  className="p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-left transition-colors"
+                >
+                  <p className="text-sm font-medium text-purple-800">Explore emotions</p>
+                  <p className="text-xs text-purple-600">Talk about how you're feeling</p>
+                </button>
+                <button
+                  onClick={() => setInputText("I've been thinking about...")}
+                  className="p-3 bg-green-50 hover:bg-green-100 rounded-lg text-left transition-colors"
+                >
+                  <p className="text-sm font-medium text-green-800">Process thoughts</p>
+                  <p className="text-xs text-green-600">Work through what's on your mind</p>
+                </button>
+                <button
+                  onClick={() => setInputText("I'm grateful for...")}
+                  className="p-3 bg-amber-50 hover:bg-amber-100 rounded-lg text-left transition-colors"
+                >
+                  <p className="text-sm font-medium text-amber-800">Practice gratitude</p>
+                  <p className="text-xs text-amber-600">Focus on positive moments</p>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
+                      message.isUser
+                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
+                        : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed">{message.text}</p>
+                    <span className={`text-xs mt-2 block ${
+                      message.isUser ? 'text-blue-100' : 'text-gray-400'
+                    }`}>
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
         </div>
 
         {/* Input Area - Fixed at bottom with reduced spacing */}

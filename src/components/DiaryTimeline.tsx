@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { DiaryEntry as DiaryEntryType } from '../types';
 import { DiaryEntry } from './DiaryEntry';
-import { Search, Filter, Calendar } from 'lucide-react';
+import { Search, Filter, Calendar, BookOpen, Sparkles } from 'lucide-react';
 
 interface DiaryTimelineProps {
   entries: DiaryEntryType[];
@@ -27,10 +27,30 @@ export const DiaryTimeline: React.FC<DiaryTimelineProps> = ({ entries }) => {
 
   if (entries.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 text-gray-500">
-        <Calendar className="w-16 h-16 mb-4 text-gray-300" />
-        <h3 className="text-xl font-medium mb-2">No entries yet</h3>
-        <p className="text-center">Start a conversation with your AI companion to create your first diary entry.</p>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Your Journey</h2>
+          <p className="text-gray-600">Reflecting on your emotional landscape through time</p>
+        </div>
+        
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-6">
+            <BookOpen className="w-10 h-10 text-white" />
+          </div>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-3">Your Story Begins Here</h3>
+          <p className="text-gray-600 mb-6 max-w-md">
+            Start a conversation with your AI companion to create your first diary entry. Each reflection becomes part of your personal growth journey.
+          </p>
+          <div className="bg-blue-50 rounded-lg p-4 max-w-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-800">Getting Started</span>
+            </div>
+            <p className="text-xs text-blue-700">
+              Go to the Chat tab and share what's on your mind. Your AI companion will help you process your thoughts and create meaningful diary entries.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -90,9 +110,11 @@ export const DiaryTimeline: React.FC<DiaryTimelineProps> = ({ entries }) => {
         ))}
       </div>
 
-      {filteredEntries.length === 0 && (
+      {filteredEntries.length === 0 && searchTerm && (
         <div className="text-center py-12">
-          <p className="text-gray-500">No entries match your current filters.</p>
+          <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-800 mb-2">No entries found</h3>
+          <p className="text-gray-500">Try adjusting your search terms or filters to find what you're looking for.</p>
         </div>
       )}
     </div>

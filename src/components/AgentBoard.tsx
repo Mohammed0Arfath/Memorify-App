@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, MessageCircle, TrendingUp, Settings, Bell, Sparkles, Calendar, Target, Heart, Lightbulb } from 'lucide-react';
+import { Brain, MessageCircle, TrendingUp, Settings, Bell, Sparkles, Calendar, Target, Heart, Lightbulb, Users } from 'lucide-react';
 import { AgentService } from '../services/agentService';
 import { AgentCheckin, WeeklyInsight, AgentSettings } from '../types/agent';
 import { DiaryEntry } from '../types';
@@ -128,7 +128,7 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
             <Sparkles className="w-4 h-4" />
             Run Analysis
           </button>
-          {activeTab === 'insights' && (
+          {activeTab === 'insights' && entries.length > 0 && (
             <button
               onClick={generateWeeklyInsight}
               className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2"
@@ -172,9 +172,20 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
           <div className="p-6">
             {checkins.length === 0 ? (
               <div className="text-center py-12">
-                <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="w-8 h-8 text-purple-600" />
+                </div>
                 <h3 className="text-xl font-medium text-gray-800 mb-2">No pending check-ins</h3>
-                <p className="text-gray-600">Your AI companion will reach out when it notices patterns or milestones.</p>
+                <p className="text-gray-600 mb-4">Your AI companion will reach out when it notices patterns or milestones.</p>
+                <div className="bg-purple-50 rounded-lg p-4 max-w-md mx-auto">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-4 h-4 text-purple-600" />
+                    <span className="text-sm font-medium text-purple-800">How Check-ins Work</span>
+                  </div>
+                  <p className="text-xs text-purple-700">
+                    Your AI companion analyzes your journaling patterns and emotional trends to provide timely, personalized check-ins when you might benefit from reflection or support.
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -225,15 +236,34 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
           <div className="p-6">
             {insights.length === 0 ? (
               <div className="text-center py-12">
-                <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="w-8 h-8 text-blue-600" />
+                </div>
                 <h3 className="text-xl font-medium text-gray-800 mb-2">No insights yet</h3>
-                <p className="text-gray-600 mb-4">Generate your first weekly insight to see patterns and growth.</p>
-                <button
-                  onClick={generateWeeklyInsight}
-                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  Generate Weekly Insight
-                </button>
+                {entries.length === 0 ? (
+                  <div>
+                    <p className="text-gray-600 mb-4">Start journaling to unlock personalized insights about your emotional patterns and growth.</p>
+                    <div className="bg-blue-50 rounded-lg p-4 max-w-md mx-auto">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Lightbulb className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">Weekly Insights</span>
+                      </div>
+                      <p className="text-xs text-blue-700">
+                        After you create a few diary entries, your AI companion will generate comprehensive weekly insights about your emotional patterns, growth, and recommended actions.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-gray-600 mb-4">Generate your first weekly insight to see patterns and growth.</p>
+                    <button
+                      onClick={generateWeeklyInsight}
+                      className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                      Generate Weekly Insight
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-6">

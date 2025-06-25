@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus } from 'lucide-react';
 import { DiaryEntry } from '../types';
 import { EmotionIndicator } from './EmotionIndicator';
 
@@ -77,6 +77,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
               </div>
             )}
             
+            {!hasEntry && (
+              <div className="flex-1 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                <Plus className="w-4 h-4 text-gray-400" />
+              </div>
+            )}
+            
             {isToday && (
               <div className="w-2 h-2 bg-blue-500 rounded-full self-center mt-auto" />
             )}
@@ -122,7 +128,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
           <p className="text-gray-600">Navigate through your emotional journey</p>
         </div>
         
-        {monthSummary && (
+        {monthSummary ? (
           <div className="bg-white rounded-lg p-4 shadow-md border">
             <h3 className="text-sm font-medium text-gray-700 mb-2">This Month</h3>
             <div className="flex items-center gap-2">
@@ -132,6 +138,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
             <p className="text-xs text-gray-500 capitalize mt-1">
               Mostly {monthSummary.dominantEmotion}
             </p>
+          </div>
+        ) : (
+          <div className="bg-gray-50 rounded-lg p-4 border border-dashed border-gray-300">
+            <h3 className="text-sm font-medium text-gray-600 mb-1">This Month</h3>
+            <p className="text-xs text-gray-500">No entries yet</p>
+            <p className="text-xs text-gray-400 mt-1">Start journaling to see insights</p>
           </div>
         )}
       </div>
@@ -185,7 +197,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
             <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
             <span>Day with entry</span>
           </div>
-          <span>Click any date to view or create an entry</span>
+          <div className="flex items-center gap-2">
+            <Plus className="w-3 h-3 text-gray-400" />
+            <span>Click to create entry</span>
+          </div>
         </div>
       </div>
     </div>
