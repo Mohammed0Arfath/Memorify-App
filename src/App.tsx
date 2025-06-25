@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, BookOpen, Calendar, Sparkles, Menu, X, User, LogOut, Brain } from 'lucide-react';
+import { MessageCircle, BookOpen, Calendar, Sparkles, Menu, X, User, LogOut, Brain, Settings } from 'lucide-react';
 import { ChatInterface } from './components/ChatInterface';
 import { DiaryTimeline } from './components/DiaryTimeline';
 import { CalendarView } from './components/CalendarView';
 import { AgentBoard } from './components/AgentBoard';
 import { AuthWrapper } from './components/AuthWrapper';
+import { UserProfile } from './components/UserProfile';
 import { ViewMode, DiaryEntry, ChatMessage } from './types';
 import { generateDiaryEntry, analyzeEmotionWithAI } from './utils/mockAI';
 import { DiaryService } from './services/diaryService';
@@ -22,6 +23,7 @@ function AppContent({ user }: AppProps) {
   const [currentEmotion, setCurrentEmotion] = useState<DiaryEntry['emotion'] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const [loading, setLoading] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
   const [isGeneratingEntry, setIsGeneratingEntry] = useState(false);
@@ -78,8 +80,9 @@ function AppContent({ user }: AppProps) {
     setSigningOut(true);
     
     try {
-      // Close the user menu first
+      // Close any open menus first
       setIsUserMenuOpen(false);
+      setShowUserProfile(false);
       
       // Clear local state immediately to provide instant feedback
       setEntries([]);
@@ -297,6 +300,16 @@ function AppContent({ user }: AppProps) {
                       <p className="text-sm text-gray-600 truncate">{user.email}</p>
                     </div>
                     <button
+                      onClick={() => {
+                        setShowUserProfile(true);
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Profile Settings
+                    </button>
+                    <button
                       onClick={handleSignOut}
                       disabled={signingOut}
                       className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
@@ -364,6 +377,14 @@ function AppContent({ user }: AppProps) {
         <div 
           className="fixed inset-0 z-10" 
           onClick={() => setIsUserMenuOpen(false)}
+        />
+      )}
+
+      {/* User Profile Modal */}
+      {showUserProfile && (
+        <UserProfile 
+          user={user} 
+          onClose={() => setShowUserProfile(false)} 
         />
       )}
 
