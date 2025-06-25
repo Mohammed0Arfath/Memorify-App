@@ -41,6 +41,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
     );
   };
 
+  const handleDateClick = (date: Date) => {
+    // Always call onDateSelect when a date is clicked
+    if (onDateSelect) {
+      onDateSelect(date);
+    }
+  };
+
   const renderCalendarDays = () => {
     const days = [];
     
@@ -59,10 +66,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
       days.push(
         <div
           key={day}
-          className={`h-20 border border-gray-200 p-1 cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
+          className={`h-20 border border-gray-200 p-1 cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:shadow-md ${
             isToday ? 'bg-blue-50 border-blue-300' : ''
           }`}
-          onClick={() => onDateSelect?.(date)}
+          onClick={() => handleDateClick(date)}
+          title={hasEntry ? `View entry for ${date.toDateString()}` : `Create entry for ${date.toDateString()}`}
         >
           <div className="h-full flex flex-col">
             <div className={`text-sm font-medium mb-1 ${
@@ -154,6 +162,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
           <button
             onClick={() => navigateMonth('prev')}
             className="p-2 rounded-lg hover:bg-white/50 transition-colors"
+            aria-label="Previous month"
           >
             <ChevronLeft className="w-5 h-5 text-gray-600" />
           </button>
@@ -165,6 +174,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
           <button
             onClick={() => navigateMonth('next')}
             className="p-2 rounded-lg hover:bg-white/50 transition-colors"
+            aria-label="Next month"
           >
             <ChevronRight className="w-5 h-5 text-gray-600" />
           </button>

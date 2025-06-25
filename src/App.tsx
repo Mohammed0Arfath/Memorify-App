@@ -185,9 +185,11 @@ function AppContent({ user }: AppProps) {
   };
 
   const handleDateSelect = (date: Date) => {
-    // For now, just switch to chat view
-    // In a real app, you might want to create a new entry for that date
+    // Switch to chat view to allow creating a new entry for the selected date
     setCurrentView('chat');
+    
+    // You could also pre-populate the chat with a date-specific message
+    // This would require modifying the ChatInterface to accept initial messages
   };
 
   const navItems = [
@@ -260,6 +262,7 @@ function AppContent({ user }: AppProps) {
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
+                    aria-label={`Navigate to ${item.label}`}
                   >
                     <Icon className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>
@@ -276,6 +279,7 @@ function AppContent({ user }: AppProps) {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   disabled={signingOut}
                   className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+                  aria-label="User menu"
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
@@ -317,6 +321,7 @@ function AppContent({ user }: AppProps) {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Toggle mobile menu"
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -342,6 +347,7 @@ function AppContent({ user }: AppProps) {
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
+                    aria-label={`Navigate to ${item.label}`}
                   >
                     <Icon className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, Phone, PhoneOff } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, Phone, PhoneOff, X } from 'lucide-react';
 
 interface VoiceChatProps {
   isVisible: boolean;
@@ -65,7 +65,7 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
     // You can implement actual mute functionality here if the widget supports it
   };
 
-  const handleDisconnect = () => {
+  const handleClose = () => {
     setIsConnected(false);
     onToggle();
   };
@@ -102,17 +102,19 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
                 onClick={handleMuteToggle}
                 className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
                 title={isMuted ? 'Unmute' : 'Mute'}
+                aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
               >
                 {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
               </button>
               
               {/* Close Button */}
               <button
-                onClick={handleDisconnect}
+                onClick={handleClose}
                 className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
-                title="End conversation"
+                title="Close voice chat"
+                aria-label="Close voice chat"
               >
-                <PhoneOff className="w-5 h-5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
