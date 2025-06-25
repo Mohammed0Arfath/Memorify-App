@@ -93,24 +93,24 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
 
   return (
     <div className="modal-backdrop backdrop-animate">
-      <div className="modal-content max-w-md max-h-[90vh] overflow-hidden fade-in-up">
+      <div className="modal-content max-h-[90vh] overflow-hidden fade-in-up">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 sm:p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover-scale transition-smooth">
-                <User className="w-6 h-6" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center hover-scale transition-smooth">
+                <User className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold">User Profile</h3>
-                <p className="text-blue-100 text-sm truncate">{user?.email}</p>
+                <h3 className="text-responsive-xl font-semibold">User Profile</h3>
+                <p className="text-blue-100 text-responsive-sm truncate">{user?.email}</p>
               </div>
             </div>
             
             {onClose && (
               <button
                 onClick={onClose}
-                className="btn-icon bg-white/20 hover:bg-white/30 text-white hover-scale btn-press"
+                className="btn-icon bg-white/20 hover:bg-white/30 text-white hover-scale btn-press touch-target"
                 aria-label="Close profile"
               >
                 <X className="w-5 h-5" />
@@ -120,14 +120,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-gray-200 overflow-x-auto">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`nav-item flex-1 justify-center py-3 text-sm font-medium transition-all duration-200 hover-lift fade-in ${
+                className={`nav-item flex-1 justify-center py-3 text-responsive-sm font-medium transition-all duration-200 hover-lift fade-in touch-target ${
                   activeTab === tab.id
                     ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
@@ -142,22 +142,22 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[60vh] optimize-scroll">
           {activeTab === 'profile' && (
             <div className="fade-in">
-              <h4 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h4>
+              <h4 className="text-responsive-lg font-semibold text-gray-800 mb-4">Profile Information</h4>
               
               {profileSuccess && (
                 <div className="alert alert-success mb-4 fade-in">
                   <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
-                  <span className="text-sm">{profileSuccess}</span>
+                  <span className="text-responsive-sm">{profileSuccess}</span>
                 </div>
               )}
 
               {profileError && (
                 <div className="alert alert-error mb-4 fade-in shake">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">{profileError}</span>
+                  <span className="text-responsive-sm">{profileError}</span>
                 </div>
               )}
 
@@ -184,7 +184,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={profileLoading || email === user?.email}
-                  className="btn-primary w-full hover-lift btn-press"
+                  className="btn-primary w-full hover-lift btn-press touch-target"
                 >
                   {profileLoading ? (
                     <>
@@ -204,19 +204,19 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
 
           {activeTab === 'password' && (
             <div className="fade-in">
-              <h4 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h4>
+              <h4 className="text-responsive-lg font-semibold text-gray-800 mb-4">Change Password</h4>
               
               {passwordSuccess && (
                 <div className="alert alert-success mb-4 fade-in">
                   <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
-                  <span className="text-sm">{passwordSuccess}</span>
+                  <span className="text-responsive-sm">{passwordSuccess}</span>
                 </div>
               )}
 
               {passwordError && (
                 <div className="alert alert-error mb-4 fade-in shake">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">{passwordError}</span>
+                  <span className="text-responsive-sm">{passwordError}</span>
                 </div>
               )}
 
@@ -241,8 +241,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale touch-target"
                       disabled={passwordLoading}
+                      aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                     >
                       {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -268,8 +269,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale touch-target"
                       disabled={passwordLoading}
+                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                     >
                       {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -279,7 +281,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={passwordLoading || !newPassword || !confirmPassword}
-                  className="btn-primary w-full hover-lift btn-press"
+                  className="btn-primary w-full hover-lift btn-press touch-target"
                 >
                   {passwordLoading ? (
                     <>
@@ -301,7 +303,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         {/* Footer */}
         <div className="card-footer fade-in">
           <div className="text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-responsive-xs text-gray-500">
               Account created: {new Date(user?.created_at).toLocaleDateString()}
             </p>
           </div>

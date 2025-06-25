@@ -34,7 +34,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
     <div 
       className={`card card-hover cursor-pointer border-l-4 ${
         isExpanded ? 'ring-2 ring-blue-200' : ''
-      } fade-in-up`}
+      } fade-in-up touch-target`}
       style={{ borderLeftColor: entry.emotion.color }}
       onClick={onToggleExpand}
     >
@@ -46,10 +46,10 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
               <EmotionIndicator emotion={entry.emotion} size="md" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-responsive-lg font-semibold text-gray-800">
                 {formatDate(entry.date)}
               </h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-responsive-sm text-gray-500">
                 <Calendar className="w-4 h-4" />
                 <span>{formatTime(entry.date)}</span>
               </div>
@@ -57,11 +57,11 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
           </div>
           <div className="flex items-center gap-3">
             {entry.photo && (
-              <div className="w-12 h-12 rounded-lg overflow-hidden hover-scale transition-smooth">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden hover-scale transition-smooth">
                 <img 
                   src={entry.photo} 
                   alt="Entry photo" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover responsive-image"
                 />
               </div>
             )}
@@ -72,7 +72,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
         </div>
 
         {/* Summary */}
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-responsive-base text-gray-600 leading-relaxed">
           {entry.summary}
         </p>
       </div>
@@ -83,29 +83,29 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
           <div className="space-y-6">
             {/* Full Entry */}
             <div className="fade-in-up stagger-1">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Diary Entry</h4>
-              <p className="text-gray-700 leading-relaxed italic bg-gray-50 p-4 rounded-lg transition-smooth hover:bg-gray-100">
+              <h4 className="text-responsive-sm font-medium text-gray-700 mb-2">Diary Entry</h4>
+              <p className="text-responsive-base text-gray-700 leading-relaxed italic bg-gray-50 p-4 rounded-lg transition-smooth hover:bg-gray-100">
                 "{entry.generatedEntry}"
               </p>
             </div>
 
             {/* Chat Preview */}
             <div className="fade-in-up stagger-2">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">
+              <h4 className="text-responsive-sm font-medium text-gray-700 mb-2">
                 Conversation Highlights ({entry.chatMessages.filter(m => m.isUser).length} messages)
               </h4>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
+              <div className="space-y-2 max-h-40 overflow-y-auto optimize-scroll">
                 {entry.chatMessages.filter(m => m.isUser).slice(0, 3).map((message, index) => (
                   <div 
                     key={message.id} 
-                    className="text-sm text-gray-600 bg-blue-50 p-2 rounded transition-smooth hover:bg-blue-100 fade-in"
+                    className="text-responsive-sm text-gray-600 bg-blue-50 p-2 rounded transition-smooth hover:bg-blue-100 fade-in"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     "{message.text}"
                   </div>
                 ))}
                 {entry.chatMessages.filter(m => m.isUser).length > 3 && (
-                  <div className="text-xs text-gray-400 text-center py-1">
+                  <div className="text-responsive-xs text-gray-400 text-center py-1">
                     + {entry.chatMessages.filter(m => m.isUser).length - 3} more messages
                   </div>
                 )}
@@ -114,8 +114,8 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
 
             {/* Emotion Analysis */}
             <div className="fade-in-up stagger-3">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Emotional Analysis</h4>
-              <div className="flex items-center gap-4">
+              <h4 className="text-responsive-sm font-medium text-gray-700 mb-2">Emotional Analysis</h4>
+              <div className="flex-responsive items-center">
                 <EmotionIndicator emotion={entry.emotion} size="lg" showLabel />
                 <div className="flex-1">
                   <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -127,7 +127,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
                       }}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-responsive-xs text-gray-500 mt-1">
                     Emotional intensity: {Math.round(entry.emotion.intensity * 100)}%
                   </p>
                 </div>
@@ -138,7 +138,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
       )}
 
       {/* Footer */}
-      <div className="card-footer flex items-center justify-between text-sm text-gray-500">
+      <div className="card-footer flex items-center justify-between text-responsive-sm text-gray-500">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1 hover-scale transition-smooth">
             <Heart className="w-4 h-4" />
@@ -151,7 +151,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
             </span>
           )}
         </div>
-        <span className="text-xs">
+        <span className="text-responsive-xs">
           {isExpanded ? 'Click to collapse' : 'Click to expand'}
         </span>
       </div>

@@ -163,17 +163,17 @@ export const AuthForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-responsive safe-top safe-bottom">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8 fade-in-down">
           <div className="brand-logo mx-auto mb-4 hover-scale transition-smooth float">
-            <Sparkles className="w-6 h-6 text-white" />
+            <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
           </div>
-          <h1 className="text-3xl font-bold gradient-text mb-2 gradient-animate">
+          <h1 className="text-responsive-3xl font-bold gradient-text mb-2 gradient-animate">
             Memorify
           </h1>
-          <p className="text-gray-600">
+          <p className="text-responsive-base text-gray-600">
             Your AI-powered journal for emotional reflection
           </p>
         </div>
@@ -181,10 +181,10 @@ export const AuthForm: React.FC = () => {
         {/* Auth Form */}
         <div className="card card-hover fade-in-up">
           <div className="card-header">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+            <h2 className="text-responsive-2xl font-semibold text-gray-800 mb-2">
               {getTitle()}
             </h2>
-            <p className="text-gray-600">
+            <p className="text-responsive-base text-gray-600">
               {getSubtitle()}
             </p>
           </div>
@@ -194,7 +194,7 @@ export const AuthForm: React.FC = () => {
             {success && (
               <div className="alert alert-success mb-4 fade-in">
                 <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
-                <span className="text-sm">{success}</span>
+                <span className="text-responsive-sm">{success}</span>
               </div>
             )}
 
@@ -202,7 +202,7 @@ export const AuthForm: React.FC = () => {
             {error && (
               <div className="alert alert-error mb-4 fade-in shake">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm">{error}</span>
+                <span className="text-responsive-sm">{error}</span>
               </div>
             )}
 
@@ -263,8 +263,9 @@ export const AuthForm: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale touch-target"
                       disabled={loading}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -300,8 +301,9 @@ export const AuthForm: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale touch-target"
                       disabled={loading}
+                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                     >
                       {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -316,7 +318,7 @@ export const AuthForm: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full hover-lift btn-press fade-in stagger-4"
+                className="btn-primary w-full hover-lift btn-press fade-in stagger-4 touch-target"
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
@@ -334,7 +336,7 @@ export const AuthForm: React.FC = () => {
               {!isResetMode && (
                 <button
                   onClick={() => switchMode(isSignUp ? 'signin' : 'signup')}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth touch-target"
                   disabled={loading}
                 >
                   {isSignUp 
@@ -348,7 +350,7 @@ export const AuthForm: React.FC = () => {
                 <div>
                   <button
                     onClick={() => switchMode('reset')}
-                    className="text-gray-600 hover:text-gray-700 text-sm transition-smooth"
+                    className="text-gray-600 hover:text-gray-700 text-responsive-sm transition-smooth touch-target"
                     disabled={loading}
                   >
                     Forgot your password?
@@ -359,7 +361,7 @@ export const AuthForm: React.FC = () => {
               {isResetMode && (
                 <button
                   onClick={() => switchMode('signin')}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth touch-target"
                   disabled={loading}
                 >
                   Back to sign in
@@ -370,27 +372,27 @@ export const AuthForm: React.FC = () => {
         </div>
 
         {/* Features */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+        <div className="mt-8 grid-responsive text-center">
           <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-1">
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
               <Sparkles className="w-4 h-4 text-blue-600" />
             </div>
-            <h3 className="font-medium text-gray-800 mb-1">AI Companion</h3>
-            <p className="text-xs text-gray-600">Empathetic conversations</p>
+            <h3 className="font-medium text-gray-800 mb-1 text-responsive-sm">AI Companion</h3>
+            <p className="text-responsive-xs text-gray-600">Empathetic conversations</p>
           </div>
           <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-2">
             <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
               <User className="w-4 h-4 text-purple-600" />
             </div>
-            <h3 className="font-medium text-gray-800 mb-1">Personal Growth</h3>
-            <p className="text-xs text-gray-600">Track emotional journey</p>
+            <h3 className="font-medium text-gray-800 mb-1 text-responsive-sm">Personal Growth</h3>
+            <p className="text-responsive-xs text-gray-600">Track emotional journey</p>
           </div>
           <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-3">
             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
               <Lock className="w-4 h-4 text-green-600" />
             </div>
-            <h3 className="font-medium text-gray-800 mb-1">Private & Secure</h3>
-            <p className="text-xs text-gray-600">Your data stays safe</p>
+            <h3 className="font-medium text-gray-800 mb-1 text-responsive-sm">Private & Secure</h3>
+            <p className="text-responsive-xs text-gray-600">Your data stays safe</p>
           </div>
         </div>
       </div>

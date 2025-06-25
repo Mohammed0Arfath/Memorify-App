@@ -37,6 +37,25 @@ function AppContent({ user }: AppProps) {
     }
   }, [user]);
 
+  // Close mobile menu when view changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [currentView]);
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.user-menu') && !target.closest('.mobile-menu')) {
+        setIsUserMenuOpen(false);
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   const loadEntries = async () => {
     try {
       const loadedEntries = await DiaryService.getEntries();
@@ -84,6 +103,7 @@ function AppContent({ user }: AppProps) {
       // Close any open menus first
       setIsUserMenuOpen(false);
       setShowUserProfile(false);
+      setIsMobileMenuOpen(false);
       
       // Clear local state immediately to provide instant feedback
       setEntries([]);
@@ -223,10 +243,10 @@ function AppContent({ user }: AppProps) {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="flex items-center justify-center h-96">
+        <div className="flex items-center justify-center min-h-[50vh] p-responsive">
           <div className="flex items-center gap-3 fade-in">
             <div className="loading-spinner w-8 h-8"></div>
-            <span className="text-gray-600">Loading your entries...</span>
+            <span className="text-gray-600 text-responsive-base">Loading your entries...</span>
           </div>
         </div>
       );
@@ -249,21 +269,21 @@ function AppContent({ user }: AppProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col safe-top safe-bottom">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0 fade-in-down">
-        <div className="max-w-7xl mx-auto px-6">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0 fade-in-down safe-top">
+        <div className="container-responsive">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3 fade-in">
-              <div className="brand-logo hover-scale transition-smooth">
-                <Sparkles className="w-6 h-6 text-white" />
+              <div className="brand-logo hover-scale transition-smooth float">
+                <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold gradient-text">
+                <h1 className="text-responsive-xl font-bold gradient-text">
                   Memorify
                 </h1>
-                <p className="text-xs text-gray-500 leading-none">
+                <p className="text-responsive-xs text-gray-500 leading-none hidden sm:block">
                   Your AI-powered companion
                   {import.meta.env.VITE_TOGETHER_API_KEY && (
                     <span className="ml-1 text-green-600">• Together.ai Enhanced</span>
@@ -280,7 +300,7 @@ function AppContent({ user }: AppProps) {
                   <button
                     key={item.id}
                     onClick={() => handleViewChange(item.id)}
-                    className={`nav-item hover-lift btn-press fade-in ${
+                    className={`nav-item hover-lift btn-press fade-in touch-target ${
                       currentView === item.id
                         ? 'nav-item-active'
                         : 'nav-item-inactive'
@@ -288,8 +308,8 @@ function AppContent({ user }: AppProps) {
                     style={{ animationDelay: `${index * 0.1}s` }}
                     aria-label={`Navigate to ${item.label}`}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
+                    <Icon className="w-4 h-4 lg:w-5 lg:h-5" />
+                    <span className="font-medium hidden lg:inline">{item.label}</span>
                   </button>
                 );
               })}
@@ -298,17 +318,17 @@ function AppContent({ user }: AppProps) {
             {/* User Menu & Mobile Menu Button */}
             <div className="flex items-center gap-2">
               {/* User Menu */}
-              <div className="relative">
+              <div className="relative user-menu">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   disabled={signingOut}
-                  className="btn-ghost hover-scale"
+                  className="btn-ghost hover-scale touch-target"
                   aria-label="User menu"
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
-                  <span className="hidden sm:block text-sm text-gray-600 max-w-32 truncate">
+                  <span className="hidden sm:block text-responsive-sm text-gray-600 max-w-32 truncate">
                     {user.email}
                   </span>
                 </button>
@@ -317,15 +337,15 @@ function AppContent({ user }: AppProps) {
                 {isUserMenuOpen && !signingOut && (
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20 fade-in-down">
                     <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-800">Signed in as</p>
-                      <p className="text-sm text-gray-600 truncate">{user.email}</p>
+                      <p className="text-responsive-sm font-medium text-gray-800">Signed in as</p>
+                      <p className="text-responsive-sm text-gray-600 truncate">{user.email}</p>
                     </div>
                     <button
                       onClick={() => {
                         setShowUserProfile(true);
                         setIsUserMenuOpen(false);
                       }}
-                      className="btn-ghost w-full justify-start"
+                      className="btn-ghost w-full justify-start touch-target"
                     >
                       <Settings className="w-4 h-4" />
                       Profile Settings
@@ -333,7 +353,7 @@ function AppContent({ user }: AppProps) {
                     <button
                       onClick={handleSignOut}
                       disabled={signingOut}
-                      className="btn-ghost w-full justify-start"
+                      className="btn-ghost w-full justify-start touch-target"
                     >
                       {signingOut ? (
                         <>
@@ -354,7 +374,7 @@ function AppContent({ user }: AppProps) {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden btn-ghost hover-scale"
+                className="md:hidden btn-ghost hover-scale touch-target mobile-menu"
                 aria-label="Toggle mobile menu"
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -365,15 +385,15 @@ function AppContent({ user }: AppProps) {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm slide-in-down">
-            <nav className="px-4 py-2 space-y-1">
+          <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm slide-in-down safe-left safe-right">
+            <nav className="px-responsive py-2 space-y-1">
               {navItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleViewChange(item.id)}
-                    className={`nav-item w-full hover-lift fade-in ${
+                    className={`nav-item w-full hover-lift fade-in touch-target ${
                       currentView === item.id
                         ? 'nav-item-active'
                         : 'nav-item-inactive'
@@ -408,15 +428,15 @@ function AppContent({ user }: AppProps) {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 min-h-0">
+      <main className="flex-1 min-h-0 optimize-scroll">
         {renderContent()}
       </main>
 
-      {/* Stats Footer */}
+      {/* Stats Footer - Hidden on mobile to save space */}
       {entries.length > 0 && (
-        <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0 fade-in-up">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
+        <footer className="hidden sm:block bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0 fade-in-up safe-bottom">
+          <div className="container-responsive">
+            <div className="flex items-center justify-center gap-4 lg:gap-8 text-responsive-sm text-gray-600 flex-wrap">
               <div className="flex items-center gap-2 hover-scale transition-smooth">
                 <BookOpen className="w-4 h-4" />
                 <span>{entries.length} entries</span>
@@ -433,7 +453,7 @@ function AppContent({ user }: AppProps) {
                 <Brain className="w-4 h-4" />
                 <span>AI companion active</span>
               </div>
-              <div className="flex items-center gap-2 hover-scale transition-smooth">
+              <div className="hidden lg:flex items-center gap-2 hover-scale transition-smooth">
                 <Sparkles className="w-4 h-4" />
                 <span>
                   {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
@@ -444,10 +464,36 @@ function AppContent({ user }: AppProps) {
         </footer>
       )}
 
+      {/* Mobile Bottom Navigation - Only show on mobile when there are entries */}
+      {entries.length > 0 && (
+        <div className="mobile-nav sm:hidden safe-bottom">
+          <div className="grid grid-cols-4 gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleViewChange(item.id)}
+                  className={`flex flex-col items-center justify-center py-2 px-1 rounded-lg transition-all duration-200 touch-target ${
+                    currentView === item.id
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                  }`}
+                  aria-label={`Navigate to ${item.label}`}
+                >
+                  <Icon className="w-5 h-5 mb-1" />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Attribution Footer */}
-      <div className="bg-gray-50 border-t border-gray-200 py-2 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-6">
-          <p className="text-xs text-center text-gray-500">
+      <div className="bg-gray-50 border-t border-gray-200 py-2 flex-shrink-0 safe-bottom">
+        <div className="container-responsive">
+          <p className="text-responsive-xs text-center text-gray-500">
             Built with ❤️ using{' '}
             <a 
               href="https://bolt.new" 
