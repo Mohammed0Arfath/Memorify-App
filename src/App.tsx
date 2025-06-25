@@ -27,6 +27,7 @@ function AppContent({ user }: AppProps) {
   const [loading, setLoading] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
   const [isGeneratingEntry, setIsGeneratingEntry] = useState(false);
+  const [viewTransition, setViewTransition] = useState(false);
 
   // Load entries from Supabase when user is authenticated
   useEffect(() => {
@@ -158,7 +159,12 @@ function AppContent({ user }: AppProps) {
         localStorage.setItem('diary-entries', JSON.stringify([newEntry, ...entries]));
       }
       
-      setCurrentView('timeline');
+      // Animate view transition
+      setViewTransition(true);
+      setTimeout(() => {
+        setCurrentView('timeline');
+        setViewTransition(false);
+      }, 150);
     } catch (error) {
       console.error('Error generating diary entry:', error);
       // Fallback to basic entry creation
@@ -189,10 +195,25 @@ function AppContent({ user }: AppProps) {
 
   const handleDateSelect = (date: Date) => {
     // Switch to chat view to allow creating a new entry for the selected date
-    setCurrentView('chat');
+    setViewTransition(true);
+    setTimeout(() => {
+      setCurrentView('chat');
+      setViewTransition(false);
+    }, 150);
     
     // You could also pre-populate the chat with a date-specific message
     // This would require modifying the ChatInterface to accept initial messages
+  };
+
+  const handleViewChange = (newView: ViewMode) => {
+    if (newView === currentView) return;
+    
+    setViewTransition(true);
+    setTimeout(() => {
+      setCurrentView(newView);
+      setViewTransition(false);
+    }, 150);
+    setIsMobileMenuOpen(false);
   };
 
   const navItems = [
@@ -206,7 +227,7 @@ function AppContent({ user }: AppProps) {
     if (loading) {
       return (
         <div className="flex items-center justify-center h-96">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 fade-in">
             <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             <span className="text-gray-600">Loading your entries...</span>
           </div>
@@ -214,29 +235,31 @@ function AppContent({ user }: AppProps) {
       );
     }
 
+    const contentClass = `transition-all duration-300 ${viewTransition ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`;
+
     switch (currentView) {
       case 'chat':
-        return <ChatInterface onGenerateEntry={handleGenerateEntry} currentEmotion={currentEmotion} />;
+        return <div className={contentClass}><ChatInterface onGenerateEntry={handleGenerateEntry} currentEmotion={currentEmotion} /></div>;
       case 'timeline':
-        return <DiaryTimeline entries={entries} />;
+        return <div className={contentClass}><DiaryTimeline entries={entries} /></div>;
       case 'calendar':
-        return <CalendarView entries={entries} onDateSelect={handleDateSelect} />;
+        return <div className={contentClass}><CalendarView entries={entries} onDateSelect={handleDateSelect} /></div>;
       case 'agent':
-        return <AgentBoard entries={entries} onRefresh={loadEntries} />;
+        return <div className={contentClass}><AgentBoard entries={entries} onRefresh={loadEntries} /></div>;
       default:
-        return <ChatInterface onGenerateEntry={handleGenerateEntry} currentEmotion={currentEmotion} />;
+        return <div className={contentClass}><ChatInterface onGenerateEntry={handleGenerateEntry} currentEmotion={currentEmotion} /></div>;
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0 fade-in-down">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="flex items-center gap-3 fade-in">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg hover-scale transition-smooth">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -254,17 +277,18 @@ function AppContent({ user }: AppProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1">
-              {navItems.map((item) => {
+              {navItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setCurrentView(item.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
+                    onClick={() => handleViewChange(item.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 hover-lift btn-press fade-in ${
                       currentView === item.id
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                     aria-label={`Navigate to ${item.label}`}
                   >
                     <Icon className="w-5 h-5" />
@@ -281,7 +305,7 @@ function AppContent({ user }: AppProps) {
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   disabled={signingOut}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-smooth disabled:opacity-50 hover-scale"
                   aria-label="User menu"
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -294,7 +318,7 @@ function AppContent({ user }: AppProps) {
 
                 {/* User Dropdown */}
                 {isUserMenuOpen && !signingOut && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20">
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20 fade-in-down">
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-800">Signed in as</p>
                       <p className="text-sm text-gray-600 truncate">{user.email}</p>
@@ -304,7 +328,7 @@ function AppContent({ user }: AppProps) {
                         setShowUserProfile(true);
                         setIsUserMenuOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-smooth"
                     >
                       <Settings className="w-4 h-4" />
                       Profile Settings
@@ -312,7 +336,7 @@ function AppContent({ user }: AppProps) {
                     <button
                       onClick={handleSignOut}
                       disabled={signingOut}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                      className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-smooth disabled:opacity-50"
                     >
                       {signingOut ? (
                         <>
@@ -333,7 +357,7 @@ function AppContent({ user }: AppProps) {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-smooth hover-scale"
                 aria-label="Toggle mobile menu"
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -344,22 +368,20 @@ function AppContent({ user }: AppProps) {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm">
+          <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm slide-in-down">
             <nav className="px-4 py-2 space-y-1">
-              {navItems.map((item) => {
+              {navItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => {
-                      setCurrentView(item.id);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    onClick={() => handleViewChange(item.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover-lift fade-in ${
                       currentView === item.id
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                     aria-label={`Navigate to ${item.label}`}
                   >
                     <Icon className="w-5 h-5" />
@@ -375,7 +397,7 @@ function AppContent({ user }: AppProps) {
       {/* Click outside to close user menu */}
       {isUserMenuOpen && !signingOut && (
         <div 
-          className="fixed inset-0 z-10" 
+          className="fixed inset-0 z-10 backdrop-animate" 
           onClick={() => setIsUserMenuOpen(false)}
         />
       )}
@@ -395,14 +417,14 @@ function AppContent({ user }: AppProps) {
 
       {/* Stats Footer (visible when there are entries) */}
       {entries.length > 0 && (
-        <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0">
+        <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0 fade-in-up">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 hover-scale transition-smooth">
                 <BookOpen className="w-4 h-4" />
                 <span>{entries.length} entries</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 hover-scale transition-smooth">
                 <Calendar className="w-4 h-4" />
                 <span>
                   {entries.length > 0 && 
@@ -410,11 +432,11 @@ function AppContent({ user }: AppProps) {
                   } days journaling
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 hover-scale transition-smooth">
                 <Brain className="w-4 h-4" />
                 <span>AI companion active</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 hover-scale transition-smooth">
                 <Sparkles className="w-4 h-4" />
                 <span>
                   {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
@@ -434,7 +456,7 @@ function AppContent({ user }: AppProps) {
               href="https://bolt.new" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-700 underline"
+              className="text-blue-600 hover:text-blue-700 underline transition-smooth"
             >
               Bolt.new
             </a>

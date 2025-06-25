@@ -73,13 +73,13 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl h-[600px] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 backdrop-animate">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl h-[600px] flex flex-col overflow-hidden fade-in-up">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover-scale transition-smooth">
                 <Mic className="w-6 h-6" />
               </div>
               <div>
@@ -92,15 +92,15 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
             
             <div className="flex items-center gap-2">
               {/* Connection Status */}
-              <div className={`w-3 h-3 rounded-full ${
+              <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 isLoading ? 'bg-yellow-400 animate-pulse' :
-                isConnected ? 'bg-green-400' : 'bg-red-400'
+                isConnected ? 'bg-green-400 pulse-soft' : 'bg-red-400'
               }`} />
               
               {/* Mute Toggle */}
               <button
                 onClick={handleMuteToggle}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-smooth hover-scale btn-press"
                 title={isMuted ? 'Unmute' : 'Mute'}
                 aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
               >
@@ -110,7 +110,7 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
               {/* Close Button */}
               <button
                 onClick={handleClose}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-smooth hover-scale btn-press"
                 title="Close voice chat"
                 aria-label="Close voice chat"
               >
@@ -123,7 +123,7 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
         {/* Widget Container */}
         <div className="flex-1 relative bg-gray-50">
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white">
+            <div className="absolute inset-0 flex items-center justify-center bg-white fade-in">
               <div className="text-center">
                 <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                 <p className="text-gray-600">Initializing voice chat...</p>
@@ -133,7 +133,7 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
           
           <div 
             ref={widgetRef} 
-            className="w-full h-full"
+            className="w-full h-full transition-opacity duration-300"
             style={{ minHeight: '400px' }}
           />
         </div>
@@ -141,7 +141,7 @@ export const VoiceChat: React.FC<VoiceChatProps> = ({
         {/* Footer */}
         <div className="p-4 bg-gray-50 border-t border-gray-200">
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 hover-scale transition-smooth">
               <Phone className="w-4 h-4" />
               <span>Powered by ElevenLabs AI</span>
             </div>

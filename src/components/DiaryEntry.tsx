@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Image as ImageIcon, Heart } from 'lucide-react';
+import { Calendar, Image as ImageIcon, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { DiaryEntry as DiaryEntryType } from '../types';
 import { EmotionIndicator } from './EmotionIndicator';
 
@@ -32,7 +32,9 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
 
   return (
     <div 
-      className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-l-4 cursor-pointer`}
+      className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-l-4 cursor-pointer hover-lift fade-in-up ${
+        isExpanded ? 'ring-2 ring-blue-200' : ''
+      }`}
       style={{ borderLeftColor: entry.emotion.color }}
       onClick={onToggleExpand}
     >
@@ -40,7 +42,9 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
       <div className="p-6 pb-4">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <EmotionIndicator emotion={entry.emotion} size="md" />
+            <div className="emotion-pulse">
+              <EmotionIndicator emotion={entry.emotion} size="md" />
+            </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-800">
                 {formatDate(entry.date)}
@@ -51,15 +55,20 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
               </div>
             </div>
           </div>
-          {entry.photo && (
-            <div className="w-12 h-12 rounded-lg overflow-hidden">
-              <img 
-                src={entry.photo} 
-                alt="Entry photo" 
-                className="w-full h-full object-cover"
-              />
+          <div className="flex items-center gap-3">
+            {entry.photo && (
+              <div className="w-12 h-12 rounded-lg overflow-hidden hover-scale transition-smooth">
+                <img 
+                  src={entry.photo} 
+                  alt="Entry photo" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            <div className="text-gray-400 transition-transform duration-200">
+              {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Summary */}
@@ -70,24 +79,28 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-6 pb-6 pt-2 border-t border-gray-100">
+        <div className="px-6 pb-6 pt-2 border-t border-gray-100 fade-in">
           <div className="space-y-4">
             {/* Full Entry */}
-            <div>
+            <div className="fade-in-up stagger-1">
               <h4 className="text-sm font-medium text-gray-700 mb-2">Diary Entry</h4>
-              <p className="text-gray-700 leading-relaxed italic bg-gray-50 p-4 rounded-lg">
+              <p className="text-gray-700 leading-relaxed italic bg-gray-50 p-4 rounded-lg transition-smooth hover:bg-gray-100">
                 "{entry.generatedEntry}"
               </p>
             </div>
 
             {/* Chat Preview */}
-            <div>
+            <div className="fade-in-up stagger-2">
               <h4 className="text-sm font-medium text-gray-700 mb-2">
                 Conversation Highlights ({entry.chatMessages.filter(m => m.isUser).length} messages)
               </h4>
               <div className="space-y-2 max-h-40 overflow-y-auto">
-                {entry.chatMessages.filter(m => m.isUser).slice(0, 3).map((message) => (
-                  <div key={message.id} className="text-sm text-gray-600 bg-blue-50 p-2 rounded">
+                {entry.chatMessages.filter(m => m.isUser).slice(0, 3).map((message, index) => (
+                  <div 
+                    key={message.id} 
+                    className="text-sm text-gray-600 bg-blue-50 p-2 rounded transition-smooth hover:bg-blue-100 fade-in"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
                     "{message.text}"
                   </div>
                 ))}
@@ -100,14 +113,14 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
             </div>
 
             {/* Emotion Analysis */}
-            <div>
+            <div className="fade-in-up stagger-3">
               <h4 className="text-sm font-medium text-gray-700 mb-2">Emotional Analysis</h4>
               <div className="flex items-center gap-4">
                 <EmotionIndicator emotion={entry.emotion} size="lg" showLabel />
                 <div className="flex-1">
-                  <div className="bg-gray-200 rounded-full h-2">
+                  <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div 
-                      className="h-2 rounded-full transition-all duration-500"
+                      className="h-2 rounded-full transition-all duration-1000 ease-out"
                       style={{ 
                         width: `${entry.emotion.intensity * 100}%`,
                         backgroundColor: entry.emotion.color 
@@ -127,12 +140,12 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
       {/* Footer */}
       <div className="px-6 py-3 bg-gray-50 flex items-center justify-between text-sm text-gray-500">
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 hover-scale transition-smooth">
             <Heart className="w-4 h-4" />
             Reflection
           </span>
           {entry.photo && (
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 hover-scale transition-smooth">
               <ImageIcon className="w-4 h-4" />
               Photo
             </span>

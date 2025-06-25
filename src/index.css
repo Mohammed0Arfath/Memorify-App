@@ -1,3 +1,366 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom animations and transitions */
+@layer utilities {
+  /* Smooth transitions for all interactive elements */
+  .transition-smooth {
+    transition: all 0.2s ease-out;
+  }
+  
+  .transition-medium {
+    transition: all 0.3s ease-out;
+  }
+  
+  .transition-slow {
+    transition: all 0.4s ease-out;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Scale animations */
+  .hover-scale {
+    transition: transform 0.2s ease-out;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* Fade in animations */
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .fade-in-up {
+    animation: fadeInUp 0.4s ease-out;
+  }
+  
+  .fade-in-down {
+    animation: fadeInDown 0.4s ease-out;
+  }
+
+  /* Slide animations */
+  .slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  .slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  /* Stagger animations for lists */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+
+  /* Button press effect */
+  .btn-press {
+    transition: transform 0.1s ease-out;
+  }
+  
+  .btn-press:active {
+    transform: scale(0.98);
+  }
+
+  /* Shake animation for errors */
+  .shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  /* Pulse animation for loading states */
+  .pulse-soft {
+    animation: pulseSoft 2s ease-in-out infinite;
+  }
+
+  /* Glow effect */
+  .glow {
+    transition: box-shadow 0.3s ease-out;
+  }
+  
+  .glow:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Smooth height transitions */
+  .transition-height {
+    transition: height 0.3s ease-out, max-height 0.3s ease-out;
+  }
+
+  /* Backdrop blur animation */
+  .backdrop-animate {
+    animation: backdropFadeIn 0.2s ease-out;
+  }
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes pulseSoft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Loading skeleton animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Message animations */
+.message-enter {
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Emotion indicator pulse */
+.emotion-pulse {
+  animation: emotionPulse 2s ease-in-out infinite;
+}
+
+@keyframes emotionPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Calendar day hover effect */
+.calendar-day {
+  transition: all 0.2s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-day::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s ease-out;
+}
+
+.calendar-day:hover::before {
+  left: 100%;
+}
+
+/* Form input focus animations */
+.form-input {
+  transition: all 0.2s ease-out;
+  position: relative;
+}
+
+.form-input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Success checkmark animation */
+@keyframes checkmark {
+  0% {
+    stroke-dasharray: 0 50;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 50 50;
+    stroke-dashoffset: -50;
+  }
+}
+
+.checkmark-animate {
+  animation: checkmark 0.6s ease-out;
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient text animation */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-animate {
+  background: linear-gradient(-45deg, #3B82F6, #8B5CF6, #EC4899, #10B981);
+  background-size: 400% 400%;
+  animation: gradientShift 4s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

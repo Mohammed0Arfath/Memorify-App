@@ -23,7 +23,7 @@ export const EmotionIndicator: React.FC<EmotionIndicatorProps> = ({
   return (
     <div className="flex items-center gap-2">
       <div 
-        className={`${sizeClasses[size]} rounded-full flex items-center justify-center border-2 transition-all duration-300 hover:scale-110`}
+        className={`${sizeClasses[size]} rounded-full flex items-center justify-center border-2 transition-all duration-300 hover:scale-110 hover-lift glow`}
         style={{ 
           backgroundColor: `${emotion.color}20`,
           borderColor: emotion.color,
@@ -31,10 +31,10 @@ export const EmotionIndicator: React.FC<EmotionIndicatorProps> = ({
         }}
         title={`${emotion.primary} (${intensity}% intensity)`}
       >
-        <span>{emotion.emoji}</span>
+        <span className="transition-transform duration-200 hover:scale-110">{emotion.emoji}</span>
       </div>
       {showLabel && (
-        <div className="flex flex-col">
+        <div className="flex flex-col fade-in">
           <span className="text-sm font-medium capitalize text-gray-700">
             {emotion.primary}
           </span>

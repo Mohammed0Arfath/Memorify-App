@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, Save, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Save, AlertCircle, CheckCircle, Eye, EyeOff, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 interface UserProfileProps {
@@ -92,13 +92,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 backdrop-animate">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden fade-in-up">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover-scale transition-smooth">
                 <User className="w-6 h-6" />
               </div>
               <div>
@@ -110,10 +110,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-smooth hover-scale btn-press"
                 aria-label="Close profile"
               >
-                <User className="w-5 h-5" />
+                <X className="w-5 h-5" />
               </button>
             )}
           </div>
@@ -121,17 +121,18 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
-          {tabs.map((tab) => {
+          {tabs.map((tab, index) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 hover-lift fade-in ${
                   activeTab === tab.id
                     ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                 }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <Icon className="w-4 h-4" />
                 {tab.label}
@@ -143,18 +144,18 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[60vh]">
           {activeTab === 'profile' && (
-            <div>
+            <div className="fade-in">
               <h4 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h4>
               
               {profileSuccess && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 fade-in">
+                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 checkmark-animate" />
                   <span className="text-sm text-green-700">{profileSuccess}</span>
                 </div>
               )}
 
               {profileError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 fade-in shake">
                   <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
                   <span className="text-sm text-red-700">{profileError}</span>
                 </div>
@@ -166,13 +167,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
                     <input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input"
                       placeholder="Enter your email"
                       required
                       disabled={profileLoading}
@@ -183,7 +184,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={profileLoading || email === user?.email}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 hover-lift btn-press"
                 >
                   {profileLoading ? (
                     <>
@@ -202,18 +203,18 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
           )}
 
           {activeTab === 'password' && (
-            <div>
+            <div className="fade-in">
               <h4 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h4>
               
               {passwordSuccess && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 fade-in">
+                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 checkmark-animate" />
                   <span className="text-sm text-green-700">{passwordSuccess}</span>
                 </div>
               )}
 
               {passwordError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 fade-in shake">
                   <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
                   <span className="text-sm text-red-700">{passwordError}</span>
                 </div>
@@ -225,13 +226,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     New Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
                     <input
                       id="newPassword"
                       type={showNewPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input"
                       placeholder="Enter new password"
                       required
                       minLength={6}
@@ -240,7 +241,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
                       disabled={passwordLoading}
                     >
                       {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -253,13 +254,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     Confirm New Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
                     <input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input"
                       placeholder="Confirm new password"
                       required
                       disabled={passwordLoading}
@@ -267,7 +268,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
                       disabled={passwordLoading}
                     >
                       {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -278,7 +279,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={passwordLoading || !newPassword || !confirmPassword}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 hover-lift btn-press"
                 >
                   {passwordLoading ? (
                     <>
@@ -298,7 +299,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-gray-50 border-t border-gray-200">
+        <div className="p-4 bg-gray-50 border-t border-gray-200 fade-in">
           <div className="text-center">
             <p className="text-xs text-gray-500">
               Account created: {new Date(user?.created_at).toLocaleDateString()}
