@@ -4,6 +4,7 @@ import { ChatMessage, DiaryEntry } from '../types';
 import { generateAIResponse, analyzeEmotionWithAI } from '../utils/mockAI';
 import { EmotionIndicator } from './EmotionIndicator';
 import { VoiceChat } from './VoiceChat';
+import { errorHandler } from '../utils/errorHandler';
 
 interface ChatInterfaceProps {
   onGenerateEntry: (messages: ChatMessage[], photo?: string) => void;
@@ -22,6 +23,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   const [isUploading, setIsUploading] = useState(false);
   const [showVoiceChat, setShowVoiceChat] = useState(false);
   const [hasStartedConversation, setHasStartedConversation] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,36 +45,52 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file.');
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Please select an image smaller than 5MB.');
-      return;
-    }
-
-    setIsUploading(true);
+    setError(null);
 
     try {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Please select an image file.');
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Please select an image smaller than 5MB.');
+      }
+
+      setIsUploading(true);
+
       // Convert to base64 for preview (in a real app, you'd upload to a service)
       const reader = new FileReader();
+      
       reader.onload = (e) => {
         const result = e.target?.result as string;
-        setSelectedPhoto(result);
+        if (result) {
+          setSelectedPhoto(result);
+        }
         setIsUploading(false);
       };
+      
       reader.onerror = () => {
-        alert('Error reading file. Please try again.');
+        const errorMsg = 'Error reading file. Please try again.';
+        setError(errorMsg);
+        errorHandler.logError(new Error('FileReader error'), {
+          action: 'upload_photo',
+          component: 'ChatInterface',
+          additionalData: { fileName: file.name, fileSize: file.size }
+        }, 'medium');
         setIsUploading(false);
       };
+      
       reader.readAsDataURL(file);
     } catch (error) {
-      console.error('Error uploading photo:', error);
-      alert('Error uploading photo. Please try again.');
+      const errorMsg = error instanceof Error ? error.message : 'Error uploading photo. Please try again.';
+      setError(errorMsg);
+      errorHandler.logError(error instanceof Error ? error : new Error('Photo upload failed'), {
+        action: 'upload_photo',
+        component: 'ChatInterface',
+        additionalData: { fileName: file.name, fileSize: file.size }
+      }, 'medium');
       setIsUploading(false);
     }
 
@@ -84,70 +102,93 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
   const removePhoto = () => {
     setSelectedPhoto(null);
+    setError(null);
   };
 
   const handleSendMessage = async () => {
     if (!inputText.trim() || isTyping) return;
 
-    // Add welcome message when starting first conversation
-    if (!hasStartedConversation) {
-      const welcomeMessage: ChatMessage = {
-        id: 'welcome',
-        text: "Hello! I'm here to help you reflect on your day and explore your thoughts and feelings. What's on your mind today?",
-        isUser: false,
-        timestamp: new Date(),
-      };
-      setMessages([welcomeMessage]);
-      setHasStartedConversation(true);
-    }
+    setError(null);
 
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      text: inputText,
-      isUser: true,
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-    setIsTyping(true);
-
-    // Analyze emotion for the current conversation
-    const allUserText = [...messages.filter(msg => msg.isUser), userMessage]
-      .map(msg => msg.text)
-      .join(' ');
-    
     try {
-      const emotion = await analyzeEmotionWithAI(allUserText);
-      setDetectedEmotion(emotion);
-    } catch (error) {
-      console.warn('Emotion analysis failed:', error);
-    }
-
-    // Generate AI response
-    try {
-      const aiResponseText = await generateAIResponse(inputText, messages);
-      
-      setTimeout(() => {
-        const aiResponse: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          text: aiResponseText,
+      // Add welcome message when starting first conversation
+      if (!hasStartedConversation) {
+        const welcomeMessage: ChatMessage = {
+          id: 'welcome',
+          text: "Hello! I'm here to help you reflect on your day and explore your thoughts and feelings. What's on your mind today?",
           isUser: false,
           timestamp: new Date(),
         };
-        
-        setMessages(prev => [...prev, aiResponse]);
-        setIsTyping(false);
-        setQuotaExceeded(false); // Reset quota exceeded state on successful response
-      }, 1000 + Math.random() * 1000);
-    } catch (error) {
-      console.error('AI response generation failed:', error);
-      
-      // Check if it's a quota exceeded error
-      if (error instanceof Error && error.message === 'QUOTA_EXCEEDED') {
-        setQuotaExceeded(true);
+        setMessages([welcomeMessage]);
+        setHasStartedConversation(true);
       }
+
+      const userMessage: ChatMessage = {
+        id: Date.now().toString(),
+        text: inputText,
+        isUser: true,
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setInputText('');
+      setIsTyping(true);
+
+      // Analyze emotion for the current conversation
+      const allUserText = [...messages.filter(msg => msg.isUser), userMessage]
+        .map(msg => msg.text)
+        .join(' ');
       
+      try {
+        const emotion = await analyzeEmotionWithAI(allUserText);
+        setDetectedEmotion(emotion);
+      } catch (error) {
+        errorHandler.logError(error instanceof Error ? error : new Error('Emotion analysis failed'), {
+          action: 'analyze_emotion',
+          component: 'ChatInterface',
+          additionalData: { textLength: allUserText.length }
+        }, 'low');
+      }
+
+      // Generate AI response
+      try {
+        const aiResponseText = await generateAIResponse(inputText, messages);
+        
+        setTimeout(() => {
+          const aiResponse: ChatMessage = {
+            id: (Date.now() + 1).toString(),
+            text: aiResponseText,
+            isUser: false,
+            timestamp: new Date(),
+          };
+          
+          setMessages(prev => [...prev, aiResponse]);
+          setIsTyping(false);
+          setQuotaExceeded(false); // Reset quota exceeded state on successful response
+        }, 1000 + Math.random() * 1000);
+      } catch (error) {
+        errorHandler.logError(error instanceof Error ? error : new Error('AI response generation failed'), {
+          action: 'generate_ai_response',
+          component: 'ChatInterface',
+          additionalData: { userMessage: inputText.slice(0, 100) }
+        }, 'medium');
+        
+        // Check if it's a quota exceeded error
+        if (error instanceof Error && error.message === 'QUOTA_EXCEEDED') {
+          setQuotaExceeded(true);
+        } else {
+          setError(errorHandler.getUserFriendlyMessage(error instanceof Error ? error : 'AI response failed', 'generating AI response'));
+        }
+        
+        setIsTyping(false);
+      }
+    } catch (error) {
+      const errorMsg = errorHandler.getUserFriendlyMessage(error instanceof Error ? error : 'Failed to send message', 'sending message');
+      setError(errorMsg);
+      errorHandler.logError(error instanceof Error ? error : new Error('Send message failed'), {
+        action: 'send_message',
+        component: 'ChatInterface'
+      }, 'medium');
       setIsTyping(false);
     }
   };
@@ -164,13 +205,20 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
     if (userMessages.length === 0 || isGeneratingEntry) return;
 
     setIsGeneratingEntry(true);
+    setError(null);
     
     try {
       await onGenerateEntry(messages, selectedPhoto || undefined);
       // Reset photo after generating entry
       setSelectedPhoto(null);
     } catch (error) {
-      console.error('Error generating diary entry:', error);
+      const errorMsg = errorHandler.getUserFriendlyMessage(error instanceof Error ? error : 'Failed to generate entry', 'generating diary entry');
+      setError(errorMsg);
+      errorHandler.logError(error instanceof Error ? error : new Error('Generate entry failed'), {
+        action: 'generate_diary_entry',
+        component: 'ChatInterface',
+        additionalData: { messageCount: messages.length }
+      }, 'medium');
     } finally {
       setIsGeneratingEntry(false);
     }
@@ -199,6 +247,22 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
         {/* Warnings Section */}
         <div className="flex-shrink-0">
+          {/* Error Message */}
+          {error && (
+            <div className="alert alert-error mx-6 mt-6 fade-in">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <div className="flex-1">
+                <span className="text-sm">{error}</span>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-600 hover:text-red-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {/* API Key Warning */}
           {apiKeyMissing && (
             <div className="alert alert-warning mx-6 mt-6 fade-in">

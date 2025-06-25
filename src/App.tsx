@@ -6,12 +6,14 @@ import { CalendarView } from './components/CalendarView';
 import { AgentBoard } from './components/AgentBoard';
 import { AuthWrapper } from './components/AuthWrapper';
 import { UserProfile } from './components/UserProfile';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ViewMode, DiaryEntry, ChatMessage } from './types';
 import { generateDiaryEntry, analyzeEmotionWithAI } from './utils/mockAI';
 import { DiaryService } from './services/diaryService';
 import { AgentService } from './services/agentService';
 import { supabase } from './lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import { errorHandler } from './utils/errorHandler';
 
 interface AppProps {
   user: SupabaseUser;
@@ -28,6 +30,7 @@ function AppContent({ user }: AppProps) {
   const [signingOut, setSigningOut] = useState(false);
   const [isGeneratingEntry, setIsGeneratingEntry] = useState(false);
   const [viewTransition, setViewTransition] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Load entries from Supabase when user is authenticated
   useEffect(() => {
@@ -39,27 +42,49 @@ function AppContent({ user }: AppProps) {
 
   const loadEntries = async () => {
     try {
-      const loadedEntries = await DiaryService.getEntries();
-      setEntries(loadedEntries);
-    } catch (error) {
-      console.error('Error loading entries:', error);
-      // Fallback to localStorage if Supabase fails
-      const savedEntries = localStorage.getItem('diary-entries');
-      if (savedEntries) {
-        try {
-          const parsedEntries = JSON.parse(savedEntries).map((entry: any) => ({
-            ...entry,
-            date: new Date(entry.date),
-            chatMessages: entry.chatMessages.map((msg: any) => ({
-              ...msg,
-              timestamp: new Date(msg.timestamp),
-            })),
-          }));
-          setEntries(parsedEntries);
-        } catch (parseError) {
-          console.error('Error parsing localStorage entries:', parseError);
+      setError(null);
+      const { data: loadedEntries, error: loadError } = await DiaryService.safeGetEntries();
+      
+      if (loadError) {
+        setError(loadError);
+        errorHandler.logError(loadError, {
+          userId: user.id,
+          action: 'load_entries',
+          component: 'App'
+        }, 'medium');
+        
+        // Try fallback to localStorage
+        const savedEntries = localStorage.getItem('diary-entries');
+        if (savedEntries) {
+          try {
+            const parsedEntries = JSON.parse(savedEntries).map((entry: any) => ({
+              ...entry,
+              date: new Date(entry.date),
+              chatMessages: entry.chatMessages.map((msg: any) => ({
+                ...msg,
+                timestamp: new Date(msg.timestamp),
+              })),
+            }));
+            setEntries(parsedEntries);
+          } catch (parseError) {
+            errorHandler.logError(parseError instanceof Error ? parseError : new Error('Failed to parse localStorage entries'), {
+              userId: user.id,
+              action: 'parse_localStorage_entries',
+              component: 'App'
+            }, 'medium');
+          }
         }
+      } else if (loadedEntries) {
+        setEntries(loadedEntries);
       }
+    } catch (error) {
+      const errorMessage = errorHandler.getUserFriendlyMessage(error instanceof Error ? error : 'Failed to load entries', 'loading entries');
+      setError(errorMessage);
+      errorHandler.logError(error instanceof Error ? error : new Error('Failed to load entries'), {
+        userId: user.id,
+        action: 'load_entries',
+        component: 'App'
+      }, 'high');
     } finally {
       setLoading(false);
     }
@@ -68,10 +93,16 @@ function AppContent({ user }: AppProps) {
   const runInitialAgentLoop = async () => {
     try {
       // Run agent loop on app load to check for triggers
-      const loadedEntries = await DiaryService.getEntries();
-      await AgentService.runAgentLoop(loadedEntries);
+      const { data: loadedEntries } = await DiaryService.safeGetEntries();
+      if (loadedEntries) {
+        await AgentService.runAgentLoop(loadedEntries);
+      }
     } catch (error) {
-      console.warn('Agent loop failed on startup:', error);
+      errorHandler.logError(error instanceof Error ? error : new Error('Agent loop failed on startup'), {
+        userId: user.id,
+        action: 'run_initial_agent_loop',
+        component: 'App'
+      }, 'low');
     }
   };
 
@@ -89,6 +120,7 @@ function AppContent({ user }: AppProps) {
       setEntries([]);
       setCurrentView('chat');
       setCurrentEmotion(null);
+      setError(null);
       
       // Clear localStorage
       localStorage.removeItem('diary-entries');
@@ -97,7 +129,11 @@ function AppContent({ user }: AppProps) {
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error('Supabase sign out error:', error);
+        errorHandler.logError(error, {
+          userId: user.id,
+          action: 'sign_out',
+          component: 'App'
+        }, 'medium');
         // Even if Supabase fails, we've cleared local state
         // The AuthWrapper will handle the redirect
       }
@@ -106,7 +142,11 @@ function AppContent({ user }: AppProps) {
       window.location.reload();
       
     } catch (error) {
-      console.error('Error during sign out:', error);
+      errorHandler.logError(error instanceof Error ? error : new Error('Sign out failed'), {
+        userId: user.id,
+        action: 'sign_out',
+        component: 'App'
+      }, 'high');
       // Even on error, try to clear everything and reload
       localStorage.clear();
       window.location.reload();
@@ -122,6 +162,7 @@ function AppContent({ user }: AppProps) {
     if (userMessages.length === 0) return;
 
     setIsGeneratingEntry(true);
+    setError(null);
 
     try {
       const allUserText = userMessages.map(msg => msg.text).join(' ');
@@ -142,21 +183,34 @@ function AppContent({ user }: AppProps) {
         summary: `A day of ${emotion.primary} and reflection. ${generatedEntry.slice(0, 120)}...`,
       };
 
-      // Save to Supabase
-      try {
-        const savedEntry = await DiaryService.createEntry(newEntry);
+      // Save to Supabase with error handling
+      const { data: savedEntry, error: saveError } = await DiaryService.safeCreateEntry(newEntry);
+      
+      if (saveError) {
+        setError(saveError);
+        errorHandler.logError(saveError, {
+          userId: user.id,
+          action: 'save_diary_entry',
+          component: 'App',
+          additionalData: { entryId: newEntry.id }
+        }, 'medium');
+        
+        // Fallback to localStorage
+        setEntries(prev => [newEntry, ...prev]);
+        localStorage.setItem('diary-entries', JSON.stringify([newEntry, ...entries]));
+      } else if (savedEntry) {
         setEntries(prev => [savedEntry, ...prev]);
         
         // Run agent loop after new entry to update memories and check triggers
         setTimeout(() => {
-          AgentService.runAgentLoop([savedEntry, ...entries]).catch(console.warn);
+          AgentService.runAgentLoop([savedEntry, ...entries]).catch((error) => {
+            errorHandler.logError(error instanceof Error ? error : new Error('Agent loop failed after entry creation'), {
+              userId: user.id,
+              action: 'run_agent_loop_after_entry',
+              component: 'App'
+            }, 'low');
+          });
         }, 1000);
-        
-      } catch (error) {
-        console.error('Error saving to Supabase:', error);
-        // Fallback to localStorage
-        setEntries(prev => [newEntry, ...prev]);
-        localStorage.setItem('diary-entries', JSON.stringify([newEntry, ...entries]));
       }
       
       // Animate view transition
@@ -166,7 +220,14 @@ function AppContent({ user }: AppProps) {
         setViewTransition(false);
       }, 150);
     } catch (error) {
-      console.error('Error generating diary entry:', error);
+      const errorMessage = errorHandler.getUserFriendlyMessage(error instanceof Error ? error : 'Failed to generate entry', 'generating diary entry');
+      setError(errorMessage);
+      errorHandler.logError(error instanceof Error ? error : new Error('Failed to generate diary entry'), {
+        userId: user.id,
+        action: 'generate_diary_entry',
+        component: 'App'
+      }, 'medium');
+      
       // Fallback to basic entry creation
       const allUserText = userMessages.map(msg => msg.text).join(' ');
       const basicEntry = `Today I reflected on ${allUserText.slice(0, 100)}...`;
@@ -249,226 +310,248 @@ function AppContent({ user }: AppProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0 fade-in-down">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center gap-3 fade-in">
-              <div className="brand-logo hover-scale transition-smooth">
-                <Sparkles className="w-6 h-6 text-white" />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+        {/* Error Banner */}
+        {error && (
+          <div className="bg-red-50 border-b border-red-200 p-4">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                <span className="text-sm text-red-700">{error}</span>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold gradient-text">
-                  Memorify
-                </h1>
-                <p className="text-xs text-gray-500 leading-none">
-                  Your AI-powered companion
-                  {import.meta.env.VITE_TOGETHER_API_KEY && (
-                    <span className="ml-1 text-green-600">• Together.ai Enhanced</span>
-                  )}
-                </p>
-              </div>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
-              {navItems.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleViewChange(item.id)}
-                    className={`nav-item hover-lift btn-press fade-in ${
-                      currentView === item.id
-                        ? 'nav-item-active'
-                        : 'nav-item-inactive'
-                    }`}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    aria-label={`Navigate to ${item.label}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-
-            {/* User Menu & Mobile Menu Button */}
-            <div className="flex items-center gap-2">
-              {/* User Menu */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  disabled={signingOut}
-                  className="btn-ghost hover-scale"
-                  aria-label="User menu"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="hidden sm:block text-sm text-gray-600 max-w-32 truncate">
-                    {user.email}
-                  </span>
-                </button>
-
-                {/* User Dropdown */}
-                {isUserMenuOpen && !signingOut && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20 fade-in-down">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-800">Signed in as</p>
-                      <p className="text-sm text-gray-600 truncate">{user.email}</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setShowUserProfile(true);
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="btn-ghost w-full justify-start"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Profile Settings
-                    </button>
-                    <button
-                      onClick={handleSignOut}
-                      disabled={signingOut}
-                      className="btn-ghost w-full justify-start"
-                    >
-                      {signingOut ? (
-                        <>
-                          <div className="loading-spinner w-4 h-4"></div>
-                          Signing out...
-                        </>
-                      ) : (
-                        <>
-                          <LogOut className="w-4 h-4" />
-                          Sign Out
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Mobile Menu Button */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden btn-ghost hover-scale"
-                aria-label="Toggle mobile menu"
+                onClick={() => setError(null)}
+                className="text-red-600 hover:text-red-800 transition-colors"
               >
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm slide-in-down">
-            <nav className="px-4 py-2 space-y-1">
-              {navItems.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleViewChange(item.id)}
-                    className={`nav-item w-full hover-lift fade-in ${
-                      currentView === item.id
-                        ? 'nav-item-active'
-                        : 'nav-item-inactive'
-                    }`}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    aria-label={`Navigate to ${item.label}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
         )}
-      </header>
 
-      {/* Click outside to close user menu */}
-      {isUserMenuOpen && !signingOut && (
-        <div 
-          className="fixed inset-0 z-10 backdrop-animate" 
-          onClick={() => setIsUserMenuOpen(false)}
-        />
-      )}
-
-      {/* User Profile Modal */}
-      {showUserProfile && (
-        <UserProfile 
-          user={user} 
-          onClose={() => setShowUserProfile(false)} 
-        />
-      )}
-
-      {/* Main Content */}
-      <main className="flex-1 min-h-0">
-        {renderContent()}
-      </main>
-
-      {/* Stats Footer */}
-      {entries.length > 0 && (
-        <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0 fade-in-up">
+        {/* Header */}
+        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0 fade-in-down">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
-              <div className="flex items-center gap-2 hover-scale transition-smooth">
-                <BookOpen className="w-4 h-4" />
-                <span>{entries.length} entries</span>
+            <div className="flex items-center justify-between h-16">
+              {/* Logo */}
+              <div className="flex items-center gap-3 fade-in">
+                <div className="brand-logo hover-scale transition-smooth float">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold gradient-text">
+                    Memorify
+                  </h1>
+                  <p className="text-xs text-gray-500 leading-none">
+                    Your AI-powered companion
+                    {import.meta.env.VITE_TOGETHER_API_KEY && (
+                      <span className="ml-1 text-green-600">• Together.ai Enhanced</span>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 hover-scale transition-smooth">
-                <Calendar className="w-4 h-4" />
-                <span>
-                  {entries.length > 0 && 
-                    Math.ceil((new Date().getTime() - new Date(entries[entries.length - 1].date).getTime()) / (1000 * 60 * 60 * 24))
-                  } days journaling
-                </span>
-              </div>
-              <div className="flex items-center gap-2 hover-scale transition-smooth">
-                <Brain className="w-4 h-4" />
-                <span>AI companion active</span>
-              </div>
-              <div className="flex items-center gap-2 hover-scale transition-smooth">
-                <Sparkles className="w-4 h-4" />
-                <span>
-                  {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
-                </span>
+
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex items-center space-x-1">
+                {navItems.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleViewChange(item.id)}
+                      className={`nav-item hover-lift btn-press fade-in ${
+                        currentView === item.id
+                          ? 'nav-item-active'
+                          : 'nav-item-inactive'
+                      }`}
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                      aria-label={`Navigate to ${item.label}`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+
+              {/* User Menu & Mobile Menu Button */}
+              <div className="flex items-center gap-2">
+                {/* User Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    disabled={signingOut}
+                    className="btn-ghost hover-scale"
+                    aria-label="User menu"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="hidden sm:block text-sm text-gray-600 max-w-32 truncate">
+                      {user.email}
+                    </span>
+                  </button>
+
+                  {/* User Dropdown */}
+                  {isUserMenuOpen && !signingOut && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20 fade-in-down">
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-800">Signed in as</p>
+                        <p className="text-sm text-gray-600 truncate">{user.email}</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowUserProfile(true);
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="btn-ghost w-full justify-start"
+                      >
+                        <Settings className="w-4 h-4" />
+                        Profile Settings
+                      </button>
+                      <button
+                        onClick={handleSignOut}
+                        disabled={signingOut}
+                        className="btn-ghost w-full justify-start"
+                      >
+                        {signingOut ? (
+                          <>
+                            <div className="loading-spinner w-4 h-4"></div>
+                            Signing out...
+                          </>
+                        ) : (
+                          <>
+                            <LogOut className="w-4 h-4" />
+                            Sign Out
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Menu Button */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="md:hidden btn-ghost hover-scale"
+                  aria-label="Toggle mobile menu"
+                >
+                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
               </div>
             </div>
           </div>
-        </footer>
-      )}
 
-      {/* Attribution Footer */}
-      <div className="bg-gray-50 border-t border-gray-200 py-2 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-6">
-          <p className="text-xs text-center text-gray-500">
-            Built with ❤️ using{' '}
-            <a 
-              href="https://bolt.new" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-700 underline transition-smooth"
-            >
-              Bolt.new
-            </a>
-          </p>
+          {/* Mobile Navigation */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm slide-in-down">
+              <nav className="px-4 py-2 space-y-1">
+                {navItems.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleViewChange(item.id)}
+                      className={`nav-item w-full hover-lift fade-in ${
+                        currentView === item.id
+                          ? 'nav-item-active'
+                          : 'nav-item-inactive'
+                      }`}
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                      aria-label={`Navigate to ${item.label}`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
+        </header>
+
+        {/* Click outside to close user menu */}
+        {isUserMenuOpen && !signingOut && (
+          <div 
+            className="fixed inset-0 z-10 backdrop-animate" 
+            onClick={() => setIsUserMenuOpen(false)}
+          />
+        )}
+
+        {/* User Profile Modal */}
+        {showUserProfile && (
+          <UserProfile 
+            user={user} 
+            onClose={() => setShowUserProfile(false)} 
+          />
+        )}
+
+        {/* Main Content */}
+        <main className="flex-1 min-h-0">
+          {renderContent()}
+        </main>
+
+        {/* Stats Footer */}
+        {entries.length > 0 && (
+          <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0 fade-in-up">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
+                <div className="flex items-center gap-2 hover-scale transition-smooth">
+                  <BookOpen className="w-4 h-4" />
+                  <span>{entries.length} entries</span>
+                </div>
+                <div className="flex items-center gap-2 hover-scale transition-smooth">
+                  <Calendar className="w-4 h-4" />
+                  <span>
+                    {entries.length > 0 && 
+                      Math.ceil((new Date().getTime() - new Date(entries[entries.length - 1].date).getTime()) / (1000 * 60 * 60 * 24))
+                    } days journaling
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 hover-scale transition-smooth">
+                  <Brain className="w-4 h-4" />
+                  <span>AI companion active</span>
+                </div>
+                <div className="flex items-center gap-2 hover-scale transition-smooth">
+                  <Sparkles className="w-4 h-4" />
+                  <span>
+                    {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </footer>
+        )}
+
+        {/* Attribution Footer */}
+        <div className="bg-gray-50 border-t border-gray-200 py-2 flex-shrink-0">
+          <div className="max-w-7xl mx-auto px-6">
+            <p className="text-xs text-center text-gray-500">
+              Built with ❤️ using{' '}
+              <a 
+                href="https://bolt.new" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 underline transition-smooth"
+              >
+                Bolt.new
+              </a>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
 function App() {
   return (
-    <AuthWrapper>
-      {(user) => <AppContent user={user} />}
-    </AuthWrapper>
+    <ErrorBoundary>
+      <AuthWrapper>
+        {(user) => <AppContent user={user} />}
+      </AuthWrapper>
+    </ErrorBoundary>
   );
 }
 
