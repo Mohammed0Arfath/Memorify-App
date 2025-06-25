@@ -822,3 +822,6 @@ export class AgentService {
   private static async analyzeWeeklyPatterns(entries: DiaryEntry[]): Promise<Partial<WeeklyInsight>> {
     try {
       return await togetherService.generateWe
+    }
+  }
+}
