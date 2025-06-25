@@ -154,7 +154,8 @@ export class AgentService {
           action: 'create_agent_checkin',
           component: 'AgentService',
           additionalData: { triggerType: checkin.trigger_type }
-        }
+        },
+        expectedErrors: ['DUPLICATE_CHECKIN']
       }
     );
   }

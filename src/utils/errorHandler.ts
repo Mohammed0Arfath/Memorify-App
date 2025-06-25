@@ -131,9 +131,10 @@ export class ErrorHandler {
       delay?: number;
       backoff?: boolean;
       context: Omit<ErrorContext, 'timestamp'>;
+      expectedErrors?: string[];
     }
   ): Promise<T> {
-    const { maxAttempts = 3, delay = 1000, backoff = true, context } = options;
+    const { maxAttempts = 3, delay = 1000, backoff = true, context, expectedErrors = [] } = options;
     
     let lastError: Error;
     
@@ -143,10 +144,17 @@ export class ErrorHandler {
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
         
-        this.logError(lastError, {
-          ...context,
-          additionalData: { attempt, maxAttempts }
-        }, attempt === maxAttempts ? 'high' : 'medium');
+        // Check if this is an expected error that shouldn't be logged
+        const isExpectedError = expectedErrors.some(expectedMsg => 
+          lastError.message.includes(expectedMsg)
+        );
+        
+        if (!isExpectedError) {
+          this.logError(lastError, {
+            ...context,
+            additionalData: { attempt, maxAttempts }
+          }, attempt === maxAttempts ? 'high' : 'medium');
+        }
 
         if (attempt === maxAttempts) {
           break;
