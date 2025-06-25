@@ -418,11 +418,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                   <div
                     className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl transition-smooth hover-lift ${
                       message.isUser
-                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
+                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg'
                         : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed">{message.text}</p>
+                    <p className={`text-sm leading-relaxed ${
+                      message.isUser ? 'text-white' : 'text-gray-800'
+                    }`}>
+                      {message.text}
+                    </p>
                     <span className={`text-xs mt-2 block ${
                       message.isUser ? 'text-blue-100' : 'text-gray-400'
                     }`}>
