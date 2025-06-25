@@ -187,7 +187,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
   return (
     <>
-      <div className="h-full flex flex-col container-responsive">
+      <div className="h-full flex flex-col max-w-4xl mx-auto">
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -201,9 +201,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         <div className="flex-shrink-0">
           {/* API Key Warning */}
           {apiKeyMissing && (
-            <div className="alert alert-warning my-responsive fade-in">
+            <div className="alert alert-warning mx-6 mt-6 fade-in">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <div className="text-responsive-sm">
+              <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Key Not Configured</p>
                 <p>
                   The app is running in demo mode with mock responses. To enable AI-powered conversations with Llama 3, Mixtral, and other models, 
@@ -224,9 +224,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* Quota Exceeded Warning */}
           {quotaExceeded && !apiKeyMissing && (
-            <div className="alert alert-error my-responsive fade-in shake">
+            <div className="alert alert-error mx-6 mt-6 fade-in shake">
               <AlertTriangle className="w-5 h-5 flex-shrink-0" />
-              <div className="text-responsive-sm">
+              <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Quota Exceeded</p>
                 <p>
                   Your Together.ai API usage limit has been reached. Please check your{' '}
@@ -248,100 +248,98 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         {/* Header */}
         <div className="card-header flex items-center justify-between bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0 fade-in-down">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth">
-              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-responsive-lg font-semibold text-gray-800">
-                AI Companion {!apiKeyMissing && !quotaExceeded && <span className="text-responsive-xs text-green-600">(Together.ai Powered)</span>}
-                {quotaExceeded && <span className="text-responsive-xs text-red-600">(Fallback Mode)</span>}
+              <h2 className="text-lg font-semibold text-gray-800">
+                AI Companion {!apiKeyMissing && !quotaExceeded && <span className="text-xs text-green-600">(Together.ai Powered)</span>}
+                {quotaExceeded && <span className="text-xs text-red-600">(Fallback Mode)</span>}
               </h2>
-              <p className="text-responsive-sm text-gray-500 hidden sm:block">Your reflective writing partner</p>
+              <p className="text-sm text-gray-500">Your reflective writing partner</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             {detectedEmotion && (
-              <div className="fade-in hidden sm:block">
+              <div className="fade-in">
                 <EmotionIndicator emotion={detectedEmotion} showLabel />
               </div>
             )}
             {/* Voice Chat Toggle */}
             <button
               onClick={toggleVoiceChat}
-              className="btn-icon bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl hover-lift btn-press touch-target"
+              className="btn-icon bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl hover-lift btn-press"
               title="Start voice conversation"
-              aria-label="Start voice conversation"
             >
-              <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Mic className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Photo Preview */}
         {selectedPhoto && (
-          <div className="alert alert-info my-responsive flex-shrink-0 fade-in">
+          <div className="alert alert-info mx-6 mt-4 flex-shrink-0 fade-in">
             <div className="flex items-start gap-3 w-full">
               <div className="relative">
                 <img 
                   src={selectedPhoto} 
                   alt="Selected photo" 
-                  className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg"
+                  className="w-20 h-20 object-cover rounded-lg"
                 />
                 <button
                   onClick={removePhoto}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-smooth hover-scale touch-target"
-                  aria-label="Remove photo"
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-smooth hover-scale"
                 >
                   <X className="w-3 h-3" />
                 </button>
               </div>
               <div className="flex-1">
-                <p className="text-responsive-sm font-medium">Photo attached</p>
-                <p className="text-responsive-xs">This photo will be included with your diary entry</p>
+                <p className="text-sm font-medium">Photo attached</p>
+                <p className="text-xs">This photo will be included with your diary entry</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto py-responsive min-h-0 optimize-scroll" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+        <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0" style={{ maxHeight: 'calc(100vh - 400px)' }}>
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center fade-in-up p-responsive">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 float">
-                <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+            <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 float">
+                <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-responsive-xl font-semibold text-gray-800 mb-2">Start Your Reflection Journey</h3>
-              <p className="text-responsive-base text-gray-600 mb-6 max-w-md">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Start Your Reflection Journey</h3>
+              <p className="text-gray-600 mb-6 max-w-md">
                 Share your thoughts, feelings, and experiences. I'm here to listen and help you process your day through meaningful conversation.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
                 <button
                   onClick={() => handlePromptClick("I had an interesting day today...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-1 touch-target"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-1"
                 >
-                  <p className="text-responsive-sm font-medium text-blue-800">Reflect on your day</p>
-                  <p className="text-responsive-xs text-blue-600">Share what happened today</p>
+                  <p className="text-sm font-medium text-blue-800">Reflect on your day</p>
+                  <p className="text-xs text-blue-600">Share what happened today</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I'm feeling...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-2 touch-target"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-2"
                 >
-                  <p className="text-responsive-sm font-medium text-purple-800">Explore emotions</p>
-                  <p className="text-responsive-xs text-purple-600">Talk about how you're feeling</p>
+                  <p className="text-sm font-medium text-purple-800">Explore emotions</p>
+                  <p className="text-xs text-purple-600">Talk about how you're feeling</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I've been thinking about...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-3 touch-target"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-3"
                 >
-                  <p className="text-responsive-sm font-medium text-green-800">Process thoughts</p>
-                  <p className="text-responsive-xs text-green-600">Work through what's on your mind</p>
+                  <p className="text-sm font-medium text-green-800">Process thoughts</p>
+                  <p className="text-xs text-green-600">Work through what's on your mind</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I'm grateful for...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-4 touch-target"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-4"
                 >
-                  <p className="text-responsive-sm font-medium text-amber-800">Practice gratitude</p>
-                  <p className="text-responsive-xs text-amber-600">Focus on positive moments</p>
+                  <p className="text-sm font-medium text-amber-800">Practice gratitude</p>
+                  <p className="text-xs text-amber-600">Focus on positive moments</p>
                 </button>
               </div>
             </div>
@@ -354,14 +352,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div
-                    className={`max-w-[85%] sm:max-w-xs md:max-w-md lg:max-w-lg px-3 sm:px-4 py-3 rounded-2xl transition-smooth hover-lift ${
+                    className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl transition-smooth hover-lift ${
                       message.isUser
                         ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
                         : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
                     }`}
                   >
-                    <p className="text-responsive-sm leading-relaxed">{message.text}</p>
-                    <span className={`text-responsive-xs mt-2 block ${
+                    <p className="text-sm leading-relaxed">{message.text}</p>
+                    <span className={`text-xs mt-2 block ${
                       message.isUser ? 'text-blue-100' : 'text-gray-400'
                     }`}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -387,8 +385,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         </div>
 
         {/* Input Area */}
-        <div className="card-footer bg-white/80 backdrop-blur-sm border-t border-gray-200 flex-shrink-0 fade-in-up safe-bottom">
-          <div className="flex gap-2 sm:gap-3 mb-3">
+        <div className="card-footer bg-white/80 backdrop-blur-sm border-t border-gray-200 flex-shrink-0 fade-in-up">
+          <div className="flex gap-3 mb-3">
             <div className="flex-1 relative">
               <textarea
                 ref={inputRef}
@@ -397,7 +395,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                 onKeyPress={handleKeyPress}
                 placeholder="Share what's on your mind..."
                 className="form-input resize-none"
-                rows={window.innerWidth < 640 ? 1 : 2}
+                rows={2}
                 disabled={isTyping}
               />
             </div>
@@ -405,22 +403,20 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               <button
                 onClick={handleSendMessage}
                 disabled={!inputText.trim() || isTyping}
-                className="btn-icon bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover-lift btn-press touch-target"
-                aria-label="Send message"
+                className="btn-icon bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover-lift btn-press"
               >
-                <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Send className="w-5 h-5" />
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="btn-icon bg-gray-100 text-gray-600 hover:bg-gray-200 hover-lift btn-press touch-target"
+                className="btn-icon bg-gray-100 text-gray-600 hover:bg-gray-200 hover-lift btn-press"
                 title="Upload photo"
-                aria-label="Upload photo"
               >
                 {isUploading ? (
-                  <div className="loading-spinner w-4 h-4 sm:w-5 sm:h-5"></div>
+                  <div className="loading-spinner w-5 h-5"></div>
                 ) : (
-                  <Image className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <Image className="w-5 h-5" />
                 )}
               </button>
             </div>
@@ -432,19 +428,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               <button
                 onClick={handleGenerateEntry}
                 disabled={isTyping || isGeneratingEntry}
-                className="px-4 sm:px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed hover-lift btn-press text-responsive-sm touch-target"
+                className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed hover-lift btn-press"
               >
                 {isGeneratingEntry ? (
                   <div className="flex items-center gap-2">
                     <div className="loading-spinner w-4 h-4 border-white border-t-transparent"></div>
-                    <span className="hidden sm:inline">Generating Entry...</span>
-                    <span className="sm:hidden">Generating...</span>
+                    Generating Entry...
                   </div>
                 ) : (
-                  <>
-                    <span className="hidden sm:inline">Generate Diary Entry ✨</span>
-                    <span className="sm:hidden">Generate ✨</span>
-                  </>
+                  'Generate Diary Entry ✨'
                 )}
               </button>
             </div>
