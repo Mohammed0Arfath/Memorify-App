@@ -92,8 +92,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 backdrop-animate">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden fade-in-up">
+    <div className="modal-backdrop backdrop-animate">
+      <div className="modal-content max-w-md max-h-[90vh] overflow-hidden fade-in-up">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
           <div className="flex items-center justify-between">
@@ -110,7 +110,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-smooth hover-scale btn-press"
+                className="btn-icon bg-white/20 hover:bg-white/30 text-white hover-scale btn-press"
                 aria-label="Close profile"
               >
                 <X className="w-5 h-5" />
@@ -127,7 +127,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 hover-lift fade-in ${
+                className={`nav-item flex-1 justify-center py-3 text-sm font-medium transition-all duration-200 hover-lift fade-in ${
                   activeTab === tab.id
                     ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
@@ -148,22 +148,22 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
               <h4 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h4>
               
               {profileSuccess && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 fade-in">
-                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 checkmark-animate" />
-                  <span className="text-sm text-green-700">{profileSuccess}</span>
+                <div className="alert alert-success mb-4 fade-in">
+                  <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
+                  <span className="text-sm">{profileSuccess}</span>
                 </div>
               )}
 
               {profileError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 fade-in shake">
-                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                  <span className="text-sm text-red-700">{profileError}</span>
+                <div className="alert alert-error mb-4 fade-in shake">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm">{profileError}</span>
                 </div>
               )}
 
               <form onSubmit={handleProfileUpdate} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="email" className="form-label">
                     Email Address
                   </label>
                   <div className="relative">
@@ -173,7 +173,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input"
+                      className="form-input pl-10"
                       placeholder="Enter your email"
                       required
                       disabled={profileLoading}
@@ -184,11 +184,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={profileLoading || email === user?.email}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 hover-lift btn-press"
+                  className="btn-primary w-full hover-lift btn-press"
                 >
                   {profileLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="loading-spinner w-4 h-4 border-white border-t-transparent"></div>
                       Updating...
                     </>
                   ) : (
@@ -207,22 +207,22 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
               <h4 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h4>
               
               {passwordSuccess && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 fade-in">
-                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 checkmark-animate" />
-                  <span className="text-sm text-green-700">{passwordSuccess}</span>
+                <div className="alert alert-success mb-4 fade-in">
+                  <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
+                  <span className="text-sm">{passwordSuccess}</span>
                 </div>
               )}
 
               {passwordError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 fade-in shake">
-                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                  <span className="text-sm text-red-700">{passwordError}</span>
+                <div className="alert alert-error mb-4 fade-in shake">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm">{passwordError}</span>
                 </div>
               )}
 
               <form onSubmit={handlePasswordUpdate} className="space-y-4">
                 <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="newPassword" className="form-label">
                     New Password
                   </label>
                   <div className="relative">
@@ -232,7 +232,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       type={showNewPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input"
+                      className="form-input pl-10 pr-12"
                       placeholder="Enter new password"
                       required
                       minLength={6}
@@ -250,7 +250,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="confirmPassword" className="form-label">
                     Confirm New Password
                   </label>
                   <div className="relative">
@@ -260,7 +260,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input"
+                      className="form-input pl-10 pr-12"
                       placeholder="Confirm new password"
                       required
                       disabled={passwordLoading}
@@ -279,11 +279,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={passwordLoading || !newPassword || !confirmPassword}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2 hover-lift btn-press"
+                  className="btn-primary w-full hover-lift btn-press"
                 >
                   {passwordLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="loading-spinner w-4 h-4 border-white border-t-transparent"></div>
                       Updating...
                     </>
                   ) : (
@@ -299,7 +299,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-gray-50 border-t border-gray-200 fade-in">
+        <div className="card-footer fade-in">
           <div className="text-center">
             <p className="text-xs text-gray-500">
               Account created: {new Date(user?.created_at).toLocaleDateString()}

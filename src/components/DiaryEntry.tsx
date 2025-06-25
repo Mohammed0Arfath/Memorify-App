@@ -32,14 +32,14 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
 
   return (
     <div 
-      className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-l-4 cursor-pointer hover-lift fade-in-up ${
+      className={`card card-hover cursor-pointer border-l-4 ${
         isExpanded ? 'ring-2 ring-blue-200' : ''
-      }`}
+      } fade-in-up`}
       style={{ borderLeftColor: entry.emotion.color }}
       onClick={onToggleExpand}
     >
       {/* Header */}
-      <div className="p-6 pb-4">
+      <div className="card-header">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="emotion-pulse">
@@ -72,15 +72,15 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
         </div>
 
         {/* Summary */}
-        <p className="text-gray-600 leading-relaxed mb-4">
+        <p className="text-gray-600 leading-relaxed">
           {entry.summary}
         </p>
       </div>
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-6 pb-6 pt-2 border-t border-gray-100 fade-in">
-          <div className="space-y-4">
+        <div className="card-body border-t border-gray-100 fade-in">
+          <div className="space-y-6">
             {/* Full Entry */}
             <div className="fade-in-up stagger-1">
               <h4 className="text-sm font-medium text-gray-700 mb-2">Diary Entry</h4>
@@ -138,7 +138,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({
       )}
 
       {/* Footer */}
-      <div className="px-6 py-3 bg-gray-50 flex items-center justify-between text-sm text-gray-500">
+      <div className="card-footer flex items-center justify-between text-sm text-gray-500">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1 hover-scale transition-smooth">
             <Heart className="w-4 h-4" />

@@ -197,15 +197,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           className="hidden"
         />
 
-        {/* Warnings Section - Fixed height to prevent layout shifts */}
+        {/* Warnings Section */}
         <div className="flex-shrink-0">
           {/* API Key Warning */}
           {apiKeyMissing && (
-            <div className="mx-6 mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 fade-in">
-              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <div className="alert alert-warning mx-6 mt-6 fade-in">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="text-amber-800 font-medium mb-1">Together.ai API Key Not Configured</p>
-                <p className="text-amber-700">
+                <p className="font-medium mb-1">Together.ai API Key Not Configured</p>
+                <p>
                   The app is running in demo mode with mock responses. To enable AI-powered conversations with Llama 3, Mixtral, and other models, 
                   add your Together.ai API key to the <code className="bg-amber-100 px-1 rounded">.env</code> file.
                   <br />
@@ -224,11 +224,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* Quota Exceeded Warning */}
           {quotaExceeded && !apiKeyMissing && (
-            <div className="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3 fade-in shake">
-              <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <div className="alert alert-error mx-6 mt-6 fade-in shake">
+              <AlertTriangle className="w-5 h-5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="text-red-800 font-medium mb-1">Together.ai API Quota Exceeded</p>
-                <p className="text-red-700">
+                <p className="font-medium mb-1">Together.ai API Quota Exceeded</p>
+                <p>
                   Your Together.ai API usage limit has been reached. Please check your{' '}
                   <a 
                     href="https://api.together.xyz/settings/billing" 
@@ -246,7 +246,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0 fade-in-down">
+        <div className="card-header flex items-center justify-between bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0 fade-in-down">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth">
               <Sparkles className="w-5 h-5 text-white" />
@@ -268,7 +268,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
             {/* Voice Chat Toggle */}
             <button
               onClick={toggleVoiceChat}
-              className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl hover-lift btn-press"
+              className="btn-icon bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl hover-lift btn-press"
               title="Start voice conversation"
             >
               <Mic className="w-5 h-5" />
@@ -278,8 +278,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
         {/* Photo Preview */}
         {selectedPhoto && (
-          <div className="mx-6 mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex-shrink-0 fade-in">
-            <div className="flex items-start gap-3">
+          <div className="alert alert-info mx-6 mt-4 flex-shrink-0 fade-in">
+            <div className="flex items-start gap-3 w-full">
               <div className="relative">
                 <img 
                   src={selectedPhoto} 
@@ -294,14 +294,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                 </button>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-blue-800">Photo attached</p>
-                <p className="text-xs text-blue-600">This photo will be included with your diary entry</p>
+                <p className="text-sm font-medium">Photo attached</p>
+                <p className="text-xs">This photo will be included with your diary entry</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Messages - Scrollable area with better height management */}
+        {/* Messages */}
         <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0" style={{ maxHeight: 'calc(100vh - 400px)' }}>
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
@@ -315,28 +315,28 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
                 <button
                   onClick={() => handlePromptClick("I had an interesting day today...")}
-                  className="p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-left transition-smooth hover-lift btn-press fade-in stagger-1"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-1"
                 >
                   <p className="text-sm font-medium text-blue-800">Reflect on your day</p>
                   <p className="text-xs text-blue-600">Share what happened today</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I'm feeling...")}
-                  className="p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-left transition-smooth hover-lift btn-press fade-in stagger-2"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-2"
                 >
                   <p className="text-sm font-medium text-purple-800">Explore emotions</p>
                   <p className="text-xs text-purple-600">Talk about how you're feeling</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I've been thinking about...")}
-                  className="p-3 bg-green-50 hover:bg-green-100 rounded-lg text-left transition-smooth hover-lift btn-press fade-in stagger-3"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-3"
                 >
                   <p className="text-sm font-medium text-green-800">Process thoughts</p>
                   <p className="text-xs text-green-600">Work through what's on your mind</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I'm grateful for...")}
-                  className="p-3 bg-amber-50 hover:bg-amber-100 rounded-lg text-left transition-smooth hover-lift btn-press fade-in stagger-4"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-4"
                 >
                   <p className="text-sm font-medium text-amber-800">Practice gratitude</p>
                   <p className="text-xs text-amber-600">Focus on positive moments</p>
@@ -371,10 +371,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               {isTyping && (
                 <div className="flex justify-start fade-in">
                   <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="loading-dots">
+                      <div className="loading-dot"></div>
+                      <div className="loading-dot" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="loading-dot" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -384,8 +384,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Input Area - Fixed at bottom with reduced spacing */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm flex-shrink-0 fade-in-up">
+        {/* Input Area */}
+        <div className="card-footer bg-white/80 backdrop-blur-sm border-t border-gray-200 flex-shrink-0 fade-in-up">
           <div className="flex gap-3 mb-3">
             <div className="flex-1 relative">
               <textarea
@@ -394,7 +394,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Share what's on your mind..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 form-input"
+                className="form-input resize-none"
                 rows={2}
                 disabled={isTyping}
               />
@@ -403,18 +403,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               <button
                 onClick={handleSendMessage}
                 disabled={!inputText.trim() || isTyping}
-                className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover-lift btn-press"
+                className="btn-icon bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover-lift btn-press"
               >
                 <Send className="w-5 h-5" />
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="p-3 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover-lift btn-press"
+                className="btn-icon bg-gray-100 text-gray-600 hover:bg-gray-200 hover-lift btn-press"
                 title="Upload photo"
               >
                 {isUploading ? (
-                  <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="loading-spinner w-5 h-5"></div>
                 ) : (
                   <Image className="w-5 h-5" />
                 )}
@@ -432,7 +432,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               >
                 {isGeneratingEntry ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="loading-spinner w-4 h-4 border-white border-t-transparent"></div>
                     Generating Entry...
                   </div>
                 ) : (

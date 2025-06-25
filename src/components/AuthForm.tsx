@@ -163,14 +163,14 @@ export const AuthForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8 fade-in-down">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-lg mx-auto mb-4 hover-scale transition-smooth float">
-            <Sparkles className="w-8 h-8 text-white" />
+          <div className="brand-logo mx-auto mb-4 hover-scale transition-smooth float">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 gradient-animate">
+          <h1 className="text-3xl font-bold gradient-text mb-2 gradient-animate">
             Memorify
           </h1>
           <p className="text-gray-600">
@@ -179,8 +179,8 @@ export const AuthForm: React.FC = () => {
         </div>
 
         {/* Auth Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 hover-lift transition-smooth fade-in-up">
-          <div className="mb-6">
+        <div className="card card-hover fade-in-up">
+          <div className="card-header">
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               {getTitle()}
             </h2>
@@ -189,187 +189,183 @@ export const AuthForm: React.FC = () => {
             </p>
           </div>
 
-          {/* Success Message */}
-          {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 fade-in">
-              <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 checkmark-animate" />
-              <span className="text-sm text-green-700">{success}</span>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 fade-in shake">
-              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-              <span className="text-sm text-red-700">{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email Field */}
-            <div className="fade-in stagger-1">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailError) validateEmail(e.target.value);
-                  }}
-                  onBlur={() => validateEmail(email)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input ${
-                    emailError ? 'border-red-300 bg-red-50 shake' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter your email"
-                  required
-                  disabled={loading}
-                />
-              </div>
-              {emailError && (
-                <p className="mt-1 text-xs text-red-600 fade-in">{emailError}</p>
-              )}
-            </div>
-
-            {/* Password Field */}
-            {!isResetMode && (
-              <div className="fade-in stagger-2">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (passwordError) validatePassword(e.target.value);
-                      if (confirmPassword && confirmPasswordError) {
-                        validateConfirmPassword(confirmPassword);
-                      }
-                    }}
-                    onBlur={() => validatePassword(password)}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input ${
-                      passwordError ? 'border-red-300 bg-red-50 shake' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter your password"
-                    required
-                    minLength={6}
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
-                    disabled={loading}
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                {passwordError && (
-                  <p className="mt-1 text-xs text-red-600 fade-in">{passwordError}</p>
-                )}
+          <div className="card-body">
+            {/* Success Message */}
+            {success && (
+              <div className="alert alert-success mb-4 fade-in">
+                <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
+                <span className="text-sm">{success}</span>
               </div>
             )}
 
-            {/* Confirm Password Field */}
-            {isSignUp && !isResetMode && (
-              <div className="fade-in stagger-3">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
-                  <input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                      if (confirmPasswordError) validateConfirmPassword(e.target.value);
-                    }}
-                    onBlur={() => validateConfirmPassword(confirmPassword)}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 form-input ${
-                      confirmPasswordError ? 'border-red-300 bg-red-50 shake' : 'border-gray-300'
-                    }`}
-                    placeholder="Confirm your password"
-                    required
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
-                    disabled={loading}
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                {confirmPasswordError && (
-                  <p className="mt-1 text-xs text-red-600 fade-in">{confirmPasswordError}</p>
-                )}
+            {/* Error Message */}
+            {error && (
+              <div className="alert alert-error mb-4 fade-in shake">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="text-sm">{error}</span>
               </div>
             )}
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover-lift btn-press fade-in stagger-4"
-            >
-              {loading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  {getButtonText()}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email Field */}
+              <div className="fade-in stagger-1">
+                <label htmlFor="email" className="form-label">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailError) validateEmail(e.target.value);
+                    }}
+                    onBlur={() => validateEmail(email)}
+                    className={`form-input pl-10 ${emailError ? 'form-input-error shake' : ''}`}
+                    placeholder="Enter your email"
+                    required
+                    disabled={loading}
+                  />
                 </div>
-              ) : (
-                getButtonText()
-              )}
-            </button>
-          </form>
+                {emailError && (
+                  <p className="form-error fade-in">{emailError}</p>
+                )}
+              </div>
 
-          {/* Navigation Links */}
-          <div className="mt-6 space-y-3 text-center fade-in stagger-5">
-            {!isResetMode && (
+              {/* Password Field */}
+              {!isResetMode && (
+                <div className="fade-in stagger-2">
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
+                    <input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (passwordError) validatePassword(e.target.value);
+                        if (confirmPassword && confirmPasswordError) {
+                          validateConfirmPassword(confirmPassword);
+                        }
+                      }}
+                      onBlur={() => validatePassword(password)}
+                      className={`form-input pl-10 pr-12 ${passwordError ? 'form-input-error shake' : ''}`}
+                      placeholder="Enter your password"
+                      required
+                      minLength={6}
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      disabled={loading}
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {passwordError && (
+                    <p className="form-error fade-in">{passwordError}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Confirm Password Field */}
+              {isSignUp && !isResetMode && (
+                <div className="fade-in stagger-3">
+                  <label htmlFor="confirmPassword" className="form-label">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
+                    <input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        if (confirmPasswordError) validateConfirmPassword(e.target.value);
+                      }}
+                      onBlur={() => validateConfirmPassword(confirmPassword)}
+                      className={`form-input pl-10 pr-12 ${confirmPasswordError ? 'form-input-error shake' : ''}`}
+                      placeholder="Confirm your password"
+                      required
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      disabled={loading}
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {confirmPasswordError && (
+                    <p className="form-error fade-in">{confirmPasswordError}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Submit Button */}
               <button
-                onClick={() => switchMode(isSignUp ? 'signin' : 'signup')}
-                className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
+                type="submit"
                 disabled={loading}
+                className="btn-primary w-full hover-lift btn-press fade-in stagger-4"
               >
-                {isSignUp 
-                  ? 'Already have an account? Sign in' 
-                  : "Don't have an account? Sign up"
-                }
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="loading-spinner w-4 h-4"></div>
+                    {getButtonText()}
+                  </div>
+                ) : (
+                  getButtonText()
+                )}
               </button>
-            )}
-            
-            {!isSignUp && !isResetMode && (
-              <div>
+            </form>
+
+            {/* Navigation Links */}
+            <div className="mt-6 space-y-3 text-center fade-in stagger-5">
+              {!isResetMode && (
                 <button
-                  onClick={() => switchMode('reset')}
-                  className="text-gray-600 hover:text-gray-700 text-sm transition-smooth"
+                  onClick={() => switchMode(isSignUp ? 'signin' : 'signup')}
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
                   disabled={loading}
                 >
-                  Forgot your password?
+                  {isSignUp 
+                    ? 'Already have an account? Sign in' 
+                    : "Don't have an account? Sign up"
+                  }
                 </button>
-              </div>
-            )}
+              )}
+              
+              {!isSignUp && !isResetMode && (
+                <div>
+                  <button
+                    onClick={() => switchMode('reset')}
+                    className="text-gray-600 hover:text-gray-700 text-sm transition-smooth"
+                    disabled={loading}
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
 
-            {isResetMode && (
-              <button
-                onClick={() => switchMode('signin')}
-                className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
-                disabled={loading}
-              >
-                Back to sign in
-              </button>
-            )}
+              {isResetMode && (
+                <button
+                  onClick={() => switchMode('signin')}
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
+                  disabled={loading}
+                >
+                  Back to sign in
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
