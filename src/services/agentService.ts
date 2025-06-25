@@ -821,7 +821,98 @@ export class AgentService {
 
   private static async analyzeWeeklyPatterns(entries: DiaryEntry[]): Promise<Partial<WeeklyInsight>> {
     try {
-      return await togetherService.generateWe
+      return await togetherService.generateWeeklyInsight(entries);
+    } catch (error) {
+      errorHandler.logError(error instanceof Error ? error : new Error('Failed to analyze weekly patterns'), {
+        action: 'analyze_weekly_patterns',
+        component: 'AgentService',
+        additionalData: { entryCount: entries.length }
+      }, 'medium');
+      
+      // Return fallback insight data
+      return {
+        dominant_emotions: [],
+        emotion_distribution: {},
+        key_themes: [],
+        growth_observations: [],
+        recommended_actions: [],
+        mood_trend: 'stable',
+        generated_visual_prompt: null
+      };
     }
+  }
+
+  private static async extractPatterns(userMessages: string, emotion: any): Promise<any[]> {
+    try {
+      return await togetherService.extractPatterns(userMessages, emotion);
+    } catch (error) {
+      errorHandler.logError(error instanceof Error ? error : new Error('Failed to extract patterns'), {
+        action: 'extract_patterns',
+        component: 'AgentService'
+      }, 'low');
+      
+      // Return empty patterns array as fallback
+      return [];
+    }
+  }
+
+  // Mapping methods for database rows
+  private static mapMemoryRow(row: any): AgentMemory {
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      memory_type: row.memory_type,
+      content: row.content,
+      emotional_context: row.emotional_context || [],
+      importance_score: row.importance_score,
+      created_at: new Date(row.created_at),
+      last_accessed: new Date(row.last_accessed),
+      access_count: row.access_count
+    };
+  }
+
+  private static mapCheckinRow(row: any): AgentCheckin {
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      trigger_type: row.trigger_type,
+      message: row.message,
+      emotional_context: row.emotional_context,
+      is_read: row.is_read,
+      created_at: new Date(row.created_at),
+      responded_at: row.responded_at ? new Date(row.responded_at) : null
+    };
+  }
+
+  private static mapSettingsRow(row: any): AgentSettings {
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      is_agentic_mode_enabled: row.is_agentic_mode_enabled,
+      personality_type: row.personality_type,
+      check_in_frequency: row.check_in_frequency,
+      proactive_insights: row.proactive_insights,
+      visual_generation: row.visual_generation,
+      last_check_in: new Date(row.last_check_in),
+      created_at: new Date(row.created_at),
+      updated_at: new Date(row.updated_at)
+    };
+  }
+
+  private static mapInsightRow(row: any): WeeklyInsight {
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      week_start: new Date(row.week_start),
+      week_end: new Date(row.week_end),
+      dominant_emotions: row.dominant_emotions || [],
+      emotion_distribution: row.emotion_distribution || {},
+      key_themes: row.key_themes || [],
+      growth_observations: row.growth_observations || [],
+      recommended_actions: row.recommended_actions || [],
+      mood_trend: row.mood_trend,
+      generated_visual_prompt: row.generated_visual_prompt,
+      created_at: new Date(row.created_at)
+    };
   }
 }
