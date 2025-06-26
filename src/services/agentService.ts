@@ -113,12 +113,12 @@ export class AgentService {
         // Validate checkin data
         this.validateCheckinData(checkin);
 
-        // Check if a similar check-in already exists in the last 24 hours
+        // Enhanced duplicate prevention - check for similar check-ins in the last 24 hours
         const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         
         const { data: existingCheckins, error: checkError } = await supabase
           .from('agent_checkins')
-          .select('id')
+          .select('id, trigger_type, created_at')
           .eq('user_id', user.id)
           .eq('trigger_type', checkin.trigger_type)
           .gte('created_at', oneDayAgo)
@@ -131,7 +131,19 @@ export class AgentService {
             additionalData: { triggerType: checkin.trigger_type }
           }, 'medium');
         } else if (existingCheckins && existingCheckins.length > 0) {
-          throw new Error('DUPLICATE_CHECKIN');
+          // For milestone triggers, allow if it's a different milestone
+          if (checkin.trigger_type === 'milestone') {
+            // Check if the milestone message is different (different achievement)
+            const existingCheckin = existingCheckins[0];
+            const timeDiff = new Date().getTime() - new Date(existingCheckin.created_at).getTime();
+            
+            // Allow new milestone if it's been at least 1 hour (different milestone)
+            if (timeDiff < 60 * 60 * 1000) {
+              throw new Error('DUPLICATE_CHECKIN');
+            }
+          } else {
+            throw new Error('DUPLICATE_CHECKIN');
+          }
         }
 
         const { data, error } = await supabase
@@ -694,32 +706,63 @@ export class AgentService {
     }
   }
 
-  // Continue with existing methods but add error handling...
-  // (The rest of the methods remain the same but with added error handling where appropriate)
+  // IMPROVED CHECK-IN TRIGGER METHODS
 
   private static async checkInactivityTrigger(entries: DiaryEntry[], settings: AgentSettings): Promise<void> {
-    const lastEntry = entries[0];
-    if (!lastEntry) return;
+    if (entries.length === 0) {
+      // No entries at all - send welcome check-in after 2 days
+      const accountAge = new Date().getTime() - settings.created_at.getTime();
+      const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
+      
+      if (accountAge > twoDaysInMs) {
+        const message = await this.generateCheckinMessage('inactivity', { 
+          daysSinceLastEntry: Math.floor(accountAge / (24 * 60 * 60 * 1000)),
+          isFirstTime: true 
+        }, settings);
+        
+        await this.createCheckin({
+          trigger_type: 'inactivity',
+          message,
+          emotional_context: 'New user - no entries yet'
+        });
+      }
+      return;
+    }
 
+    const lastEntry = entries[0];
+    const now = new Date();
+    const lastEntryDate = new Date(lastEntry.date);
+    
+    // Calculate days since last entry with timezone consideration
     const daysSinceLastEntry = Math.floor(
-      (new Date().getTime() - lastEntry.date.getTime()) / (1000 * 60 * 60 * 24)
+      (now.getTime() - lastEntryDate.getTime()) / (1000 * 60 * 60 * 24)
     );
 
+    // Enhanced thresholds based on user preferences
     const thresholds = {
-      daily: 1,
-      every_2_days: 2,
-      weekly: 7,
-      as_needed: 14
+      daily: 2,        // Allow 1 day grace period
+      every_2_days: 3, // Allow 1 day grace period
+      weekly: 8,       // Allow 1 day grace period
+      as_needed: 14    // More lenient for as-needed users
     };
 
     const threshold = thresholds[settings.check_in_frequency];
     
     if (daysSinceLastEntry >= threshold) {
-      const message = await this.generateCheckinMessage('inactivity', { daysSinceLastEntry }, settings);
+      // Check user's typical journaling pattern to personalize message
+      const recentEntries = entries.slice(0, 10);
+      const avgDaysBetweenEntries = this.calculateAverageDaysBetweenEntries(recentEntries);
+      
+      const message = await this.generateCheckinMessage('inactivity', { 
+        daysSinceLastEntry,
+        avgDaysBetweenEntries,
+        isUnusualGap: daysSinceLastEntry > avgDaysBetweenEntries * 2
+      }, settings);
+      
       await this.createCheckin({
         trigger_type: 'inactivity',
         message,
-        emotional_context: `${daysSinceLastEntry} days since last entry`
+        emotional_context: `${daysSinceLastEntry} days since last entry (usual: ${avgDaysBetweenEntries} days)`
       });
     }
   }
@@ -727,21 +770,49 @@ export class AgentService {
   private static async checkEmotionalPatterns(entries: DiaryEntry[], settings: AgentSettings): Promise<void> {
     if (entries.length < 3) return;
 
-    const recentEmotions = entries.slice(0, 3).map(e => e.emotion.primary);
+    const recentEntries = entries.slice(0, 5); // Look at last 5 entries
+    const recentEmotions = recentEntries.map(e => e.emotion.primary);
+    
+    // Enhanced pattern detection
     const concerningPatterns = ['anxiety', 'melancholy'];
+    const positivePatterns = ['joy', 'gratitude', 'contentment'];
     
     const concerningCount = recentEmotions.filter(e => concerningPatterns.includes(e)).length;
+    const positiveCount = recentEmotions.filter(e => positivePatterns.includes(e)).length;
     
-    if (concerningCount >= 2) {
+    // Check for concerning patterns (3+ concerning emotions in last 5 entries)
+    if (concerningCount >= 3) {
+      // Also check emotional intensity
+      const avgIntensity = recentEntries
+        .filter(e => concerningPatterns.includes(e.emotion.primary))
+        .reduce((sum, e) => sum + e.emotion.intensity, 0) / concerningCount;
+      
       const message = await this.generateCheckinMessage('emotional_pattern', { 
-        pattern: recentEmotions.join(', '),
-        concern: true 
+        pattern: recentEmotions.slice(0, 3).join(', '),
+        concern: true,
+        intensity: avgIntensity,
+        patternLength: concerningCount
       }, settings);
       
       await this.createCheckin({
         trigger_type: 'emotional_pattern',
         message,
-        emotional_context: `Recent pattern: ${recentEmotions.join(', ')}`
+        emotional_context: `Concerning pattern: ${concerningCount}/${recentEntries.length} entries with ${concerningPatterns.join('/')}`
+      });
+    }
+    // Check for positive patterns to celebrate
+    else if (positiveCount >= 4) {
+      const message = await this.generateCheckinMessage('emotional_pattern', { 
+        pattern: recentEmotions.slice(0, 3).join(', '),
+        concern: false,
+        celebration: true,
+        patternLength: positiveCount
+      }, settings);
+      
+      await this.createCheckin({
+        trigger_type: 'emotional_pattern',
+        message,
+        emotional_context: `Positive pattern: ${positiveCount}/${recentEntries.length} entries with positive emotions`
       });
     }
   }
@@ -749,50 +820,36 @@ export class AgentService {
   private static async checkMilestones(entries: DiaryEntry[], settings: AgentSettings): Promise<void> {
     if (entries.length === 0) return;
 
-    // Calculate consecutive journaling days
-    const consecutiveDays = this.calculateConsecutiveDays(entries);
+    // Calculate consecutive journaling days with improved logic
+    const consecutiveDays = this.calculateConsecutiveDaysImproved(entries);
     const totalEntries = entries.length;
 
-    // Define milestones with both consecutive days and total entries
+    // Enhanced milestone definitions
     const milestones = [
-      { 
-        type: 'consecutive_days', 
-        count: 7, 
-        message: "You've journaled for 7 consecutive days! 🌟 That's an amazing streak!" 
-      },
-      { 
-        type: 'consecutive_days', 
-        count: 14, 
-        message: "Two weeks of consistent journaling! 🎉 Your dedication is inspiring!" 
-      },
-      { 
-        type: 'consecutive_days', 
-        count: 30, 
-        message: "30 days straight! 🏆 You've built an incredible habit!" 
-      },
-      { 
-        type: 'total_entries', 
-        count: 10, 
-        message: "You've created 10 diary entries! 📚 Your journey is taking shape!" 
-      },
-      { 
-        type: 'total_entries', 
-        count: 25, 
-        message: "25 entries of reflection and growth! 🌱 What a beautiful collection!" 
-      },
-      { 
-        type: 'total_entries', 
-        count: 50, 
-        message: "50 diary entries! 📖 You're building an incredible story of self-discovery!" 
-      },
-      { 
-        type: 'total_entries', 
-        count: 100, 
-        message: "100 entries! 🎊 You've created a treasure trove of personal insights!" 
-      }
+      // Consecutive days milestones
+      { type: 'consecutive_days', count: 3, message: "3 days in a row! 🌱 You're building a beautiful habit!" },
+      { type: 'consecutive_days', count: 7, message: "One week of consistent journaling! 🌟 That's an amazing streak!" },
+      { type: 'consecutive_days', count: 14, message: "Two weeks straight! 🎉 Your dedication is truly inspiring!" },
+      { type: 'consecutive_days', count: 21, message: "21 days! 🏆 You've officially built a habit - this is incredible!" },
+      { type: 'consecutive_days', count: 30, message: "30 days straight! 🎊 You're a journaling champion!" },
+      { type: 'consecutive_days', count: 50, message: "50 consecutive days! 🌟 Your commitment is extraordinary!" },
+      { type: 'consecutive_days', count: 100, message: "100 days in a row! 🏆 You've achieved something truly remarkable!" },
+      
+      // Total entries milestones
+      { type: 'total_entries', count: 5, message: "5 diary entries! 📝 You're getting into the rhythm!" },
+      { type: 'total_entries', count: 10, message: "10 entries! 📚 Your reflection journey is taking shape!" },
+      { type: 'total_entries', count: 25, message: "25 entries! 🌱 What a beautiful collection of thoughts and growth!" },
+      { type: 'total_entries', count: 50, message: "50 diary entries! 📖 You're building an incredible story of self-discovery!" },
+      { type: 'total_entries', count: 100, message: "100 entries! 🎊 You've created a treasure trove of personal insights!" },
+      { type: 'total_entries', count: 200, message: "200 entries! 📚 Your dedication to self-reflection is inspiring!" },
+      { type: 'total_entries', count: 365, message: "365 entries! 🎉 A full year's worth of wisdom and growth!" },
+      
+      // Special milestones
+      { type: 'first_month', count: 30, message: "Your first month of journaling! 🌟 What an incredible start!" },
+      { type: 'emotional_variety', count: 8, message: "You've explored 8 different emotions! 🎨 Your emotional awareness is expanding!" }
     ];
 
-    // Check for consecutive days milestones
+    // Check consecutive days milestones
     const consecutiveMilestone = milestones.find(m => 
       m.type === 'consecutive_days' && m.count === consecutiveDays
     );
@@ -801,7 +858,8 @@ export class AgentService {
       const message = await this.generateCheckinMessage('milestone', { 
         count: consecutiveDays,
         type: 'consecutive_days',
-        achievement: consecutiveMilestone.message 
+        achievement: consecutiveMilestone.message,
+        isPersonalBest: consecutiveDays > this.getPersonalBestStreak(entries)
       }, settings);
       
       await this.createCheckin({
@@ -812,7 +870,7 @@ export class AgentService {
       return; // Only trigger one milestone at a time
     }
 
-    // Check for total entries milestones
+    // Check total entries milestones
     const totalMilestone = milestones.find(m => 
       m.type === 'total_entries' && m.count === totalEntries
     );
@@ -821,7 +879,8 @@ export class AgentService {
       const message = await this.generateCheckinMessage('milestone', { 
         count: totalEntries,
         type: 'total_entries',
-        achievement: totalMilestone.message 
+        achievement: totalMilestone.message,
+        averagePerWeek: this.calculateAverageEntriesPerWeek(entries)
       }, settings);
       
       await this.createCheckin({
@@ -829,51 +888,160 @@ export class AgentService {
         message,
         emotional_context: `Milestone: ${totalEntries} total entries`
       });
+      return;
+    }
+
+    // Check for emotional variety milestone
+    const uniqueEmotions = new Set(entries.map(e => e.emotion.primary)).size;
+    const emotionalVarietyMilestone = milestones.find(m => 
+      m.type === 'emotional_variety' && m.count === uniqueEmotions
+    );
+    
+    if (emotionalVarietyMilestone) {
+      const message = await this.generateCheckinMessage('milestone', { 
+        count: uniqueEmotions,
+        type: 'emotional_variety',
+        achievement: emotionalVarietyMilestone.message,
+        emotions: Array.from(new Set(entries.map(e => e.emotion.primary))).slice(0, 5)
+      }, settings);
+      
+      await this.createCheckin({
+        trigger_type: 'milestone',
+        message,
+        emotional_context: `Milestone: ${uniqueEmotions} unique emotions explored`
+      });
     }
   }
 
-  private static calculateConsecutiveDays(entries: DiaryEntry[]): number {
+  // IMPROVED HELPER METHODS
+
+  private static calculateConsecutiveDaysImproved(entries: DiaryEntry[]): number {
     if (entries.length === 0) return 0;
 
     // Sort entries by date (most recent first)
     const sortedEntries = [...entries].sort((a, b) => b.date.getTime() - a.date.getTime());
     
+    // Group entries by date (handle multiple entries per day)
+    const entriesByDate = new Map<string, DiaryEntry[]>();
+    sortedEntries.forEach(entry => {
+      const dateKey = entry.date.toISOString().split('T')[0]; // YYYY-MM-DD
+      if (!entriesByDate.has(dateKey)) {
+        entriesByDate.set(dateKey, []);
+      }
+      entriesByDate.get(dateKey)!.push(entry);
+    });
+
+    const uniqueDates = Array.from(entriesByDate.keys()).sort().reverse(); // Most recent first
+    
+    if (uniqueDates.length === 0) return 0;
+
     let consecutiveDays = 0;
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0); // Start of today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    // Check if there's an entry for today or yesterday to start the streak
-    const mostRecentEntry = sortedEntries[0];
-    const mostRecentDate = new Date(mostRecentEntry.date);
-    mostRecentDate.setHours(0, 0, 0, 0);
-    
-    const daysDiff = Math.floor((currentDate.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
+    // Start checking from today or the most recent entry date
+    const mostRecentEntryDate = new Date(uniqueDates[0]);
+    const daysSinceLastEntry = Math.floor((today.getTime() - mostRecentEntryDate.getTime()) / (1000 * 60 * 60 * 24));
     
     // If the most recent entry is more than 1 day old, no current streak
-    if (daysDiff > 1) {
+    if (daysSinceLastEntry > 1) {
       return 0;
     }
     
-    // Start checking from the most recent entry date
-    let checkDate = new Date(mostRecentDate);
+    // Start from the most recent entry date and work backwards
+    let checkDate = new Date(mostRecentEntryDate);
     
-    for (const entry of sortedEntries) {
-      const entryDate = new Date(entry.date);
-      entryDate.setHours(0, 0, 0, 0);
+    for (const dateStr of uniqueDates) {
+      const entryDate = new Date(dateStr);
       
-      // If this entry matches the date we're checking
-      if (entryDate.getTime() === checkDate.getTime()) {
+      // If this date matches what we're checking for
+      if (entryDate.toISOString().split('T')[0] === checkDate.toISOString().split('T')[0]) {
         consecutiveDays++;
         // Move to the previous day
         checkDate.setDate(checkDate.getDate() - 1);
-      } else if (entryDate.getTime() < checkDate.getTime()) {
-        // There's a gap in the streak
-        break;
+      } else {
+        // Check if there's a gap
+        const expectedDateStr = checkDate.toISOString().split('T')[0];
+        if (dateStr !== expectedDateStr) {
+          // There's a gap in the streak
+          break;
+        }
       }
-      // If entryDate > checkDate, continue to next entry (multiple entries same day)
     }
     
     return consecutiveDays;
+  }
+
+  private static calculateAverageDaysBetweenEntries(entries: DiaryEntry[]): number {
+    if (entries.length < 2) return 1;
+
+    const sortedEntries = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+    let totalDays = 0;
+    let gaps = 0;
+
+    for (let i = 1; i < sortedEntries.length; i++) {
+      const daysBetween = Math.floor(
+        (sortedEntries[i].date.getTime() - sortedEntries[i-1].date.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (daysBetween > 0) {
+        totalDays += daysBetween;
+        gaps++;
+      }
+    }
+
+    return gaps > 0 ? Math.round(totalDays / gaps) : 1;
+  }
+
+  private static getPersonalBestStreak(entries: DiaryEntry[]): number {
+    // Calculate the longest streak in the user's history
+    if (entries.length === 0) return 0;
+
+    const sortedEntries = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+    const entriesByDate = new Map<string, boolean>();
+    
+    sortedEntries.forEach(entry => {
+      const dateKey = entry.date.toISOString().split('T')[0];
+      entriesByDate.set(dateKey, true);
+    });
+
+    const dates = Array.from(entriesByDate.keys()).sort();
+    let maxStreak = 0;
+    let currentStreak = 0;
+    let previousDate: Date | null = null;
+
+    for (const dateStr of dates) {
+      const currentDate = new Date(dateStr);
+      
+      if (previousDate) {
+        const daysDiff = Math.floor((currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff === 1) {
+          currentStreak++;
+        } else {
+          maxStreak = Math.max(maxStreak, currentStreak);
+          currentStreak = 1;
+        }
+      } else {
+        currentStreak = 1;
+      }
+      
+      previousDate = currentDate;
+    }
+
+    return Math.max(maxStreak, currentStreak);
+  }
+
+  private static calculateAverageEntriesPerWeek(entries: DiaryEntry[]): number {
+    if (entries.length === 0) return 0;
+
+    const sortedEntries = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+    const firstEntry = sortedEntries[0];
+    const lastEntry = sortedEntries[sortedEntries.length - 1];
+    
+    const totalDays = Math.floor((lastEntry.date.getTime() - firstEntry.date.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const totalWeeks = Math.max(1, totalDays / 7);
+    
+    return Math.round((entries.length / totalWeeks) * 10) / 10; // Round to 1 decimal place
   }
 
   private static async updateMemoriesFromEntries(entries: DiaryEntry[]): Promise<void> {
@@ -932,15 +1100,28 @@ export class AgentService {
         additionalData: { triggerType }
       }, 'medium');
       
-      // Fallback messages
+      // Enhanced fallback messages with context
       const fallbacks = {
-        inactivity: `Hey there! I noticed it's been ${context.daysSinceLastEntry} days since we last talked. How are you feeling today?`,
-        emotional_pattern: `I've been thinking about our recent conversations. It seems like you've been experiencing some challenging emotions. Want to talk about it?`,
-        milestone: `${context.achievement} I'm so proud of your commitment to self-reflection. How does it feel to reach this milestone?`,
-        scheduled: `Good morning! How are you starting your day today?`
+        inactivity: context.isFirstTime 
+          ? `Welcome to your journaling journey! I noticed you haven't created your first entry yet. I'm here whenever you're ready to start reflecting. How are you feeling today?`
+          : context.isUnusualGap
+          ? `Hey there! It's been ${context.daysSinceLastEntry} days since we last connected - longer than your usual ${context.avgDaysBetweenEntries} days. I'm thinking of you and wondering how you've been. What's been on your mind lately?`
+          : `Hi! I noticed it's been ${context.daysSinceLastEntry} days since your last reflection. How are you feeling today?`,
+        
+        emotional_pattern: context.concern
+          ? `I've been reflecting on our recent conversations, and I noticed you've been experiencing some challenging emotions like ${context.pattern}. Your feelings are completely valid, and I'm here to support you. How are you taking care of yourself during this time?`
+          : `I've noticed such a beautiful pattern in your recent reflections - lots of ${context.pattern}! It's wonderful to see these positive emotions flowing through your journey. What's been contributing to this uplifting energy?`,
+        
+        milestone: context.type === 'consecutive_days'
+          ? `🎉 ${context.achievement} ${context.isPersonalBest ? "That's a new personal record! " : ""}Your consistency in self-reflection shows real commitment to your growth. How does it feel to reach this milestone?`
+          : context.type === 'total_entries'
+          ? `🎊 ${context.achievement} You're averaging about ${context.averagePerWeek} entries per week, which shows wonderful dedication. What insights have you gained from this journey so far?`
+          : `🌟 ${context.achievement} Your emotional awareness and willingness to explore different feelings is truly inspiring. What have you learned about yourself?`,
+        
+        scheduled: `Good morning! How are you starting your day today? I'm here if you'd like to reflect on anything that's on your mind.`
       };
       
-      return fallbacks[triggerType as keyof typeof fallbacks] || "How are you doing today?";
+      return fallbacks[triggerType as keyof typeof fallbacks] || "How are you doing today? I'm here to listen and support your reflection journey.";
     }
   }
 
