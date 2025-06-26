@@ -4,12 +4,6 @@ A beautiful, emotionally intelligent diary app powered by Together.ai's advanced
 
 ## ✨ Features
 
-### 🔐 Flexible Authentication
-- **Email & Password**: Traditional secure authentication
-- **Google OAuth**: One-click sign-in with Google account
-- **Password Reset**: Secure password recovery via email
-- **No Email Confirmation**: Instant access after registration
-
 ### 🤖 AI-Powered Conversations
 - **Advanced AI Models**: Chat with an empathetic AI companion using Together.ai's powerful models (Llama 3 70B, Mixtral 8x7B, and more)
 - **Voice Chat Integration**: Real-time voice conversations with ElevenLabs Conversational AI
@@ -35,7 +29,7 @@ A beautiful, emotionally intelligent diary app powered by Together.ai's advanced
 - **Growth Insights**: AI-generated observations about your personal development
 
 ### 🔐 Security & Privacy
-- **Multiple Auth Options**: Email/password and Google OAuth
+- **User Authentication**: Secure sign-up/sign-in with Supabase Auth
 - **Database Storage**: All entries stored securely in Supabase PostgreSQL with Row Level Security
 - **Data Encryption**: Your personal reflections are protected and private
 
@@ -87,14 +81,6 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    - Go to your Supabase dashboard → SQL Editor
    - Run the migration files from `supabase/migrations/` in order
 
-4. **Configure Google OAuth (Optional)**:
-   - Go to Supabase Dashboard → Authentication → Providers
-   - Enable Google provider
-   - Add your Google OAuth credentials:
-     - Client ID from Google Cloud Console
-     - Client Secret from Google Cloud Console
-   - Set redirect URL: `https://your-project.supabase.co/auth/v1/callback`
-
 ### 4. Configure ElevenLabs Voice Chat (Optional)
 
 The app includes ElevenLabs Conversational AI for voice interactions. The default agent ID is pre-configured, but you can:
@@ -112,17 +98,10 @@ npm run dev
 ## 📱 Usage Guide
 
 ### Getting Started
-1. **Sign Up/Sign In**: 
-   - Create an account with email/password or use Google OAuth
-   - Instant access - no email confirmation required
+1. **Sign Up/Sign In**: Create an account or sign in to access your personal diary
 2. **Start Chatting**: Click on the Chat tab and begin sharing your thoughts with the AI companion
 3. **Voice Conversations**: Use the microphone button to start voice chats with the AI
 4. **Add Photos**: Upload photos to your conversations for richer diary entries
-
-### Authentication Options
-1. **Email & Password**: Traditional secure authentication
-2. **Google OAuth**: One-click sign-in with your Google account
-3. **Password Reset**: Use "Forgot Password" to reset via email
 
 ### Creating Entries
 1. **Chat with AI**: Have meaningful conversations about your day, feelings, and experiences
@@ -161,13 +140,6 @@ The app uses Together.ai's unified API for access to state-of-the-art AI models:
 - **Customizable Agents**: Configure personality and voice characteristics
 - **Seamless Experience**: Voice chats integrate with text conversations
 
-### Authentication Integration
-
-- **Supabase Auth**: Secure authentication with multiple providers
-- **Google OAuth**: Seamless Google sign-in integration
-- **Session Management**: Automatic token refresh and session persistence
-- **Security**: Row Level Security ensures data privacy
-
 ### Available AI Models
 
 | Model | Description | Use Case |
@@ -200,7 +172,7 @@ The app uses Supabase PostgreSQL with comprehensive tables:
 
 ### Security Features
 - **Row Level Security**: Ensures users can only access their own data
-- **Authentication**: Secure user management with Supabase Auth (email/password + Google OAuth)
+- **Authentication**: Secure user management with Supabase Auth
 - **Data Encryption**: All sensitive data is encrypted at rest
 - **API Security**: Secure API endpoints with proper authentication
 
@@ -241,12 +213,6 @@ The built files will be in the `dist` directory, ready for deployment.
 - **Tailwind CSS** for beautiful, responsive styling
 - **Lucide React** for consistent iconography
 - **Vite** for fast development and optimized builds
-
-### Authentication
-- **Supabase Auth** for secure user management
-- **Google OAuth** for seamless social login
-- **Email/Password** authentication with validation
-- **Session management** with automatic token refresh
 
 ### AI & Voice
 - **Together.ai API** for advanced AI models and conversations
@@ -291,7 +257,6 @@ MIT License - feel free to use this project for personal or commercial purposes.
 - **Together.ai** for providing access to state-of-the-art AI models
 - **ElevenLabs** for revolutionary voice AI technology
 - **Supabase** for the excellent backend-as-a-service platform
-- **Google** for OAuth integration and authentication services
 - **React & Tailwind** communities for amazing development tools
 
 ---
