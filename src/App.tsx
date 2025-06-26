@@ -382,7 +382,7 @@ function AppContent({ user }: AppProps) {
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     disabled={signingOut}
-                    className="btn-ghost hover-scale"
+                    className="btn-ghost hover-scale flex items-center gap-2"
                     aria-label="User menu"
                   >
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -396,8 +396,8 @@ function AppContent({ user }: AppProps) {
                   {/* User Dropdown */}
                   {isUserMenuOpen && !signingOut && (
                     <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20 fade-in-down">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-800">Signed in as</p>
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-700">Signed in as</p>
                         <p className="text-sm text-gray-600 truncate">{user.email}</p>
                       </div>
                       <button
@@ -405,25 +405,25 @@ function AppContent({ user }: AppProps) {
                           setShowUserProfile(true);
                           setIsUserMenuOpen(false);
                         }}
-                        className="btn-ghost w-full justify-start"
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3"
                       >
-                        <Settings className="w-4 h-4" />
-                        Profile Settings
+                        <Settings className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-700">Profile Settings</span>
                       </button>
                       <button
                         onClick={handleSignOut}
                         disabled={signingOut}
-                        className="btn-ghost w-full justify-start"
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3"
                       >
                         {signingOut ? (
                           <>
                             <div className="loading-spinner w-4 h-4"></div>
-                            Signing out...
+                            <span className="text-sm text-gray-700">Signing out...</span>
                           </>
                         ) : (
                           <>
-                            <LogOut className="w-4 h-4" />
-                            Sign Out
+                            <LogOut className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm text-gray-700">Sign Out</span>
                           </>
                         )}
                       </button>
