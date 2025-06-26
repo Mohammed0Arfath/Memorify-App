@@ -227,18 +227,18 @@ export class AgentService {
           .from('agent_settings')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .limit(1);
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           throw new Error(`Failed to fetch agent settings: ${error.message}`);
         }
 
-        if (!data) {
+        if (!data || data.length === 0) {
           // Create default settings
           return await this.createDefaultSettings();
         }
 
-        return this.mapSettingsRow(data);
+        return this.mapSettingsRow(data[0]);
       },
       {
         maxAttempts: 3,
