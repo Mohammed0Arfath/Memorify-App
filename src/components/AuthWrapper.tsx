@@ -55,6 +55,11 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
         // Handle specific auth events
         if (event === 'SIGNED_IN') {
           console.log('User signed in successfully');
+          
+          // Check if this is a Google OAuth sign-in
+          if (session?.user?.app_metadata?.provider === 'google') {
+            console.log('Google OAuth sign-in completed');
+          }
         } else if (event === 'SIGNED_OUT') {
           console.log('User signed out');
           // Clear any cached data

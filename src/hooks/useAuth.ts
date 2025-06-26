@@ -56,6 +56,8 @@ export const useAuth = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      
       if (mounted) {
         setAuthState({
           user: session?.user ?? null,
@@ -63,6 +65,24 @@ export const useAuth = () => {
           loading: false,
           error: null,
         });
+
+        // Handle OAuth callback and other auth events
+        if (event === 'SIGNED_IN' && session?.user) {
+          console.log('User signed in successfully:', session.user.email);
+          
+          // Check if this is a Google OAuth sign-in
+          if (session.user.app_metadata?.provider === 'google') {
+            console.log('Google OAuth sign-in detected');
+          }
+        } else if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
+          // Clear any cached data
+          localStorage.removeItem('diary-entries');
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed');
+        } else if (event === 'USER_UPDATED') {
+          console.log('User updated');
+        }
       }
     });
 
@@ -87,6 +107,31 @@ export const useAuth = () => {
       return { data, error: null };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Sign in failed';
+      setAuthState(prev => ({ ...prev, loading: false, error: errorMessage }));
+      return { data: null, error: errorMessage };
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    setAuthState(prev => ({ ...prev, loading: true, error: null }));
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        }
+      });
+      
+      if (error) throw error;
+      
+      return { data, error: null };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Google sign in failed';
       setAuthState(prev => ({ ...prev, loading: false, error: errorMessage }));
       return { data: null, error: errorMessage };
     }
@@ -176,6 +221,7 @@ export const useAuth = () => {
   return {
     ...authState,
     signIn,
+    signInWithGoogle,
     signUp,
     signOut,
     resetPassword,
