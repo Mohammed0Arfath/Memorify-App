@@ -352,53 +352,114 @@ Context: ${JSON.stringify(context)}`;
         throw new Error('Invalid or empty entries array provided');
       }
 
-      const entriesText = entries.map(entry => 
-        `Date: ${entry.date.toDateString()}\nEmotion: ${entry.emotion.primary}\nEntry: ${entry.generatedEntry.slice(0, 200)}...`
-      ).join('\n\n');
+      // Extract comprehensive data from entries
+      const emotionCounts: Record<string, number> = {};
+      const allThemes: string[] = [];
+      const entryTexts: string[] = [];
 
-      if (entriesText.length > 10000) {
-        // Truncate if too long to avoid API limits
-        const truncatedText = entriesText.slice(0, 10000) + '\n\n[Content truncated for analysis]';
+      entries.forEach(entry => {
+        // Count emotions
+        emotionCounts[entry.emotion.primary] = (emotionCounts[entry.emotion.primary] || 0) + 1;
+        
+        // Extract text content
+        const userMessages = entry.chatMessages
+          .filter(msg => msg.isUser)
+          .map(msg => msg.text)
+          .join(' ');
+        
+        entryTexts.push(`${entry.generatedEntry} ${userMessages}`);
+        
+        // Extract potential themes from entry content
+        const words = entry.generatedEntry.toLowerCase().split(/\s+/);
+        const themeWords = words.filter(word => 
+          word.length > 4 && 
+          !['today', 'feeling', 'think', 'about', 'really', 'would', 'could', 'should'].includes(word)
+        );
+        allThemes.push(...themeWords.slice(0, 3)); // Top 3 theme words per entry
+      });
+
+      // Create comprehensive analysis text
+      const analysisText = `
+Weekly Diary Analysis:
+Total entries: ${entries.length}
+Date range: ${entries[entries.length - 1]?.date.toDateString()} to ${entries[0]?.date.toDateString()}
+
+Emotions observed: ${Object.entries(emotionCounts).map(([emotion, count]) => `${emotion} (${count} times)`).join(', ')}
+
+Entry contents for analysis:
+${entryTexts.join('\n\n---\n\n')}
+      `.trim();
+
+      if (!TOGETHER_CONFIG.apiKey) {
+        // Fallback analysis when no API key
+        return this.generateFallbackInsight(entries, emotionCounts);
       }
 
-      const systemPrompt = `You are an expert at analyzing emotional patterns and personal growth. Analyze the provided diary entries from the past week and return insights in JSON format.
+      const systemPrompt = `You are an expert emotional intelligence analyst specializing in personal growth insights. Analyze the provided weekly diary data and generate meaningful insights.
 
-Return ONLY a JSON object with this structure:
+CRITICAL: Return ONLY a valid JSON object with this exact structure:
 {
-  "dominant_emotions": ["emotion1", "emotion2"],
-  "emotion_distribution": {"joy": 3, "reflection": 2},
-  "key_themes": ["theme1", "theme2"],
-  "growth_observations": ["observation1", "observation2"],
-  "recommended_actions": ["action1", "action2"],
-  "mood_trend": "improving|declining|stable",
-  "generated_visual_prompt": "artistic description for mood visualization"
-}`;
+  "dominant_emotions": ["emotion1", "emotion2", "emotion3"],
+  "emotion_distribution": {"joy": 2, "reflection": 3, "calm": 1},
+  "key_themes": ["personal growth", "relationships", "work-life balance"],
+  "growth_observations": ["You've shown increased self-awareness this week", "Your emotional vocabulary is expanding"],
+  "recommended_actions": ["Continue journaling daily", "Practice mindfulness meditation"],
+  "mood_trend": "improving",
+  "generated_visual_prompt": "A serene watercolor painting showing gentle waves of emotion flowing through a peaceful landscape, with warm colors representing growth and cool tones for reflection"
+}
+
+Guidelines:
+- dominant_emotions: Top 2-3 emotions from the data, most frequent first
+- emotion_distribution: Exact counts from the entries
+- key_themes: 2-4 meaningful themes extracted from content (not just emotions)
+- growth_observations: 2-3 specific, personalized insights about their emotional journey
+- recommended_actions: 2-3 actionable suggestions for continued growth
+- mood_trend: "improving", "declining", or "stable" based on emotional patterns
+- generated_visual_prompt: Artistic description for mood visualization (abstract, no people)
+
+Be specific, personal, and encouraging. Focus on growth and positive patterns while acknowledging challenges.`;
 
       const messages = [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Analyze these diary entries:\n\n${entriesText}` }
+        { role: 'user', content: `Analyze this weekly diary data and provide insights:\n\n${analysisText}` }
       ];
 
-      const data = await this.makeRequest(messages, { maxTokens: 500, temperature: 0.7 });
+      const data = await this.makeRequest(messages, { maxTokens: 600, temperature: 0.7 });
       const response = data.choices[0]?.message?.content;
       
       if (response) {
         try {
-          const insight = JSON.parse(response);
+          // Clean the response to ensure it's valid JSON
+          const cleanedResponse = response.trim();
+          const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
           
-          // Validate the parsed data structure
-          if (!insight.dominant_emotions || !Array.isArray(insight.dominant_emotions)) {
-            throw new Error('Invalid insight data structure');
+          if (!jsonMatch) {
+            throw new Error('No JSON object found in response');
           }
 
-          return insight;
+          const insight = JSON.parse(jsonMatch[0]);
+          
+          // Validate and ensure all required fields exist
+          const validatedInsight = {
+            dominant_emotions: Array.isArray(insight.dominant_emotions) ? insight.dominant_emotions : Object.keys(emotionCounts).slice(0, 3),
+            emotion_distribution: insight.emotion_distribution && typeof insight.emotion_distribution === 'object' ? insight.emotion_distribution : emotionCounts,
+            key_themes: Array.isArray(insight.key_themes) ? insight.key_themes : ['personal reflection', 'emotional awareness'],
+            growth_observations: Array.isArray(insight.growth_observations) ? insight.growth_observations : ['You\'re developing greater emotional awareness through consistent journaling'],
+            recommended_actions: Array.isArray(insight.recommended_actions) ? insight.recommended_actions : ['Continue your daily reflection practice'],
+            mood_trend: ['improving', 'declining', 'stable'].includes(insight.mood_trend) ? insight.mood_trend : 'stable',
+            generated_visual_prompt: typeof insight.generated_visual_prompt === 'string' ? insight.generated_visual_prompt : 'A gentle abstract representation of emotional growth and self-discovery'
+          };
+
+          return validatedInsight;
         } catch (parseError) {
           errorHandler.logError(parseError instanceof Error ? parseError : new Error('Failed to parse weekly insight'), {
             action: 'parse_weekly_insight',
             component: 'TogetherService',
-            additionalData: { response }
+            additionalData: { response: response.slice(0, 200) }
           }, 'medium');
-          throw new Error('Failed to parse weekly insight response');
+          
+          // Return fallback insight on parse error
+          return this.generateFallbackInsight(entries, emotionCounts);
         }
       } else {
         throw new Error('Empty response from weekly insight API');
@@ -409,8 +470,64 @@ Return ONLY a JSON object with this structure:
         component: 'TogetherService',
         additionalData: { entryCount: entries.length }
       }, 'medium');
-      throw error;
+      
+      // Return fallback insight on any error
+      const emotionCounts: Record<string, number> = {};
+      entries.forEach(entry => {
+        emotionCounts[entry.emotion.primary] = (emotionCounts[entry.emotion.primary] || 0) + 1;
+      });
+      
+      return this.generateFallbackInsight(entries, emotionCounts);
     }
+  }
+
+  private generateFallbackInsight(entries: DiaryEntry[], emotionCounts: Record<string, number>): Partial<WeeklyInsight> {
+    // Generate meaningful fallback insights based on actual data
+    const dominantEmotions = Object.entries(emotionCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([emotion]) => emotion);
+
+    const totalEntries = entries.length;
+    const avgIntensity = entries.reduce((sum, entry) => sum + entry.emotion.intensity, 0) / totalEntries;
+
+    // Determine mood trend based on emotion intensity over time
+    const firstHalf = entries.slice(Math.floor(totalEntries / 2));
+    const secondHalf = entries.slice(0, Math.floor(totalEntries / 2));
+    
+    const firstHalfAvg = firstHalf.reduce((sum, entry) => sum + entry.emotion.intensity, 0) / firstHalf.length;
+    const secondHalfAvg = secondHalf.reduce((sum, entry) => sum + entry.emotion.intensity, 0) / secondHalf.length;
+    
+    let moodTrend: 'improving' | 'declining' | 'stable' = 'stable';
+    if (secondHalfAvg > firstHalfAvg + 0.1) moodTrend = 'improving';
+    else if (secondHalfAvg < firstHalfAvg - 0.1) moodTrend = 'declining';
+
+    // Extract themes from entry content
+    const allText = entries.map(entry => entry.generatedEntry + ' ' + entry.summary).join(' ').toLowerCase();
+    const commonThemes = ['personal growth', 'self-reflection', 'emotional awareness', 'mindfulness', 'relationships', 'work-life balance'];
+    const detectedThemes = commonThemes.filter(theme => 
+      allText.includes(theme.replace('-', ' ')) || 
+      allText.includes(theme.split(' ')[0]) || 
+      allText.includes(theme.split(' ')[1])
+    ).slice(0, 3);
+
+    return {
+      dominant_emotions: dominantEmotions,
+      emotion_distribution: emotionCounts,
+      key_themes: detectedThemes.length > 0 ? detectedThemes : ['personal reflection', 'emotional awareness'],
+      growth_observations: [
+        `You've maintained consistent journaling with ${totalEntries} entries this week`,
+        avgIntensity > 0.7 ? 'Your emotional experiences have been quite intense, showing deep engagement with your feelings' : 'You\'ve shown balanced emotional awareness throughout the week',
+        dominantEmotions.includes('reflection') ? 'Your reflective nature is helping you process experiences thoughtfully' : `Your primary emotional theme of ${dominantEmotions[0]} suggests meaningful personal experiences`
+      ],
+      recommended_actions: [
+        'Continue your consistent journaling practice',
+        moodTrend === 'improving' ? 'Build on the positive momentum you\'ve created' : 'Focus on self-care and emotional balance',
+        'Consider exploring the themes that emerged in your reflections more deeply'
+      ],
+      mood_trend: moodTrend,
+      generated_visual_prompt: `A ${moodTrend === 'improving' ? 'uplifting' : moodTrend === 'declining' ? 'gentle and supportive' : 'balanced and serene'} abstract watercolor composition representing ${dominantEmotions[0]} and personal growth, with flowing organic shapes in warm and cool tones`
+    };
   }
 
   async extractMemoryPatterns(text: string, emotion: Emotion): Promise<Array<{type: string, content: string, importance: number}>> {

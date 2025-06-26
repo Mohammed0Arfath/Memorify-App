@@ -315,7 +315,7 @@ export class AgentService {
     );
   }
 
-  // Weekly Insights with error handling
+  // Weekly Insights with enhanced error handling and better fallback
   static async generateWeeklyInsight(entries: DiaryEntry[]): Promise<WeeklyInsight> {
     return errorHandler.withRetry(
       async () => {
@@ -351,17 +351,39 @@ export class AgentService {
           throw new Error('No entries found for the current week');
         }
 
-        // Generate comprehensive insights
-        const insight = await this.analyzeWeeklyPatterns(weekEntries);
+        // Generate comprehensive insights with enhanced error handling
+        let insight: Partial<WeeklyInsight>;
+        
+        try {
+          insight = await togetherService.generateWeeklyInsight(weekEntries);
+        } catch (aiError) {
+          errorHandler.logError(aiError instanceof Error ? aiError : new Error('AI insight generation failed'), {
+            action: 'ai_weekly_insight_generation',
+            component: 'AgentService',
+            additionalData: { entryCount: weekEntries.length }
+          }, 'medium');
+          
+          // Generate fallback insight based on actual data
+          insight = this.generateLocalWeeklyInsight(weekEntries);
+        }
+
+        // Ensure all required fields are present
+        const completeInsight = {
+          user_id: user.id,
+          week_start: weekStart.toISOString(),
+          week_end: weekEnd.toISOString(),
+          dominant_emotions: insight.dominant_emotions || [],
+          emotion_distribution: insight.emotion_distribution || {},
+          key_themes: insight.key_themes || [],
+          growth_observations: insight.growth_observations || [],
+          recommended_actions: insight.recommended_actions || [],
+          mood_trend: insight.mood_trend || 'stable',
+          generated_visual_prompt: insight.generated_visual_prompt || null,
+        };
 
         const { data, error } = await supabase
           .from('weekly_insights')
-          .insert({
-            user_id: user.id,
-            week_start: weekStart.toISOString(),
-            week_end: weekEnd.toISOString(),
-            ...insight,
-          })
+          .insert(completeInsight)
           .select()
           .single();
 
@@ -380,6 +402,108 @@ export class AgentService {
         }
       }
     );
+  }
+
+  // Enhanced local insight generation for fallback
+  private static generateLocalWeeklyInsight(entries: DiaryEntry[]): Partial<WeeklyInsight> {
+    // Analyze emotions
+    const emotionCounts: Record<string, number> = {};
+    let totalIntensity = 0;
+    
+    entries.forEach(entry => {
+      emotionCounts[entry.emotion.primary] = (emotionCounts[entry.emotion.primary] || 0) + 1;
+      totalIntensity += entry.emotion.intensity;
+    });
+
+    const avgIntensity = totalIntensity / entries.length;
+    const dominantEmotions = Object.entries(emotionCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([emotion]) => emotion);
+
+    // Analyze mood trend
+    const firstHalf = entries.slice(Math.floor(entries.length / 2));
+    const secondHalf = entries.slice(0, Math.floor(entries.length / 2));
+    
+    const firstHalfAvg = firstHalf.reduce((sum, entry) => sum + entry.emotion.intensity, 0) / firstHalf.length;
+    const secondHalfAvg = secondHalf.reduce((sum, entry) => sum + entry.emotion.intensity, 0) / secondHalf.length;
+    
+    let moodTrend: 'improving' | 'declining' | 'stable' = 'stable';
+    if (secondHalfAvg > firstHalfAvg + 0.15) moodTrend = 'improving';
+    else if (secondHalfAvg < firstHalfAvg - 0.15) moodTrend = 'declining';
+
+    // Extract themes from content
+    const allText = entries.map(entry => 
+      `${entry.generatedEntry} ${entry.summary} ${entry.chatMessages.filter(m => m.isUser).map(m => m.text).join(' ')}`
+    ).join(' ').toLowerCase();
+
+    const themeKeywords = {
+      'personal growth': ['growth', 'learning', 'development', 'progress', 'improve'],
+      'relationships': ['friend', 'family', 'relationship', 'connect', 'social'],
+      'work-life balance': ['work', 'job', 'career', 'balance', 'stress'],
+      'mindfulness': ['mindful', 'present', 'meditation', 'awareness', 'calm'],
+      'creativity': ['creative', 'art', 'music', 'write', 'express'],
+      'health & wellness': ['health', 'exercise', 'sleep', 'energy', 'wellness'],
+      'gratitude': ['grateful', 'thankful', 'appreciate', 'blessing', 'grateful'],
+      'challenges': ['difficult', 'challenge', 'struggle', 'overcome', 'tough']
+    };
+
+    const detectedThemes = Object.entries(themeKeywords)
+      .filter(([theme, keywords]) => 
+        keywords.some(keyword => allText.includes(keyword))
+      )
+      .map(([theme]) => theme)
+      .slice(0, 4);
+
+    // Generate personalized observations
+    const observations = [
+      `You've maintained consistent journaling with ${entries.length} entries this week, showing dedication to self-reflection`,
+    ];
+
+    if (avgIntensity > 0.7) {
+      observations.push('Your emotional experiences have been quite intense, indicating deep engagement with your feelings and experiences');
+    } else if (avgIntensity < 0.4) {
+      observations.push('You\'ve experienced relatively calm emotions this week, suggesting a period of stability and balance');
+    } else {
+      observations.push('You\'ve shown balanced emotional awareness throughout the week, processing both highs and lows thoughtfully');
+    }
+
+    if (dominantEmotions.includes('reflection')) {
+      observations.push('Your reflective nature is helping you process experiences thoughtfully and gain deeper insights');
+    } else if (dominantEmotions.includes('gratitude')) {
+      observations.push('Your focus on gratitude is creating a positive foundation for personal growth and wellbeing');
+    } else if (dominantEmotions.includes('joy')) {
+      observations.push('The joy you\'ve experienced this week highlights the positive aspects of your journey');
+    }
+
+    // Generate actionable recommendations
+    const recommendations = [
+      'Continue your consistent journaling practice as it\'s clearly supporting your emotional awareness',
+    ];
+
+    if (moodTrend === 'improving') {
+      recommendations.push('Build on the positive momentum you\'ve created by identifying what\'s working well');
+    } else if (moodTrend === 'declining') {
+      recommendations.push('Focus on self-care and consider reaching out for support if needed');
+    } else {
+      recommendations.push('Maintain the emotional balance you\'ve achieved while staying open to growth opportunities');
+    }
+
+    if (detectedThemes.includes('mindfulness')) {
+      recommendations.push('Continue exploring mindfulness practices as they seem to resonate with your current journey');
+    } else {
+      recommendations.push('Consider incorporating mindfulness or meditation to deepen your self-awareness');
+    }
+
+    return {
+      dominant_emotions: dominantEmotions,
+      emotion_distribution: emotionCounts,
+      key_themes: detectedThemes.length > 0 ? detectedThemes : ['personal reflection', 'emotional awareness'],
+      growth_observations: observations,
+      recommended_actions: recommendations,
+      mood_trend: moodTrend,
+      generated_visual_prompt: `A ${moodTrend === 'improving' ? 'uplifting and bright' : moodTrend === 'declining' ? 'gentle and supportive' : 'balanced and serene'} abstract watercolor composition representing ${dominantEmotions[0]} and personal growth, with flowing organic shapes in harmonious colors that reflect emotional depth and self-discovery`
+    };
   }
 
   static async getWeeklyInsights(limit = 10): Promise<WeeklyInsight[]> {
@@ -820,32 +944,9 @@ export class AgentService {
     }
   }
 
-  private static async analyzeWeeklyPatterns(entries: DiaryEntry[]): Promise<Partial<WeeklyInsight>> {
-    try {
-      return await togetherService.generateWeeklyInsight(entries);
-    } catch (error) {
-      errorHandler.logError(error instanceof Error ? error : new Error('Failed to analyze weekly patterns'), {
-        action: 'analyze_weekly_patterns',
-        component: 'AgentService',
-        additionalData: { entryCount: entries.length }
-      }, 'medium');
-      
-      // Return fallback insight data
-      return {
-        dominant_emotions: [],
-        emotion_distribution: {},
-        key_themes: [],
-        growth_observations: [],
-        recommended_actions: [],
-        mood_trend: 'stable',
-        generated_visual_prompt: null
-      };
-    }
-  }
-
   private static async extractPatterns(userMessages: string, emotion: any): Promise<any[]> {
     try {
-      return await togetherService.extractPatterns(userMessages, emotion);
+      return await togetherService.extractMemoryPatterns(userMessages, emotion);
     } catch (error) {
       errorHandler.logError(error instanceof Error ? error : new Error('Failed to extract patterns'), {
         action: 'extract_patterns',
