@@ -163,7 +163,7 @@ export const AuthForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-6 transition-colors duration-500">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8 fade-in-down">
@@ -173,18 +173,18 @@ export const AuthForm: React.FC = () => {
           <h1 className="text-3xl font-bold gradient-text mb-2 gradient-animate">
             Memorify
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-slate-400">
             Your AI-powered journal for emotional reflection
           </p>
         </div>
 
         {/* Auth Form */}
-        <div className="card card-hover fade-in-up">
-          <div className="card-header">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+        <div className="card card-hover fade-in-up bg-white dark:bg-slate-800/50 backdrop-blur-sm border border-gray-200 dark:border-slate-700">
+          <div className="card-header border-b border-gray-100 dark:border-slate-700">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-slate-100 mb-2">
               {getTitle()}
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-slate-300">
               {getSubtitle()}
             </p>
           </div>
@@ -192,7 +192,7 @@ export const AuthForm: React.FC = () => {
           <div className="card-body">
             {/* Success Message */}
             {success && (
-              <div className="alert alert-success mb-4 fade-in">
+              <div className="alert alert-success mb-4 fade-in bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/50 text-green-800 dark:text-green-300">
                 <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
                 <span className="text-sm">{success}</span>
               </div>
@@ -200,7 +200,7 @@ export const AuthForm: React.FC = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="alert alert-error mb-4 fade-in shake">
+              <div className="alert alert-error mb-4 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span className="text-sm">{error}</span>
               </div>
@@ -209,11 +209,11 @@ export const AuthForm: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Field */}
               <div className="fade-in stagger-1">
-                <label htmlFor="email" className="form-label">
+                <label htmlFor="email" className="form-label text-gray-700 dark:text-slate-300">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 w-5 h-5 transition-smooth" />
                   <input
                     id="email"
                     type="email"
@@ -223,25 +223,25 @@ export const AuthForm: React.FC = () => {
                       if (emailError) validateEmail(e.target.value);
                     }}
                     onBlur={() => validateEmail(email)}
-                    className={`form-input pl-10 ${emailError ? 'form-input-error shake' : ''}`}
+                    className={`form-input pl-10 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 ${emailError ? 'form-input-error shake' : ''}`}
                     placeholder="Enter your email"
                     required
                     disabled={loading}
                   />
                 </div>
                 {emailError && (
-                  <p className="form-error fade-in">{emailError}</p>
+                  <p className="form-error fade-in text-red-600 dark:text-red-400">{emailError}</p>
                 )}
               </div>
 
               {/* Password Field */}
               {!isResetMode && (
                 <div className="fade-in stagger-2">
-                  <label htmlFor="password" className="form-label">
+                  <label htmlFor="password" className="form-label text-gray-700 dark:text-slate-300">
                     Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 w-5 h-5 transition-smooth" />
                     <input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
@@ -254,7 +254,7 @@ export const AuthForm: React.FC = () => {
                         }
                       }}
                       onBlur={() => validatePassword(password)}
-                      className={`form-input pl-10 pr-12 ${passwordError ? 'form-input-error shake' : ''}`}
+                      className={`form-input pl-10 pr-12 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 ${passwordError ? 'form-input-error shake' : ''}`}
                       placeholder="Enter your password"
                       required
                       minLength={6}
@@ -263,14 +263,14 @@ export const AuthForm: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-smooth hover-scale"
                       disabled={loading}
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
                   {passwordError && (
-                    <p className="form-error fade-in">{passwordError}</p>
+                    <p className="form-error fade-in text-red-600 dark:text-red-400">{passwordError}</p>
                   )}
                 </div>
               )}
@@ -278,11 +278,11 @@ export const AuthForm: React.FC = () => {
               {/* Confirm Password Field */}
               {isSignUp && !isResetMode && (
                 <div className="fade-in stagger-3">
-                  <label htmlFor="confirmPassword" className="form-label">
+                  <label htmlFor="confirmPassword" className="form-label text-gray-700 dark:text-slate-300">
                     Confirm Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 transition-smooth" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 w-5 h-5 transition-smooth" />
                     <input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -292,7 +292,7 @@ export const AuthForm: React.FC = () => {
                         if (confirmPasswordError) validateConfirmPassword(e.target.value);
                       }}
                       onBlur={() => validateConfirmPassword(confirmPassword)}
-                      className={`form-input pl-10 pr-12 ${confirmPasswordError ? 'form-input-error shake' : ''}`}
+                      className={`form-input pl-10 pr-12 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 ${confirmPasswordError ? 'form-input-error shake' : ''}`}
                       placeholder="Confirm your password"
                       required
                       disabled={loading}
@@ -300,14 +300,14 @@ export const AuthForm: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-smooth hover-scale"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-smooth hover-scale"
                       disabled={loading}
                     >
                       {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
                   {confirmPasswordError && (
-                    <p className="form-error fade-in">{confirmPasswordError}</p>
+                    <p className="form-error fade-in text-red-600 dark:text-red-400">{confirmPasswordError}</p>
                   )}
                 </div>
               )}
@@ -334,7 +334,7 @@ export const AuthForm: React.FC = () => {
               {!isResetMode && (
                 <button
                   onClick={() => switchMode(isSignUp ? 'signin' : 'signup')}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-smooth"
                   disabled={loading}
                 >
                   {isSignUp 
@@ -348,7 +348,7 @@ export const AuthForm: React.FC = () => {
                 <div>
                   <button
                     onClick={() => switchMode('reset')}
-                    className="text-gray-600 hover:text-gray-700 text-sm transition-smooth"
+                    className="text-gray-600 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 text-sm transition-smooth"
                     disabled={loading}
                   >
                     Forgot your password?
@@ -359,7 +359,7 @@ export const AuthForm: React.FC = () => {
               {isResetMode && (
                 <button
                   onClick={() => switchMode('signin')}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-smooth"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-smooth"
                   disabled={loading}
                 >
                   Back to sign in
@@ -371,26 +371,26 @@ export const AuthForm: React.FC = () => {
 
         {/* Features */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-1">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
-              <Sparkles className="w-4 h-4 text-blue-600" />
+          <div className="bg-white/50 dark:bg-slate-800/30 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-1 border border-gray-200/50 dark:border-slate-700/30">
+            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
+              <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="font-medium text-gray-800 mb-1">AI Companion</h3>
-            <p className="text-xs text-gray-600">Empathetic conversations</p>
+            <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-1">AI Companion</h3>
+            <p className="text-xs text-gray-600 dark:text-slate-400">Empathetic conversations</p>
           </div>
-          <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-2">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
-              <User className="w-4 h-4 text-purple-600" />
+          <div className="bg-white/50 dark:bg-slate-800/30 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-2 border border-gray-200/50 dark:border-slate-700/30">
+            <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
+              <User className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className="font-medium text-gray-800 mb-1">Personal Growth</h3>
-            <p className="text-xs text-gray-600">Track emotional journey</p>
+            <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-1">Personal Growth</h3>
+            <p className="text-xs text-gray-600 dark:text-slate-400">Track emotional journey</p>
           </div>
-          <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-3">
-            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
-              <Lock className="w-4 h-4 text-green-600" />
+          <div className="bg-white/50 dark:bg-slate-800/30 backdrop-blur-sm rounded-lg p-4 hover-lift transition-smooth fade-in stagger-3 border border-gray-200/50 dark:border-slate-700/30">
+            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-2 hover-scale transition-smooth">
+              <Lock className="w-4 h-4 text-green-600 dark:text-green-400" />
             </div>
-            <h3 className="font-medium text-gray-800 mb-1">Private & Secure</h3>
-            <p className="text-xs text-gray-600">Your data stays safe</p>
+            <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-1">Private & Secure</h3>
+            <p className="text-xs text-gray-600 dark:text-slate-400">Your data stays safe</p>
           </div>
         </div>
       </div>
