@@ -235,7 +235,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
   return (
     <>
-      <div className="h-full flex flex-col max-w-4xl mx-auto">
+      <div className="h-full flex flex-col">
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -309,206 +309,241 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Header */}
-        <div className="card-header flex items-center justify-between bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 flex-shrink-0 fade-in-down">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-slate-100">
-                AI Companion {!apiKeyMissing && !quotaExceeded && <span className="text-xs text-green-600 dark:text-green-400">(Together.ai Powered)</span>}
-                {quotaExceeded && <span className="text-xs text-red-600 dark:text-red-400">(Fallback Mode)</span>}
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-slate-400">Your reflective writing partner</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {detectedEmotion && (
-              <div className="fade-in">
-                <EmotionIndicator emotion={detectedEmotion} showLabel />
+        {/* Enhanced Header */}
+        <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 fade-in-down transition-colors duration-500">
+          <div className="max-w-6xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth shadow-lg">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-100">
+                    AI Companion 
+                    {!apiKeyMissing && !quotaExceeded && (
+                      <span className="text-sm text-green-600 dark:text-green-400 font-normal ml-2">(Together.ai Powered)</span>
+                    )}
+                    {quotaExceeded && (
+                      <span className="text-sm text-red-600 dark:text-red-400 font-normal ml-2">(Fallback Mode)</span>
+                    )}
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">Your reflective writing partner</p>
+                </div>
               </div>
-            )}
-            {/* Voice Chat Toggle */}
-            <button
-              onClick={toggleVoiceChat}
-              className="btn-icon bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl hover-lift btn-press"
-              title="Start voice conversation"
-            >
-              <Mic className="w-5 h-5" />
-            </button>
+              <div className="flex items-center gap-4">
+                {detectedEmotion && (
+                  <div className="fade-in">
+                    <EmotionIndicator emotion={detectedEmotion} showLabel />
+                  </div>
+                )}
+                {/* Voice Chat Toggle */}
+                <button
+                  onClick={toggleVoiceChat}
+                  className="btn-icon bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl hover-lift btn-press"
+                  title="Start voice conversation"
+                >
+                  <Mic className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Photo Preview */}
         {selectedPhoto && (
-          <div className="alert alert-info mx-6 mt-4 flex-shrink-0 fade-in bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-800 dark:text-blue-300">
-            <div className="flex items-start gap-3 w-full">
-              <div className="relative">
-                <img 
-                  src={selectedPhoto} 
-                  alt="Selected photo" 
-                  className="w-20 h-20 object-cover rounded-lg border border-blue-200 dark:border-blue-700"
-                />
-                <button
-                  onClick={removePhoto}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-smooth hover-scale"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">Photo attached</p>
-                <p className="text-xs">This photo will be included with your diary entry</p>
+          <div className="flex-shrink-0 max-w-6xl mx-auto w-full px-6 mt-4">
+            <div className="alert alert-info fade-in bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-800 dark:text-blue-300">
+              <div className="flex items-start gap-3 w-full">
+                <div className="relative">
+                  <img 
+                    src={selectedPhoto} 
+                    alt="Selected photo" 
+                    className="w-20 h-20 object-cover rounded-lg border border-blue-200 dark:border-blue-700"
+                  />
+                  <button
+                    onClick={removePhoto}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-smooth hover-scale"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Photo attached</p>
+                  <p className="text-xs">This photo will be included with your diary entry</p>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0" style={{ maxHeight: 'calc(100vh - 400px)' }}>
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 float">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-slate-100 mb-2">Start Your Reflection Journey</h3>
-              <p className="text-gray-600 dark:text-slate-300 mb-6 max-w-md">
-                Share your thoughts, feelings, and experiences. I'm here to listen and help you process your day through meaningful conversation.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
-                <button
-                  onClick={() => handlePromptClick("I had an interesting day today...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-1 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
-                >
-                  <p className="text-sm font-medium text-blue-800 dark:text-blue-300">Reflect on your day</p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400">Share what happened today</p>
-                </button>
-                <button
-                  onClick={() => handlePromptClick("I'm feeling...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-2 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
-                >
-                  <p className="text-sm font-medium text-purple-800 dark:text-purple-300">Explore emotions</p>
-                  <p className="text-xs text-purple-600 dark:text-purple-400">Talk about how you're feeling</p>
-                </button>
-                <button
-                  onClick={() => handlePromptClick("I've been thinking about...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-3 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
-                >
-                  <p className="text-sm font-medium text-green-800 dark:text-green-300">Process thoughts</p>
-                  <p className="text-xs text-green-600 dark:text-green-400">Work through what's on your mind</p>
-                </button>
-                <button
-                  onClick={() => handlePromptClick("I'm grateful for...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-4 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
-                >
-                  <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Practice gratitude</p>
-                  <p className="text-xs text-amber-600 dark:text-amber-400">Focus on positive moments</p>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {messages.map((message, index) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} message-enter`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div
-                    className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl transition-smooth hover-lift ${
-                      message.isUser
-                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg'
-                        : 'bg-white dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 shadow-sm backdrop-blur-sm'
-                    }`}
-                  >
-                    <p className={`text-sm leading-relaxed ${
-                      message.isUser ? 'text-white' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
-                      {message.text}
-                    </p>
-                    <span className={`text-xs mt-2 block ${
-                      message.isUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'
-                    }`}>
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
+        {/* Enhanced Messages Container */}
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="max-w-6xl mx-auto px-6 py-6">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-6 float shadow-xl">
+                  <Sparkles className="w-10 h-10 text-white" />
                 </div>
-              ))}
-              
-              {isTyping && (
-                <div className="flex justify-start fade-in">
-                  <div className="bg-white dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 rounded-2xl px-4 py-3 shadow-sm backdrop-blur-sm">
-                    <div className="loading-dots">
-                      <div className="loading-dot bg-gray-400 dark:bg-slate-500"></div>
-                      <div className="loading-dot bg-gray-400 dark:bg-slate-500" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="loading-dot bg-gray-400 dark:bg-slate-500" style={{ animationDelay: '0.2s' }}></div>
+                <h3 className="text-2xl font-semibold text-gray-800 dark:text-slate-100 mb-3">Start Your Reflection Journey</h3>
+                <p className="text-gray-600 dark:text-slate-300 mb-8 max-w-lg text-lg leading-relaxed">
+                  Share your thoughts, feelings, and experiences. I'm here to listen and help you process your day through meaningful conversation.
+                </p>
+                
+                {/* Enhanced Prompt Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl w-full">
+                  <button
+                    onClick={() => handlePromptClick("I had an interesting day today...")}
+                    className="group p-6 text-left hover-lift btn-press fade-in stagger-1 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <span className="text-2xl">📝</span>
+                    </div>
+                    <p className="text-lg font-medium text-blue-800 dark:text-blue-300 mb-2">Reflect on your day</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-400">Share what happened today</p>
+                  </button>
+                  
+                  <button
+                    onClick={() => handlePromptClick("I'm feeling...")}
+                    className="group p-6 text-left hover-lift btn-press fade-in stagger-2 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <span className="text-2xl">💭</span>
+                    </div>
+                    <p className="text-lg font-medium text-purple-800 dark:text-purple-300 mb-2">Explore emotions</p>
+                    <p className="text-sm text-purple-600 dark:text-purple-400">Talk about how you're feeling</p>
+                  </button>
+                  
+                  <button
+                    onClick={() => handlePromptClick("I've been thinking about...")}
+                    className="group p-6 text-left hover-lift btn-press fade-in stagger-3 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <span className="text-2xl">🧠</span>
+                    </div>
+                    <p className="text-lg font-medium text-green-800 dark:text-green-300 mb-2">Process thoughts</p>
+                    <p className="text-sm text-green-600 dark:text-green-400">Work through what's on your mind</p>
+                  </button>
+                  
+                  <button
+                    onClick={() => handlePromptClick("I'm grateful for...")}
+                    className="group p-6 text-left hover-lift btn-press fade-in stagger-4 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <span className="text-2xl">🙏</span>
+                    </div>
+                    <p className="text-lg font-medium text-amber-800 dark:text-amber-300 mb-2">Practice gratitude</p>
+                    <p className="text-sm text-amber-600 dark:text-amber-400">Focus on positive moments</p>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {messages.map((message, index) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} message-enter`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div
+                      className={`max-w-2xl px-6 py-4 rounded-3xl transition-smooth hover-lift shadow-lg ${
+                        message.isUser
+                          ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-blue-500/25'
+                          : 'bg-white dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 shadow-gray-500/10 dark:shadow-slate-900/20 backdrop-blur-sm'
+                      }`}
+                    >
+                      <p className={`text-base leading-relaxed ${
+                        message.isUser ? 'text-white' : 'text-gray-800 dark:text-slate-200'
+                      }`}>
+                        {message.text}
+                      </p>
+                      <span className={`text-xs mt-3 block ${
+                        message.isUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'
+                      }`}>
+                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </div>
                   </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
+                ))}
+                
+                {isTyping && (
+                  <div className="flex justify-start fade-in">
+                    <div className="bg-white dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 rounded-3xl px-6 py-4 shadow-lg backdrop-blur-sm">
+                      <div className="loading-dots">
+                        <div className="loading-dot bg-gray-400 dark:bg-slate-500"></div>
+                        <div className="loading-dot bg-gray-400 dark:bg-slate-500" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="loading-dot bg-gray-400 dark:bg-slate-500" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Input Area */}
-        <div className="card-footer bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 flex-shrink-0 fade-in-up">
-          <div className="flex gap-3 mb-3">
-            <div className="flex-1 relative">
-              <textarea
-                ref={inputRef}
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Share what's on your mind..."
-                className="form-input resize-none bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 backdrop-blur-sm"
-                rows={2}
-                disabled={isTyping}
-              />
+        {/* Enhanced Input Area */}
+        <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 fade-in-up">
+          <div className="max-w-6xl mx-auto px-6 py-6">
+            <div className="flex gap-4 mb-4">
+              <div className="flex-1 relative">
+                <textarea
+                  ref={inputRef}
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Share what's on your mind..."
+                  className="form-input resize-none bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 backdrop-blur-sm text-base py-4 px-5 rounded-2xl shadow-lg focus:shadow-xl transition-all duration-300"
+                  rows={3}
+                  disabled={isTyping}
+                />
+              </div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!inputText.trim() || isTyping}
+                  className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover-lift btn-press rounded-2xl flex items-center justify-center transition-all duration-300"
+                >
+                  <Send className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="w-14 h-14 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-600 hover-lift btn-press border border-gray-300 dark:border-slate-600 rounded-2xl flex items-center justify-center transition-all duration-300"
+                  title="Upload photo"
+                >
+                  {isUploading ? (
+                    <div className="loading-spinner w-5 h-5 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
+                  ) : (
+                    <Image className="w-6 h-6" />
+                  )}
+                </button>
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={handleSendMessage}
-                disabled={!inputText.trim() || isTyping}
-                className="btn-icon bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover-lift btn-press"
-              >
-                <Send className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="btn-icon bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-600 hover-lift btn-press border border-gray-300 dark:border-slate-600"
-                title="Upload photo"
-              >
-                {isUploading ? (
-                  <div className="loading-spinner w-5 h-5 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
-                ) : (
-                  <Image className="w-5 h-5" />
-                )}
-              </button>
-            </div>
+            
+            {/* Generate Entry Button */}
+            {messages.filter(msg => msg.isUser).length > 0 && (
+              <div className="flex justify-center fade-in">
+                <button
+                  onClick={handleGenerateEntry}
+                  disabled={isTyping || isGeneratingEntry}
+                  className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed hover-lift btn-press text-lg"
+                >
+                  {isGeneratingEntry ? (
+                    <div className="flex items-center gap-3">
+                      <div className="loading-spinner w-5 h-5 border-white border-t-transparent"></div>
+                      Generating Entry...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Generate Diary Entry
+                    </div>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
-          
-          {/* Generate Entry Button */}
-          {messages.filter(msg => msg.isUser).length > 0 && (
-            <div className="flex justify-center fade-in">
-              <button
-                onClick={handleGenerateEntry}
-                disabled={isTyping || isGeneratingEntry}
-                className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-lg hover:shadow-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed hover-lift btn-press"
-              >
-                {isGeneratingEntry ? (
-                  <div className="flex items-center gap-2">
-                    <div className="loading-spinner w-4 h-4 border-white border-t-transparent"></div>
-                    Generating Entry...
-                  </div>
-                ) : (
-                  'Generate Diary Entry ✨'
-                )}
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
