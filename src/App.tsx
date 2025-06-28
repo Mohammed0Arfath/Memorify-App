@@ -314,18 +314,18 @@ function AppContent({ user }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500 mobile-overflow-hidden">
         {/* Error Banner */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                <span className="text-sm text-red-700 dark:text-red-300">{error}</span>
+          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4 mobile-overflow-hidden">
+            <div className="max-w-7xl mx-auto flex items-center justify-between mobile-container">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0"></div>
+                <span className="text-sm text-red-700 dark:text-red-300 mobile-text">{error}</span>
               </div>
               <button
                 onClick={() => setError(null)}
-                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors"
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors flex-shrink-0 ml-2"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -334,19 +334,19 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Header */}
-        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-10 flex-shrink-0 fade-in-down transition-colors duration-500">
-          <div className="max-w-7xl mx-auto px-6">
+        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-10 flex-shrink-0 fade-in-down transition-colors duration-500 mobile-overflow-hidden">
+          <div className="max-w-7xl mx-auto mobile-container">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
-              <div className="flex items-center gap-3 fade-in">
+              <div className="flex items-center gap-3 fade-in min-w-0 flex-shrink-0">
                 <div className="brand-logo hover-scale transition-smooth float">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold gradient-text">
+                <div className="min-w-0">
+                  <h1 className="text-xl md:text-2xl font-bold gradient-text mobile-text">
                     Memorify
                   </h1>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none mobile-text">
                     Your AI-powered companion
                     {import.meta.env.VITE_TOGETHER_API_KEY && (
                       <span className="ml-1 text-green-600 dark:text-green-400">• Together.ai Enhanced</span>
@@ -379,7 +379,7 @@ function AppContent({ user }: AppProps) {
               </nav>
 
               {/* User Menu, Theme Toggle & Mobile Menu Button */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {/* Theme Toggle */}
                 <ThemeToggle variant="inline" size="sm" />
 
@@ -391,20 +391,20 @@ function AppContent({ user }: AppProps) {
                     className="btn-ghost hover-scale flex items-center gap-2"
                     aria-label="User menu"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                       <User className="w-4 h-4 text-white" />
                     </div>
-                    <span className="hidden sm:block text-sm text-gray-600 dark:text-slate-300 max-w-32 truncate">
+                    <span className="hidden sm:block text-sm text-gray-600 dark:text-slate-300 max-w-32 truncate mobile-text">
                       {user.email}
                     </span>
                   </button>
 
                   {/* User Dropdown */}
                   {isUserMenuOpen && !signingOut && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 py-2 z-20 fade-in-down">
+                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 py-2 z-20 fade-in-down mobile-overflow-hidden">
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
                         <p className="text-sm font-medium text-gray-700 dark:text-slate-300">Signed in as</p>
-                        <p className="text-sm text-gray-600 dark:text-slate-400 truncate">{user.email}</p>
+                        <p className="text-sm text-gray-600 dark:text-slate-400 truncate mobile-text">{user.email}</p>
                       </div>
                       <button
                         onClick={() => {
@@ -413,7 +413,7 @@ function AppContent({ user }: AppProps) {
                         }}
                         className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3"
                       >
-                        <Settings className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+                        <Settings className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
                         <span className="text-sm text-gray-700 dark:text-slate-300">Profile Settings</span>
                       </button>
                       <button
@@ -428,7 +428,7 @@ function AppContent({ user }: AppProps) {
                           </>
                         ) : (
                           <>
-                            <LogOut className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+                            <LogOut className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
                             <span className="text-sm text-gray-700 dark:text-slate-300">Sign Out</span>
                           </>
                         )}
@@ -451,7 +451,7 @@ function AppContent({ user }: AppProps) {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down">
+            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down mobile-overflow-hidden">
               <nav className="px-4 py-2 space-y-1">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
@@ -494,34 +494,34 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-0">
+        <main className="flex-1 min-h-0 mobile-overflow-hidden">
           {renderContent()}
         </main>
 
         {/* Stats Footer */}
         {entries.length > 0 && (
-          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="flex items-center justify-center gap-8 text-sm text-gray-600 dark:text-slate-400">
+          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500 mobile-overflow-hidden">
+            <div className="max-w-7xl mx-auto mobile-container">
+              <div className="flex items-center justify-center gap-4 md:gap-8 text-sm text-gray-600 dark:text-slate-400 mobile-flex-wrap">
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <BookOpen className="w-4 h-4" />
-                  <span>{entries.length} entries</span>
+                  <BookOpen className="w-4 h-4 flex-shrink-0" />
+                  <span className="mobile-text">{entries.length} entries</span>
                 </div>
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <Calendar className="w-4 h-4" />
-                  <span>
+                  <Calendar className="w-4 h-4 flex-shrink-0" />
+                  <span className="mobile-text">
                     {entries.length > 0 && 
                       Math.ceil((new Date().getTime() - new Date(entries[entries.length - 1].date).getTime()) / (1000 * 60 * 60 * 24))
                     } days journaling
                   </span>
                 </div>
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <Brain className="w-4 h-4" />
-                  <span>AI companion active</span>
+                  <Brain className="w-4 h-4 flex-shrink-0" />
+                  <span className="mobile-text">AI companion active</span>
                 </div>
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <Sparkles className="w-4 h-4" />
-                  <span>
+                  <Sparkles className="w-4 h-4 flex-shrink-0" />
+                  <span className="mobile-text">
                     {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
                   </span>
                 </div>
@@ -531,9 +531,9 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Attribution Footer */}
-        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500">
-          <div className="max-w-7xl mx-auto px-6">
-            <p className="text-xs text-center text-gray-500 dark:text-slate-500">
+        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500 mobile-overflow-hidden">
+          <div className="max-w-7xl mx-auto mobile-container">
+            <p className="text-xs text-center text-gray-500 dark:text-slate-500 mobile-text">
               Built with ❤️ using{' '}
               <a 
                 href="https://bolt.new" 

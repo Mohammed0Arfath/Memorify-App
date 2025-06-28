@@ -53,7 +53,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
     
     // Empty cells for days before the first day of the month
     for (let i = 0; i < firstDayOfWeek; i++) {
-      days.push(<div key={`empty-${i}`} className="h-20" />);
+      days.push(<div key={`empty-${i}`} className="h-16 md:h-20" />);
     }
     
     // Days of the month
@@ -66,14 +66,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
       days.push(
         <div
           key={day}
-          className={`h-20 border border-gray-200 dark:border-slate-700 p-1 cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-md ${
+          className={`h-16 md:h-20 border border-gray-200 dark:border-slate-700 p-1 cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-md mobile-overflow-hidden ${
             isToday ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700' : 'bg-white dark:bg-slate-800/30'
           }`}
           onClick={() => handleDateClick(date)}
           title={hasEntry ? `View entry for ${date.toDateString()}` : `Create entry for ${date.toDateString()}`}
         >
           <div className="h-full flex flex-col">
-            <div className={`text-sm font-medium mb-1 ${
+            <div className={`text-sm font-medium mb-1 mobile-text ${
               isToday ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-slate-300'
             }`}>
               {day}
@@ -128,37 +128,37 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
   const monthSummary = getMonthSummary();
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto mobile-container py-6 mobile-overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-slate-100 mb-2">Calendar View</h2>
-          <p className="text-gray-600 dark:text-slate-300">Navigate through your emotional journey</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-slate-100 mb-2 mobile-text">Calendar View</h2>
+          <p className="text-gray-600 dark:text-slate-300 mobile-text">Navigate through your emotional journey</p>
         </div>
         
         {monthSummary ? (
-          <div className="bg-white dark:bg-slate-800/50 rounded-lg p-4 shadow-md border border-gray-200 dark:border-slate-700 backdrop-blur-sm">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">This Month</h3>
+          <div className="bg-white dark:bg-slate-800/50 rounded-lg p-4 shadow-md border border-gray-200 dark:border-slate-700 backdrop-blur-sm mobile-overflow-hidden">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2 mobile-text">This Month</h3>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{monthSummary.totalEntries}</span>
-              <span className="text-sm text-gray-500 dark:text-slate-400">entries</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400 mobile-text">entries</span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-slate-400 capitalize mt-1">
+            <p className="text-xs text-gray-500 dark:text-slate-400 capitalize mt-1 mobile-text">
               Mostly {monthSummary.dominantEmotion}
             </p>
           </div>
         ) : (
-          <div className="bg-gray-50 dark:bg-slate-800/30 rounded-lg p-4 border border-dashed border-gray-300 dark:border-slate-600">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">This Month</h3>
-            <p className="text-xs text-gray-500 dark:text-slate-500">No entries yet</p>
-            <p className="text-xs text-gray-400 dark:text-slate-600 mt-1">Start journaling to see insights</p>
+          <div className="bg-gray-50 dark:bg-slate-800/30 rounded-lg p-4 border border-dashed border-gray-300 dark:border-slate-600 mobile-overflow-hidden">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-slate-400 mb-1 mobile-text">This Month</h3>
+            <p className="text-xs text-gray-500 dark:text-slate-500 mobile-text">No entries yet</p>
+            <p className="text-xs text-gray-400 dark:text-slate-600 mt-1 mobile-text">Start journaling to see insights</p>
           </div>
         )}
       </div>
 
       {/* Calendar Navigation */}
-      <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-slate-700 backdrop-blur-sm">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-700/50 dark:to-slate-600/50">
+      <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-slate-700 backdrop-blur-sm mobile-overflow-hidden">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-700/50 dark:to-slate-600/50">
           <button
             onClick={() => navigateMonth('prev')}
             className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-slate-600/50 transition-colors"
@@ -167,7 +167,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
             <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-slate-300" />
           </button>
           
-          <h3 className="text-xl font-semibold text-gray-800 dark:text-slate-100">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-slate-100 mobile-text">
             {monthNames[month]} {year}
           </h3>
           
@@ -183,33 +183,33 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ entries, onDateSelec
         {/* Day Headers */}
         <div className="grid grid-cols-7 border-b border-gray-200 dark:border-slate-700">
           {dayNames.map(day => (
-            <div key={day} className="p-3 text-center text-sm font-medium text-gray-500 dark:text-slate-400 bg-gray-50 dark:bg-slate-700/30">
+            <div key={day} className="p-2 md:p-3 text-center text-xs md:text-sm font-medium text-gray-500 dark:text-slate-400 bg-gray-50 dark:bg-slate-700/30 mobile-text">
               {day}
             </div>
           ))}
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-7 mobile-overflow-hidden">
           {renderCalendarDays()}
         </div>
       </div>
 
       {/* Legend */}
-      <div className="mt-6 bg-white dark:bg-slate-800/50 rounded-lg p-4 shadow-md border border-gray-200 dark:border-slate-700 backdrop-blur-sm">
-        <h4 className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-3">Legend</h4>
+      <div className="mt-6 bg-white dark:bg-slate-800/50 rounded-lg p-4 shadow-md border border-gray-200 dark:border-slate-700 backdrop-blur-sm mobile-overflow-hidden">
+        <h4 className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-3 mobile-text">Legend</h4>
         <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-slate-400">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
-            <span>Today</span>
+            <div className="w-3 h-3 bg-blue-500 dark:bg-blue-400 rounded-full flex-shrink-0"></div>
+            <span className="mobile-text">Today</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gray-300 dark:bg-slate-600 rounded-full"></div>
-            <span>Day with entry</span>
+            <div className="w-3 h-3 bg-gray-300 dark:bg-slate-600 rounded-full flex-shrink-0"></div>
+            <span className="mobile-text">Day with entry</span>
           </div>
           <div className="flex items-center gap-2">
-            <Plus className="w-3 h-3 text-gray-400 dark:text-slate-500" />
-            <span>Click to create entry</span>
+            <Plus className="w-3 h-3 text-gray-400 dark:text-slate-500 flex-shrink-0" />
+            <span className="mobile-text">Click to create entry</span>
           </div>
         </div>
       </div>
