@@ -249,14 +249,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         <div className="flex-shrink-0">
           {/* Error Message */}
           {error && (
-            <div className="alert alert-error mx-6 mt-6 fade-in">
+            <div className="alert alert-error mx-6 mt-6 fade-in bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1">
                 <span className="text-sm">{error}</span>
               </div>
               <button
                 onClick={() => setError(null)}
-                className="text-red-600 hover:text-red-800 transition-colors"
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -265,19 +265,19 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* API Key Warning */}
           {apiKeyMissing && (
-            <div className="alert alert-warning mx-6 mt-6 fade-in">
+            <div className="alert alert-warning mx-6 mt-6 fade-in bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/50 text-amber-800 dark:text-amber-300">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Key Not Configured</p>
                 <p>
                   The app is running in demo mode with mock responses. To enable AI-powered conversations with Llama 3, Mixtral, and other models, 
-                  add your Together.ai API key to the <code className="bg-amber-100 px-1 rounded">.env</code> file.
+                  add your Together.ai API key to the <code className="bg-amber-100 dark:bg-amber-800/50 px-1 rounded">.env</code> file.
                   <br />
                   <a 
                     href="https://api.together.xyz/" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="underline hover:text-amber-800 mt-1 inline-block transition-smooth"
+                    className="underline hover:text-amber-800 dark:hover:text-amber-200 mt-1 inline-block transition-smooth"
                   >
                     Get your Together.ai API key →
                   </a>
@@ -288,7 +288,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* Quota Exceeded Warning */}
           {quotaExceeded && !apiKeyMissing && (
-            <div className="alert alert-error mx-6 mt-6 fade-in shake">
+            <div className="alert alert-error mx-6 mt-6 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
               <AlertTriangle className="w-5 h-5 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Quota Exceeded</p>
@@ -298,7 +298,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                     href="https://api.together.xyz/settings/billing" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="underline hover:text-red-800 transition-smooth"
+                    className="underline hover:text-red-800 dark:hover:text-red-200 transition-smooth"
                   >
                     billing settings
                   </a>{' '}
@@ -310,17 +310,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         </div>
 
         {/* Header */}
-        <div className="card-header flex items-center justify-between bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0 fade-in-down">
+        <div className="card-header flex items-center justify-between bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 flex-shrink-0 fade-in-down">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-800">
-                AI Companion {!apiKeyMissing && !quotaExceeded && <span className="text-xs text-green-600">(Together.ai Powered)</span>}
-                {quotaExceeded && <span className="text-xs text-red-600">(Fallback Mode)</span>}
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-slate-100">
+                AI Companion {!apiKeyMissing && !quotaExceeded && <span className="text-xs text-green-600 dark:text-green-400">(Together.ai Powered)</span>}
+                {quotaExceeded && <span className="text-xs text-red-600 dark:text-red-400">(Fallback Mode)</span>}
               </h2>
-              <p className="text-sm text-gray-500">Your reflective writing partner</p>
+              <p className="text-sm text-gray-500 dark:text-slate-400">Your reflective writing partner</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -342,13 +342,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
         {/* Photo Preview */}
         {selectedPhoto && (
-          <div className="alert alert-info mx-6 mt-4 flex-shrink-0 fade-in">
+          <div className="alert alert-info mx-6 mt-4 flex-shrink-0 fade-in bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-800 dark:text-blue-300">
             <div className="flex items-start gap-3 w-full">
               <div className="relative">
                 <img 
                   src={selectedPhoto} 
                   alt="Selected photo" 
-                  className="w-20 h-20 object-cover rounded-lg"
+                  className="w-20 h-20 object-cover rounded-lg border border-blue-200 dark:border-blue-700"
                 />
                 <button
                   onClick={removePhoto}
@@ -372,38 +372,38 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 float">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Start Your Reflection Journey</h3>
-              <p className="text-gray-600 mb-6 max-w-md">
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-slate-100 mb-2">Start Your Reflection Journey</h3>
+              <p className="text-gray-600 dark:text-slate-300 mb-6 max-w-md">
                 Share your thoughts, feelings, and experiences. I'm here to listen and help you process your day through meaningful conversation.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
                 <button
                   onClick={() => handlePromptClick("I had an interesting day today...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-1"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-1 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
                 >
-                  <p className="text-sm font-medium text-blue-800">Reflect on your day</p>
-                  <p className="text-xs text-blue-600">Share what happened today</p>
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-300">Reflect on your day</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">Share what happened today</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I'm feeling...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-2"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-2 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
                 >
-                  <p className="text-sm font-medium text-purple-800">Explore emotions</p>
-                  <p className="text-xs text-purple-600">Talk about how you're feeling</p>
+                  <p className="text-sm font-medium text-purple-800 dark:text-purple-300">Explore emotions</p>
+                  <p className="text-xs text-purple-600 dark:text-purple-400">Talk about how you're feeling</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I've been thinking about...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-3"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-3 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
                 >
-                  <p className="text-sm font-medium text-green-800">Process thoughts</p>
-                  <p className="text-xs text-green-600">Work through what's on your mind</p>
+                  <p className="text-sm font-medium text-green-800 dark:text-green-300">Process thoughts</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">Work through what's on your mind</p>
                 </button>
                 <button
                   onClick={() => handlePromptClick("I'm grateful for...")}
-                  className="card p-3 text-left hover-lift btn-press fade-in stagger-4"
+                  className="card p-3 text-left hover-lift btn-press fade-in stagger-4 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700"
                 >
-                  <p className="text-sm font-medium text-amber-800">Practice gratitude</p>
-                  <p className="text-xs text-amber-600">Focus on positive moments</p>
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Practice gratitude</p>
+                  <p className="text-xs text-amber-600 dark:text-amber-400">Focus on positive moments</p>
                 </button>
               </div>
             </div>
@@ -419,16 +419,16 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                     className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl transition-smooth hover-lift ${
                       message.isUser
                         ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg'
-                        : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                        : 'bg-white dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 shadow-sm backdrop-blur-sm'
                     }`}
                   >
                     <p className={`text-sm leading-relaxed ${
-                      message.isUser ? 'text-white' : 'text-gray-800'
+                      message.isUser ? 'text-white' : 'text-gray-800 dark:text-slate-200'
                     }`}>
                       {message.text}
                     </p>
                     <span className={`text-xs mt-2 block ${
-                      message.isUser ? 'text-blue-100' : 'text-gray-400'
+                      message.isUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'
                     }`}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
@@ -438,11 +438,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               
               {isTyping && (
                 <div className="flex justify-start fade-in">
-                  <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
+                  <div className="bg-white dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 rounded-2xl px-4 py-3 shadow-sm backdrop-blur-sm">
                     <div className="loading-dots">
-                      <div className="loading-dot"></div>
-                      <div className="loading-dot" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="loading-dot" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="loading-dot bg-gray-400 dark:bg-slate-500"></div>
+                      <div className="loading-dot bg-gray-400 dark:bg-slate-500" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="loading-dot bg-gray-400 dark:bg-slate-500" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -453,7 +453,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         </div>
 
         {/* Input Area */}
-        <div className="card-footer bg-white/80 backdrop-blur-sm border-t border-gray-200 flex-shrink-0 fade-in-up">
+        <div className="card-footer bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 flex-shrink-0 fade-in-up">
           <div className="flex gap-3 mb-3">
             <div className="flex-1 relative">
               <textarea
@@ -462,7 +462,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Share what's on your mind..."
-                className="form-input resize-none"
+                className="form-input resize-none bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 backdrop-blur-sm"
                 rows={2}
                 disabled={isTyping}
               />
@@ -478,11 +478,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="btn-icon bg-gray-100 text-gray-600 hover:bg-gray-200 hover-lift btn-press"
+                className="btn-icon bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-600 hover-lift btn-press border border-gray-300 dark:border-slate-600"
                 title="Upload photo"
               >
                 {isUploading ? (
-                  <div className="loading-spinner w-5 h-5"></div>
+                  <div className="loading-spinner w-5 h-5 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
                 ) : (
                   <Image className="w-5 h-5" />
                 )}
