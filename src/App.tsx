@@ -404,14 +404,14 @@ function AppContent({ user }: AppProps) {
 
         {/* Header */}
         <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40 flex-shrink-0 fade-in-down transition-colors duration-500">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
               <div className="flex items-center gap-3 fade-in min-w-0 flex-shrink-0">
                 <div className="brand-logo hover-scale transition-smooth float">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 hidden sm:block">
                   <h1 className="text-xl md:text-2xl font-bold gradient-text truncate">
                     Memorify
                   </h1>
@@ -458,7 +458,7 @@ function AppContent({ user }: AppProps) {
                     data-user-menu-button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     disabled={signingOut}
-                    className="btn-ghost hover-scale flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-ghost hover-scale flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed p-2"
                     aria-label="User menu"
                     aria-expanded={isUserMenuOpen}
                     aria-haspopup="true"
@@ -475,7 +475,7 @@ function AppContent({ user }: AppProps) {
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="md:hidden btn-ghost hover-scale"
+                  className="md:hidden btn-ghost hover-scale p-2"
                   aria-label="Toggle mobile menu"
                 >
                   {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -512,11 +512,11 @@ function AppContent({ user }: AppProps) {
           )}
         </header>
 
-        {/* User Dropdown Overlay - Fixed positioning */}
+        {/* User Dropdown Overlay - Mobile-optimized positioning */}
         {isUserMenuOpen && !signingOut && (
           <div 
             data-user-menu-dropdown
-            className="fixed top-16 right-6 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-700 py-2 z-50 fade-in-down"
+            className="fixed top-16 right-2 sm:right-6 w-64 max-w-[calc(100vw-16px)] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-700 py-2 z-50 fade-in-down"
             style={{
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1)',
               transformOrigin: 'top right',
