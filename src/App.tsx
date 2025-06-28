@@ -112,16 +112,12 @@ function AppContent({ user }: AppProps) {
   const handleSignOut = async () => {
     if (signingOut) return; // Prevent multiple clicks
     
-    console.log('🔄 Starting sign out process...');
     setSigningOut(true);
     
     try {
       // Close any open menus first
       setIsUserMenuOpen(false);
       setShowUserProfile(false);
-      setIsMobileMenuOpen(false);
-      
-      console.log('📱 Closed all menus');
       
       // Clear local state immediately to provide instant feedback
       setEntries([]);
@@ -129,56 +125,34 @@ function AppContent({ user }: AppProps) {
       setCurrentEmotion(null);
       setError(null);
       
-      console.log('🧹 Cleared local state');
-      
       // Clear localStorage
       localStorage.removeItem('diary-entries');
-      localStorage.removeItem('memorify-user-session');
       
-      console.log('💾 Cleared localStorage');
-      
-      // Sign out from Supabase with explicit session clearing
-      const { error } = await supabase.auth.signOut({
-        scope: 'global' // This ensures all sessions are cleared
-      });
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error('❌ Supabase sign out error:', error);
         errorHandler.logError(error, {
           userId: user.id,
           action: 'sign_out',
           component: 'App'
         }, 'medium');
-      } else {
-        console.log('✅ Successfully signed out from Supabase');
+        // Even if Supabase fails, we've cleared local state
+        // The AuthWrapper will handle the redirect
       }
       
-      // Force clear any remaining session data
-      await supabase.auth.getSession().then(({ data }) => {
-        if (data.session) {
-          console.log('⚠️ Session still exists, forcing refresh...');
-          window.location.reload();
-        }
-      });
-      
-      console.log('🔄 Sign out process completed');
+      // Force a page reload to ensure clean state
+      window.location.reload();
       
     } catch (error) {
-      console.error('💥 Sign out error:', error);
       errorHandler.logError(error instanceof Error ? error : new Error('Sign out failed'), {
         userId: user.id,
         action: 'sign_out',
         component: 'App'
       }, 'high');
-      
       // Even on error, try to clear everything and reload
       localStorage.clear();
-      sessionStorage.clear();
-      
-      // Force reload as last resort
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      window.location.reload();
     } finally {
       setSigningOut(false);
     }
@@ -445,11 +419,11 @@ function AppContent({ user }: AppProps) {
                       <button
                         onClick={handleSignOut}
                         disabled={signingOut}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3"
                       >
                         {signingOut ? (
                           <>
-                            <div className="loading-spinner w-4 h-4 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
+                            <div className="loading-spinner w-4 h-4"></div>
                             <span className="text-sm text-gray-700 dark:text-slate-300">Signing out...</span>
                           </>
                         ) : (
