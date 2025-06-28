@@ -7,6 +7,7 @@ import { AgentBoard } from './components/AgentBoard';
 import { AuthWrapper } from './components/AuthWrapper';
 import { UserProfile } from './components/UserProfile';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { ThemeToggle } from './components/ThemeToggle';
 import { ViewMode, DiaryEntry, ChatMessage } from './types';
 import { generateDiaryEntry, analyzeEmotionWithAI } from './utils/mockAI';
 import { DiaryService } from './services/diaryService';
@@ -14,12 +15,14 @@ import { AgentService } from './services/agentService';
 import { supabase } from './lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { errorHandler } from './utils/errorHandler';
+import { useTheme } from './hooks/useTheme';
 
 interface AppProps {
   user: SupabaseUser;
 }
 
 function AppContent({ user }: AppProps) {
+  const { isDark } = useTheme();
   const [currentView, setCurrentView] = useState<ViewMode>('chat');
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [currentEmotion, setCurrentEmotion] = useState<DiaryEntry['emotion'] | null>(null);
@@ -287,7 +290,7 @@ function AppContent({ user }: AppProps) {
         <div className="flex items-center justify-center h-96">
           <div className="flex items-center gap-3 fade-in">
             <div className="loading-spinner w-8 h-8"></div>
-            <span className="text-gray-600">Loading your entries...</span>
+            <span className="text-gray-600 dark:text-slate-300">Loading your entries...</span>
           </div>
         </div>
       );
@@ -311,18 +314,18 @@ function AppContent({ user }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500">
         {/* Error Banner */}
         {error && (
-          <div className="bg-red-50 border-b border-red-200 p-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                <span className="text-sm text-red-700">{error}</span>
+                <span className="text-sm text-red-700 dark:text-red-300">{error}</span>
               </div>
               <button
                 onClick={() => setError(null)}
-                className="text-red-600 hover:text-red-800 transition-colors"
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -331,7 +334,7 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10 flex-shrink-0 fade-in-down">
+        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-10 flex-shrink-0 fade-in-down transition-colors duration-500">
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
@@ -343,10 +346,10 @@ function AppContent({ user }: AppProps) {
                   <h1 className="text-2xl font-bold gradient-text">
                     Memorify
                   </h1>
-                  <p className="text-xs text-gray-500 leading-none">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none">
                     Your AI-powered companion
                     {import.meta.env.VITE_TOGETHER_API_KEY && (
-                      <span className="ml-1 text-green-600">• Together.ai Enhanced</span>
+                      <span className="ml-1 text-green-600 dark:text-green-400">• Together.ai Enhanced</span>
                     )}
                   </p>
                 </div>
@@ -375,8 +378,11 @@ function AppContent({ user }: AppProps) {
                 })}
               </nav>
 
-              {/* User Menu & Mobile Menu Button */}
+              {/* User Menu, Theme Toggle & Mobile Menu Button */}
               <div className="flex items-center gap-2">
+                {/* Theme Toggle */}
+                <ThemeToggle variant="inline" size="sm" />
+
                 {/* User Menu */}
                 <div className="relative">
                   <button
@@ -388,42 +394,42 @@ function AppContent({ user }: AppProps) {
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                       <User className="w-4 h-4 text-white" />
                     </div>
-                    <span className="hidden sm:block text-sm text-gray-600 max-w-32 truncate">
+                    <span className="hidden sm:block text-sm text-gray-600 dark:text-slate-300 max-w-32 truncate">
                       {user.email}
                     </span>
                   </button>
 
                   {/* User Dropdown */}
                   {isUserMenuOpen && !signingOut && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20 fade-in-down">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-700">Signed in as</p>
-                        <p className="text-sm text-gray-600 truncate">{user.email}</p>
+                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 py-2 z-20 fade-in-down">
+                      <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
+                        <p className="text-sm font-medium text-gray-700 dark:text-slate-300">Signed in as</p>
+                        <p className="text-sm text-gray-600 dark:text-slate-400 truncate">{user.email}</p>
                       </div>
                       <button
                         onClick={() => {
                           setShowUserProfile(true);
                           setIsUserMenuOpen(false);
                         }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3"
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3"
                       >
-                        <Settings className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-700">Profile Settings</span>
+                        <Settings className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+                        <span className="text-sm text-gray-700 dark:text-slate-300">Profile Settings</span>
                       </button>
                       <button
                         onClick={handleSignOut}
                         disabled={signingOut}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3"
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3"
                       >
                         {signingOut ? (
                           <>
                             <div className="loading-spinner w-4 h-4"></div>
-                            <span className="text-sm text-gray-700">Signing out...</span>
+                            <span className="text-sm text-gray-700 dark:text-slate-300">Signing out...</span>
                           </>
                         ) : (
                           <>
-                            <LogOut className="w-4 h-4 text-gray-500" />
-                            <span className="text-sm text-gray-700">Sign Out</span>
+                            <LogOut className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+                            <span className="text-sm text-gray-700 dark:text-slate-300">Sign Out</span>
                           </>
                         )}
                       </button>
@@ -445,7 +451,7 @@ function AppContent({ user }: AppProps) {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm slide-in-down">
+            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down">
               <nav className="px-4 py-2 space-y-1">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
@@ -494,9 +500,9 @@ function AppContent({ user }: AppProps) {
 
         {/* Stats Footer */}
         {entries.length > 0 && (
-          <footer className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 flex-shrink-0 fade-in-up">
+          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500">
             <div className="max-w-7xl mx-auto px-6">
-              <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
+              <div className="flex items-center justify-center gap-8 text-sm text-gray-600 dark:text-slate-400">
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
                   <BookOpen className="w-4 h-4" />
                   <span>{entries.length} entries</span>
@@ -525,15 +531,15 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Attribution Footer */}
-        <div className="bg-gray-50 border-t border-gray-200 py-2 flex-shrink-0">
+        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500">
           <div className="max-w-7xl mx-auto px-6">
-            <p className="text-xs text-center text-gray-500">
+            <p className="text-xs text-center text-gray-500 dark:text-slate-500">
               Built with ❤️ using{' '}
               <a 
                 href="https://bolt.new" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 underline transition-smooth"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline transition-smooth"
               >
                 Bolt.new
               </a>

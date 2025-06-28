@@ -12,42 +12,28 @@ import {
   Github,
   Linkedin,
   Globe,
-  Moon,
-  Sun,
   ArrowRight,
   Play,
   CheckCircle,
   Star
 } from 'lucide-react';
 import Spline from '@splinetool/react-spline';
+import { ThemeToggle } from './ThemeToggle';
+import { useTheme } from '../hooks/useTheme';
 
 interface LandingPageProps {
   onNavigateToAuth: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) => {
-  const [darkMode, setDarkMode] = useState(true);
+  const { isDark } = useTheme();
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
 
   useEffect(() => {
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('memorify-theme');
-    if (savedTheme) {
-      setDarkMode(savedTheme === 'dark');
-    }
-    
-    // Apply theme to document
-    document.documentElement.classList.toggle('dark', darkMode);
-    localStorage.setItem('memorify-theme', darkMode ? 'dark' : 'light');
-    
     // Loading animation
     setTimeout(() => setIsLoaded(true), 500);
-  }, [darkMode]);
-
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-  };
+  }, []);
 
   const scrollToFeatures = () => {
     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
@@ -114,24 +100,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
   ];
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${darkMode ? 'dark' : ''}`}>
+    <div className="min-h-screen transition-colors duration-500">
       {/* Enhanced Background for Dark Mode */}
       <div className="fixed inset-0 bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"></div>
       
       {/* Theme Toggle */}
-      <div className="fixed top-6 right-6 z-50">
-        <button
-          onClick={toggleTheme}
-          className="p-3 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-gray-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-all duration-300 hover:scale-110 shadow-lg dark:shadow-2xl"
-          aria-label="Toggle theme"
-        >
-          {darkMode ? (
-            <Sun className="w-5 h-5 text-yellow-500" />
-          ) : (
-            <Moon className="w-5 h-5 text-slate-700" />
-          )}
-        </button>
-      </div>
+      <ThemeToggle />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
