@@ -245,11 +245,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           className="hidden"
         />
 
-        {/* Warnings Section - Compact */}
+        {/* Warnings Section - Compact with side spacing */}
         <div className="flex-shrink-0">
           {/* Error Message */}
           {error && (
-            <div className="alert alert-error mx-4 md:mx-6 mt-3 fade-in bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
+            <div className="alert alert-error mx-6 md:mx-8 lg:mx-12 mt-3 fade-in bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <div className="flex-1">
                 <span className="text-sm">{error}</span>
@@ -265,7 +265,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* API Key Warning */}
           {apiKeyMissing && (
-            <div className="alert alert-warning mx-4 md:mx-6 mt-3 fade-in bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/50 text-amber-800 dark:text-amber-300">
+            <div className="alert alert-warning mx-6 md:mx-8 lg:mx-12 mt-3 fade-in bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/50 text-amber-800 dark:text-amber-300">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Key Not Configured</p>
@@ -288,7 +288,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* Quota Exceeded Warning */}
           {quotaExceeded && !apiKeyMissing && (
-            <div className="alert alert-error mx-4 md:mx-6 mt-3 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
+            <div className="alert alert-error mx-6 md:mx-8 lg:mx-12 mt-3 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Quota Exceeded</p>
@@ -309,9 +309,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Compact Header */}
+        {/* Compact Header with side spacing */}
         <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 fade-in-down transition-colors duration-500">
-          <div className="px-4 md:px-6 py-3">
+          <div className="px-6 md:px-8 lg:px-12 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth shadow-lg">
@@ -349,9 +349,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         </div>
 
-        {/* Photo Preview - Compact */}
+        {/* Photo Preview - Compact with side spacing */}
         {selectedPhoto && (
-          <div className="flex-shrink-0 mx-4 md:mx-6 mt-3">
+          <div className="flex-shrink-0 mx-6 md:mx-8 lg:mx-12 mt-3">
             <div className="alert alert-info fade-in bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-800 dark:text-blue-300">
               <div className="flex items-start gap-3 w-full">
                 <div className="relative">
@@ -376,8 +376,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         )}
 
-        {/* Messages Container - Optimized */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 min-h-0">
+        {/* Messages Container - Optimized with side spacing */}
+        <div className="flex-1 overflow-y-auto px-6 md:px-8 lg:px-12 py-4 min-h-0">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 float shadow-xl">
@@ -480,9 +480,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Compact Input Area */}
+        {/* Compact Input Area with side spacing */}
         <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 fade-in-up">
-          <div className="px-4 md:px-6 py-4">
+          <div className="px-6 md:px-8 lg:px-12 py-4">
             <div className="flex gap-3 mb-3">
               <div className="flex-1 relative">
                 <textarea
