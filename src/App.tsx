@@ -46,7 +46,10 @@ function AppContent({ user }: AppProps) {
   // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isUserMenuOpen && !(event.target as Element).closest('.user-menu-container')) {
+      const target = event.target as Element;
+      const userMenuContainer = target.closest('.user-menu-container');
+      
+      if (isUserMenuOpen && !userMenuContainer) {
         setIsUserMenuOpen(false);
       }
     };
@@ -466,9 +469,9 @@ function AppContent({ user }: AppProps) {
                     </span>
                   </button>
 
-                  {/* User Dropdown */}
+                  {/* User Dropdown - Fixed positioning and styling */}
                   {isUserMenuOpen && !signingOut && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 py-2 z-20 fade-in-down mobile-overflow-hidden">
+                    <div className="user-dropdown absolute right-0 top-full mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-50 fade-in-down mobile-overflow-hidden">
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
                         <p className="text-sm font-medium text-gray-700 dark:text-slate-300">Signed in as</p>
                         <p className="text-sm text-gray-600 dark:text-slate-400 truncate mobile-text">{user.email}</p>
