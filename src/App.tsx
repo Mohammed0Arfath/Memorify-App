@@ -131,11 +131,11 @@ function AppContent({ user }: AppProps) {
       
       console.log('🧹 Cleared local state');
       
-      // Clear localStorage and sessionStorage
-      localStorage.clear();
-      sessionStorage.clear();
+      // Clear localStorage
+      localStorage.removeItem('diary-entries');
+      localStorage.removeItem('memorify-user-session');
       
-      console.log('💾 Cleared all storage');
+      console.log('💾 Cleared localStorage');
       
       // Sign out from Supabase with explicit session clearing
       const { error } = await supabase.auth.signOut({
@@ -153,13 +153,15 @@ function AppContent({ user }: AppProps) {
         console.log('✅ Successfully signed out from Supabase');
       }
       
-      // Force clear any remaining session data and reload
-      console.log('🔄 Forcing page reload to complete sign out...');
+      // Force clear any remaining session data
+      await supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          console.log('⚠️ Session still exists, forcing refresh...');
+          window.location.reload();
+        }
+      });
       
-      // Use a small delay to ensure the sign out request completes
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 500);
+      console.log('🔄 Sign out process completed');
       
     } catch (error) {
       console.error('💥 Sign out error:', error);
@@ -175,10 +177,10 @@ function AppContent({ user }: AppProps) {
       
       // Force reload as last resort
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.reload();
       }, 1000);
     } finally {
-      // Don't reset signingOut state since we're reloading the page
+      setSigningOut(false);
     }
   };
 
