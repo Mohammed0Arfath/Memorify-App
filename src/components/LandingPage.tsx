@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, 
   MessageCircle, 
@@ -166,7 +165,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </p>
 
             {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
               <button
                 onClick={onNavigateToAuth}
                 className="group px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/30 transition-all duration-300 hover:scale-105 flex items-center gap-3"
@@ -183,6 +182,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
                 <Play className="w-5 h-5" />
                 Explore Features
               </button>
+            </div>
+
+            {/* Sign In Link */}
+            <div className="mb-16">
+              <p className="text-white/70 dark:text-slate-400 text-sm">
+                Already have an account?{' '}
+                <button
+                  onClick={onNavigateToAuth}
+                  className="text-purple-300 dark:text-purple-200 hover:text-purple-200 dark:hover:text-purple-100 font-medium underline underline-offset-2 transition-colors duration-300"
+                >
+                  Sign in
+                </button>
+              </p>
             </div>
 
             {/* Enhanced Stats */}
@@ -307,7 +319,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             Join thousands of users who have discovered deeper self-awareness and emotional growth through AI-powered reflection.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <button
               onClick={onNavigateToAuth}
               className="group px-10 py-5 bg-white dark:bg-slate-100 text-purple-600 dark:text-purple-700 font-bold rounded-2xl shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105 flex items-center gap-3"
@@ -318,7 +330,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </button>
           </div>
 
-          <div className="mt-12 flex items-center justify-center gap-8 text-white/70 dark:text-white/80">
+          {/* Sign In Link in CTA */}
+          <div className="mb-8">
+            <p className="text-white/80 dark:text-white/90 text-sm">
+              Already have an account?{' '}
+              <button
+                onClick={onNavigateToAuth}
+                className="text-white font-medium underline underline-offset-2 hover:text-white/80 transition-colors duration-300"
+              >
+                Sign in here
+              </button>
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-8 text-white/70 dark:text-white/80 flex-wrap">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5" />
               <span>Free to start</span>
