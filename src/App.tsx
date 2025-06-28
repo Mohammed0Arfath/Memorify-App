@@ -43,36 +43,37 @@ function AppContent({ user }: AppProps) {
     }
   }, [user]);
 
-  // Close user menu when clicking outside
+  // Close user menu when clicking outside or pressing Escape
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      const userMenuContainer = target.closest('.user-menu-container');
+      if (!isUserMenuOpen) return;
       
-      if (isUserMenuOpen && !userMenuContainer) {
+      const target = event.target as Element;
+      const userMenuButton = document.querySelector('[data-user-menu-button]');
+      const userMenuDropdown = document.querySelector('[data-user-menu-dropdown]');
+      
+      // Don't close if clicking on the button or dropdown
+      if (userMenuButton?.contains(target) || userMenuDropdown?.contains(target)) {
+        return;
+      }
+      
+      setIsUserMenuOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isUserMenuOpen) {
         setIsUserMenuOpen(false);
       }
     };
 
     if (isUserMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isUserMenuOpen]);
-
-  // Handle keyboard navigation for user menu
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (isUserMenuOpen) {
-        if (event.key === 'Escape') {
-          setIsUserMenuOpen(false);
-        }
-      }
-    };
-
-    if (isUserMenuOpen) {
       document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleKeyDown);
+      };
     }
   }, [isUserMenuOpen]);
 
@@ -382,14 +383,14 @@ function AppContent({ user }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500 mobile-overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500 overflow-x-hidden">
         {/* Error Banner */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4 mobile-overflow-hidden">
-            <div className="max-w-7xl mx-auto flex items-center justify-between mobile-container">
+          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4">
+            <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0"></div>
-                <span className="text-sm text-red-700 dark:text-red-300 mobile-text">{error}</span>
+                <span className="text-sm text-red-700 dark:text-red-300 truncate">{error}</span>
               </div>
               <button
                 onClick={() => setError(null)}
@@ -402,8 +403,8 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Header */}
-        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-10 flex-shrink-0 fade-in-down transition-colors duration-500 mobile-overflow-hidden">
-          <div className="max-w-7xl mx-auto mobile-container">
+        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40 flex-shrink-0 fade-in-down transition-colors duration-500">
+          <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
               <div className="flex items-center gap-3 fade-in min-w-0 flex-shrink-0">
@@ -411,10 +412,10 @@ function AppContent({ user }: AppProps) {
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-xl md:text-2xl font-bold gradient-text mobile-text">
+                  <h1 className="text-xl md:text-2xl font-bold gradient-text truncate">
                     Memorify
                   </h1>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none mobile-text">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none truncate">
                     Your AI-powered companion
                     {import.meta.env.VITE_TOGETHER_API_KEY && (
                       <span className="ml-1 text-green-600 dark:text-green-400">• Together.ai Enhanced</span>
@@ -452,8 +453,9 @@ function AppContent({ user }: AppProps) {
                 <ThemeToggle variant="inline" size="sm" />
 
                 {/* User Menu */}
-                <div className="relative user-menu-container">
+                <div className="relative">
                   <button
+                    data-user-menu-button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     disabled={signingOut}
                     className="btn-ghost hover-scale flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -464,48 +466,10 @@ function AppContent({ user }: AppProps) {
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                       <User className="w-4 h-4 text-white" />
                     </div>
-                    <span className="hidden sm:block text-sm text-gray-600 dark:text-slate-300 max-w-32 truncate mobile-text">
+                    <span className="hidden sm:block text-sm text-gray-600 dark:text-slate-300 max-w-32 truncate">
                       {user.email}
                     </span>
                   </button>
-
-                  {/* User Dropdown - Fixed positioning and styling */}
-                  {isUserMenuOpen && !signingOut && (
-                    <div className="user-dropdown absolute right-0 top-full mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-50 fade-in-down mobile-overflow-hidden">
-                      <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
-                        <p className="text-sm font-medium text-gray-700 dark:text-slate-300">Signed in as</p>
-                        <p className="text-sm text-gray-600 dark:text-slate-400 truncate mobile-text">{user.email}</p>
-                      </div>
-                      <button
-                        onClick={handleOpenProfile}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
-                        role="menuitem"
-                        tabIndex={0}
-                      >
-                        <Settings className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-700 dark:text-slate-300">Profile Settings</span>
-                      </button>
-                      <button
-                        onClick={handleSignOut}
-                        disabled={signingOut}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
-                        role="menuitem"
-                        tabIndex={0}
-                      >
-                        {signingOut ? (
-                          <>
-                            <div className="loading-spinner w-4 h-4 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
-                            <span className="text-sm text-gray-700 dark:text-slate-300">Signing out...</span>
-                          </>
-                        ) : (
-                          <>
-                            <LogOut className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
-                            <span className="text-sm text-gray-700 dark:text-slate-300">Sign Out</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -522,7 +486,7 @@ function AppContent({ user }: AppProps) {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down mobile-overflow-hidden">
+            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down">
               <nav className="px-4 py-2 space-y-1">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
@@ -548,6 +512,52 @@ function AppContent({ user }: AppProps) {
           )}
         </header>
 
+        {/* User Dropdown Overlay - Fixed positioning */}
+        {isUserMenuOpen && !signingOut && (
+          <div 
+            data-user-menu-dropdown
+            className="fixed top-16 right-6 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-700 py-2 z-50 fade-in-down"
+            style={{
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+              transformOrigin: 'top right',
+              animation: 'fadeInDown 0.2s ease-out'
+            }}
+          >
+            <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
+              <p className="text-sm font-medium text-gray-700 dark:text-slate-300">Signed in as</p>
+              <p className="text-sm text-gray-600 dark:text-slate-400 truncate">{user.email}</p>
+            </div>
+            <button
+              onClick={handleOpenProfile}
+              className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
+              role="menuitem"
+              tabIndex={0}
+            >
+              <Settings className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
+              <span className="text-sm text-gray-700 dark:text-slate-300">Profile Settings</span>
+            </button>
+            <button
+              onClick={handleSignOut}
+              disabled={signingOut}
+              className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
+              role="menuitem"
+              tabIndex={0}
+            >
+              {signingOut ? (
+                <>
+                  <div className="loading-spinner w-4 h-4 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
+                  <span className="text-sm text-gray-700 dark:text-slate-300">Signing out...</span>
+                </>
+              ) : (
+                <>
+                  <LogOut className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-700 dark:text-slate-300">Sign Out</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
         {/* User Profile Modal */}
         {showUserProfile && (
           <UserProfile 
@@ -557,22 +567,22 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-0 mobile-overflow-hidden">
+        <main className="flex-1 min-h-0">
           {renderContent()}
         </main>
 
         {/* Stats Footer */}
         {entries.length > 0 && (
-          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500 mobile-overflow-hidden">
-            <div className="max-w-7xl mx-auto mobile-container">
-              <div className="flex items-center justify-center gap-4 md:gap-8 text-sm text-gray-600 dark:text-slate-400 mobile-flex-wrap">
+          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="flex items-center justify-center gap-4 md:gap-8 text-sm text-gray-600 dark:text-slate-400 flex-wrap">
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
                   <BookOpen className="w-4 h-4 flex-shrink-0" />
-                  <span className="mobile-text">{entries.length} entries</span>
+                  <span>{entries.length} entries</span>
                 </div>
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
                   <Calendar className="w-4 h-4 flex-shrink-0" />
-                  <span className="mobile-text">
+                  <span>
                     {entries.length > 0 && 
                       Math.ceil((new Date().getTime() - new Date(entries[entries.length - 1].date).getTime()) / (1000 * 60 * 60 * 24))
                     } days journaling
@@ -580,11 +590,11 @@ function AppContent({ user }: AppProps) {
                 </div>
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
                   <Brain className="w-4 h-4 flex-shrink-0" />
-                  <span className="mobile-text">AI companion active</span>
+                  <span>AI companion active</span>
                 </div>
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
                   <Sparkles className="w-4 h-4 flex-shrink-0" />
-                  <span className="mobile-text">
+                  <span>
                     {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
                   </span>
                 </div>
@@ -594,9 +604,9 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Attribution Footer */}
-        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500 mobile-overflow-hidden">
-          <div className="max-w-7xl mx-auto mobile-container">
-            <p className="text-xs text-center text-gray-500 dark:text-slate-500 mobile-text">
+        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500">
+          <div className="max-w-7xl mx-auto px-6">
+            <p className="text-xs text-center text-gray-500 dark:text-slate-500">
               Built with ❤️ using{' '}
               <a 
                 href="https://bolt.new" 
