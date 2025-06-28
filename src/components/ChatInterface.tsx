@@ -25,6 +25,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   const [hasStartedConversation, setHasStartedConversation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,11 +35,21 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   }, []);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      });
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Smooth auto-scroll when new messages are added
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [messages]);
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,7 +246,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
   return (
     <>
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col relative">
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -245,8 +256,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           className="hidden"
         />
 
-        {/* Warnings Section - Compact with side spacing */}
-        <div className="flex-shrink-0">
+        {/* Warnings Section - Fixed positioning */}
+        <div className="flex-shrink-0 relative z-10">
           {/* Error Message */}
           {error && (
             <div className="alert alert-error mx-6 md:mx-8 lg:mx-12 mt-3 fade-in bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
@@ -309,8 +320,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Compact Header with side spacing */}
-        <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 fade-in-down transition-colors duration-500">
+        {/* Header - Fixed positioning */}
+        <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 fade-in-down transition-colors duration-500 relative z-10">
           <div className="px-6 md:px-8 lg:px-12 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -349,9 +360,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         </div>
 
-        {/* Photo Preview - Compact with side spacing */}
+        {/* Photo Preview - Fixed positioning */}
         {selectedPhoto && (
-          <div className="flex-shrink-0 mx-6 md:mx-8 lg:mx-12 mt-3">
+          <div className="flex-shrink-0 mx-6 md:mx-8 lg:mx-12 mt-3 relative z-10">
             <div className="alert alert-info fade-in bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-800 dark:text-blue-300">
               <div className="flex items-start gap-3 w-full">
                 <div className="relative">
@@ -376,8 +387,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         )}
 
-        {/* Messages Container - Optimized with side spacing */}
-        <div className="flex-1 overflow-y-auto px-6 md:px-8 lg:px-12 py-4 min-h-0">
+        {/* Messages Container - Scrollable with bottom padding for fixed input */}
+        <div 
+          ref={messagesContainerRef}
+          className="flex-1 overflow-y-auto px-6 md:px-8 lg:px-12 py-4 min-h-0"
+          style={{ paddingBottom: '180px' }} // Space for fixed input area
+        >
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 float shadow-xl">
@@ -480,48 +495,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Compact Input Area with side spacing */}
-        <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 fade-in-up">
+        {/* Fixed Input Area at Bottom of Viewport */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 z-30 shadow-lg">
           <div className="px-6 md:px-8 lg:px-12 py-4">
-            <div className="flex gap-3 mb-3">
-              <div className="flex-1 relative">
-                <textarea
-                  ref={inputRef}
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Share what's on your mind..."
-                  className="form-input resize-none bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 backdrop-blur-sm text-base py-3 px-4 rounded-2xl shadow-lg focus:shadow-xl transition-all duration-300"
-                  rows={2}
-                  disabled={isTyping}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!inputText.trim() || isTyping}
-                  className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover-lift btn-press rounded-2xl flex items-center justify-center transition-all duration-300"
-                >
-                  <Send className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="w-12 h-12 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-600 hover-lift btn-press border border-gray-300 dark:border-slate-600 rounded-2xl flex items-center justify-center transition-all duration-300"
-                  title="Upload photo"
-                >
-                  {isUploading ? (
-                    <div className="loading-spinner w-4 h-4 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
-                  ) : (
-                    <Image className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-            
-            {/* Generate Entry Button - Compact */}
+            {/* Generate Entry Button - Above input */}
             {messages.filter(msg => msg.isUser).length > 0 && (
-              <div className="flex justify-center fade-in">
+              <div className="flex justify-center mb-3 fade-in">
                 <button
                   onClick={handleGenerateEntry}
                   disabled={isTyping || isGeneratingEntry}
@@ -541,6 +520,44 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                 </button>
               </div>
             )}
+
+            {/* Input Row */}
+            <div className="flex gap-3">
+              <div className="flex-1 relative">
+                <textarea
+                  ref={inputRef}
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Share what's on your mind..."
+                  className="form-input resize-none bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 backdrop-blur-sm text-base py-3 px-4 rounded-2xl shadow-lg focus:shadow-xl transition-all duration-300 w-full"
+                  rows={2}
+                  disabled={isTyping}
+                  style={{ maxHeight: '120px' }}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!inputText.trim() || isTyping}
+                  className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover-lift btn-press rounded-2xl flex items-center justify-center transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="w-12 h-12 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-600 hover-lift btn-press border border-gray-300 dark:border-slate-600 rounded-2xl flex items-center justify-center transition-all duration-300"
+                  title="Upload photo"
+                >
+                  {isUploading ? (
+                    <div className="loading-spinner w-4 h-4 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
+                  ) : (
+                    <Image className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
