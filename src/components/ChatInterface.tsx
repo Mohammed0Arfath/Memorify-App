@@ -376,11 +376,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         )}
 
-        {/* Enhanced Messages Container - Adjusted padding bottom for better input visibility */}
+        {/* Enhanced Messages Container */}
         <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="max-w-6xl mx-auto px-6 py-6 pb-4">
+          <div className="max-w-6xl mx-auto px-6 py-6">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center fade-in-up min-h-[60vh]">
+              <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
                 <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-6 float shadow-xl">
                   <Sparkles className="w-10 h-10 text-white" />
                 </div>
@@ -437,7 +437,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
                 </div>
               </div>
             ) : (
-              <div className="space-y-6 pb-8">
+              <div className="space-y-6">
                 {messages.map((message, index) => (
                   <div
                     key={message.id}
@@ -482,10 +482,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         </div>
 
-        {/* Enhanced Input Area - Reduced padding for better positioning */}
+        {/* Enhanced Input Area */}
         <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 fade-in-up">
-          <div className="max-w-6xl mx-auto px-6 py-4">
-            <div className="flex gap-4 mb-3">
+          <div className="max-w-6xl mx-auto px-6 py-6">
+            <div className="flex gap-4 mb-4">
               <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
