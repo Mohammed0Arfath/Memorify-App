@@ -235,7 +235,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
   return (
     <>
-      <div className="h-full flex flex-col relative">
+      <div className="h-full flex flex-col">
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -376,8 +376,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         )}
 
-        {/* Messages Container - Full height with bottom padding for overlay input */}
-        <div className="flex-1 overflow-y-auto px-6 md:px-8 lg:px-12 py-4 min-h-0" style={{ paddingBottom: messages.filter(msg => msg.isUser).length > 0 ? '180px' : '140px' }}>
+        {/* Messages Container - Optimized with side spacing */}
+        <div className="flex-1 overflow-y-auto px-6 md:px-8 lg:px-12 py-4 min-h-0">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center fade-in-up">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 float shadow-xl">
@@ -480,8 +480,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Floating Input Area - Fixed at bottom with overlay */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-t border-gray-200 dark:border-slate-700 fade-in-up shadow-2xl">
+        {/* Compact Input Area with side spacing */}
+        <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 fade-in-up">
           <div className="px-6 md:px-8 lg:px-12 py-4">
             <div className="flex gap-3 mb-3">
               <div className="flex-1 relative">
