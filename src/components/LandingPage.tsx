@@ -15,7 +15,8 @@ import {
   ArrowRight,
   Play,
   CheckCircle,
-  Star
+  Star,
+  ExternalLink
 } from 'lucide-react';
 import Spline from '@splinetool/react-spline';
 import { ThemeToggle } from './ThemeToggle';
@@ -334,7 +335,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
         </div>
       </section>
 
-      {/* Enhanced Footer */}
+      {/* Enhanced Footer with Developer Links */}
       <footer className="relative py-12 bg-gray-900 dark:bg-slate-950 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
@@ -349,53 +350,74 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
               </div>
             </div>
 
-            {/* Enhanced Links */}
+            {/* Developer Links */}
             <div className="flex items-center gap-6">
               <a
-                href="https://github.com"
+                href="https://github.com/Mohammed0Arfath/Memorify-App"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-gray-400 dark:text-slate-500 hover:text-white dark:hover:text-slate-200 transition-colors duration-300 hover:scale-110"
-                aria-label="GitHub"
+                className="group flex items-center gap-2 p-2 text-gray-400 dark:text-slate-500 hover:text-white dark:hover:text-slate-200 transition-all duration-300 hover:scale-110"
+                aria-label="GitHub Repository"
               >
                 <Github className="w-5 h-5" />
+                <span className="hidden sm:block text-sm group-hover:text-purple-300 transition-colors">GitHub</span>
+                <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/mohammed-arfath-r"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-gray-400 dark:text-slate-500 hover:text-white dark:hover:text-slate-200 transition-colors duration-300 hover:scale-110"
-                aria-label="LinkedIn"
+                className="group flex items-center gap-2 p-2 text-gray-400 dark:text-slate-500 hover:text-white dark:hover:text-slate-200 transition-all duration-300 hover:scale-110"
+                aria-label="LinkedIn Profile"
               >
                 <Linkedin className="w-5 h-5" />
+                <span className="hidden sm:block text-sm group-hover:text-blue-300 transition-colors">LinkedIn</span>
+                <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
               <a
-                href="https://netlify.com"
+                href="https://heroic-clafoutis-6f1eee.netlify.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-gray-400 dark:text-slate-500 hover:text-white dark:hover:text-slate-200 transition-colors duration-300 hover:scale-110"
-                aria-label="Netlify"
+                className="group flex items-center gap-2 p-2 text-gray-400 dark:text-slate-500 hover:text-white dark:hover:text-slate-200 transition-all duration-300 hover:scale-110"
+                aria-label="Portfolio Website"
               >
                 <Globe className="w-5 h-5" />
+                <span className="hidden sm:block text-sm group-hover:text-green-300 transition-colors">Portfolio</span>
+                <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 dark:border-slate-800 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-gray-400 dark:text-slate-500">
-            <div className="mb-4 md:mb-0">
-              © 2025 Memorify. All rights reserved.
-            </div>
-            <div className="flex items-center gap-2">
-              Built with
-              <a
-                href="https://bolt.new"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-purple-400 dark:text-purple-300 hover:text-purple-300 dark:hover:text-purple-200 transition-colors duration-300 flex items-center gap-1"
-              >
-                <Zap className="w-4 h-4" />
-                Bolt.new
-              </a>
+          <div className="border-t border-gray-800 dark:border-slate-800 mt-8 pt-8">
+            <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-400 dark:text-slate-500">
+              <div className="mb-4 md:mb-0 text-center md:text-left">
+                <div className="mb-2">
+                  © 2025 Memorify. All rights reserved.
+                </div>
+                <div className="text-xs">
+                  Developed by{' '}
+                  <a
+                    href="https://www.linkedin.com/in/mohammed-arfath-r"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-400 dark:text-purple-300 hover:text-purple-300 dark:hover:text-purple-200 transition-colors duration-300 font-medium"
+                  >
+                    Mohammed Arfath R
+                  </a>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-center md:text-right">
+                <span>Built with</span>
+                <a
+                  href="https://bolt.new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-400 dark:text-purple-300 hover:text-purple-300 dark:hover:text-purple-200 transition-colors duration-300 flex items-center gap-1 font-medium"
+                >
+                  <Zap className="w-4 h-4" />
+                  Bolt.new
+                </a>
+              </div>
             </div>
           </div>
         </div>
