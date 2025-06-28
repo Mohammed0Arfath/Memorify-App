@@ -5,7 +5,6 @@ import { generateAIResponse, analyzeEmotionWithAI } from '../utils/mockAI';
 import { EmotionIndicator } from './EmotionIndicator';
 import { VoiceChat } from './VoiceChat';
 import { errorHandler } from '../utils/errorHandler';
-import { supabase } from '../lib/supabase';
 
 interface ChatInterfaceProps {
   onGenerateEntry: (messages: ChatMessage[], photo?: string) => void;
@@ -25,7 +24,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   const [showVoiceChat, setShowVoiceChat] = useState(false);
   const [hasStartedConversation, setHasStartedConversation] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,27 +31,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
   useEffect(() => {
     // Check if Together.ai API key is configured
     setApiKeyMissing(!import.meta.env.VITE_TOGETHER_API_KEY);
-    
-    // Get user name from Supabase auth
-    const getUserName = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user?.email) {
-          // Extract name from email (before @) and capitalize first letter
-          const emailName = user.email.split('@')[0];
-          const formattedName = emailName
-            .split(/[._-]/) // Split on dots, underscores, or hyphens
-            .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-            .join(' ');
-          setUserName(formattedName);
-        }
-      } catch (error) {
-        console.error('Error getting user name:', error);
-        setUserName('Friend'); // Fallback name
-      }
-    };
-
-    getUserName();
   }, []);
 
   const scrollToBottom = () => {
@@ -335,16 +312,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         )}
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col justify-center items-center px-6 py-12">
+        <div className="flex-1 flex flex-col justify-center items-center px-6 py-8">
           {messages.length === 0 ? (
             /* Welcome Screen - Gemini Style */
-            <div className="w-full max-w-5xl mx-auto text-center space-y-12">
+            <div className="w-full max-w-4xl mx-auto text-center space-y-8">
               {/* Greeting */}
-              <div className="space-y-6 fade-in-up">
+              <div className="space-y-4 fade-in-up">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-800 dark:text-slate-100">
-                  Hello, <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-medium">
-                    {userName || 'Friend'}
-                  </span>
+                  Hello, <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-medium">Mohammed</span>
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600 dark:text-slate-400 font-light">
                   Start Your Reflection Journey
@@ -352,49 +327,49 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               </div>
 
               {/* Suggestion Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12 fade-in-up" style={{ animationDelay: '0.2s' }}>
                 <button
                   onClick={() => handlePromptClick("I had an interesting day today...")}
-                  className="group p-8 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
+                  className="group p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                 >
-                  <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">📝</span>
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">📝</span>
                   </div>
-                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-3 text-lg">Reflect on your day</h3>
-                  <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">Share what happened today</p>
+                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-2">Reflect on your day</h3>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">Share what happened today</p>
                 </button>
                 
                 <button
                   onClick={() => handlePromptClick("I'm feeling...")}
-                  className="group p-8 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-purple-300 dark:hover:border-purple-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
+                  className="group p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-purple-300 dark:hover:border-purple-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                 >
-                  <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">💭</span>
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">💭</span>
                   </div>
-                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-3 text-lg">Explore emotions</h3>
-                  <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">Talk about how you're feeling</p>
+                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-2">Explore emotions</h3>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">Talk about how you're feeling</p>
                 </button>
                 
                 <button
                   onClick={() => handlePromptClick("I've been thinking about...")}
-                  className="group p-8 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-green-300 dark:hover:border-green-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
+                  className="group p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-green-300 dark:hover:border-green-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                 >
-                  <div className="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">🧠</span>
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">🧠</span>
                   </div>
-                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-3 text-lg">Process thoughts</h3>
-                  <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">Work through what's on your mind</p>
+                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-2">Process thoughts</h3>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">Work through what's on your mind</p>
                 </button>
                 
                 <button
                   onClick={() => handlePromptClick("I'm grateful for...")}
-                  className="group p-8 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
+                  className="group p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-600/50 hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 text-left hover:-translate-y-1"
                 >
-                  <div className="w-14 h-14 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">🙏</span>
+                  <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">🙏</span>
                   </div>
-                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-3 text-lg">Practice gratitude</h3>
-                  <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">Focus on positive moments</p>
+                  <h3 className="font-medium text-gray-800 dark:text-slate-200 mb-2">Practice gratitude</h3>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">Focus on positive moments</p>
                 </button>
               </div>
             </div>
@@ -403,8 +378,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
             <div className="w-full max-w-4xl mx-auto">
               {/* Header with emotion indicator */}
               {detectedEmotion && (
-                <div className="flex justify-center mb-8 fade-in">
-                  <div className="flex items-center gap-3 bg-white dark:bg-slate-800/50 rounded-full px-6 py-3 border border-gray-200 dark:border-slate-700/50 shadow-sm">
+                <div className="flex justify-center mb-6 fade-in">
+                  <div className="flex items-center gap-3 bg-white dark:bg-slate-800/50 rounded-full px-4 py-2 border border-gray-200 dark:border-slate-700/50 shadow-sm">
                     <EmotionIndicator emotion={detectedEmotion} showLabel />
                     <button
                       onClick={toggleVoiceChat}
@@ -418,7 +393,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               )}
 
               {/* Messages */}
-              <div className="space-y-8 mb-12">
+              <div className="space-y-6 mb-8">
                 {messages.map((message, index) => (
                   <div
                     key={message.id}
@@ -462,7 +437,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
               {/* Generate Entry Button */}
               {messages.filter(msg => msg.isUser).length > 0 && (
-                <div className="flex justify-center mb-8 fade-in">
+                <div className="flex justify-center mb-6 fade-in">
                   <button
                     onClick={handleGenerateEntry}
                     disabled={isTyping || isGeneratingEntry}
