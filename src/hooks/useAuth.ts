@@ -115,12 +115,15 @@ export const useAuth = () => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
     
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut({
+        scope: 'global'
+      });
       
       if (error) throw error;
       
       // Clear local storage
       localStorage.removeItem('diary-entries');
+      localStorage.removeItem('memorify-user-session');
       
       return { error: null };
     } catch (error) {

@@ -28,6 +28,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
 
+  // Handle keyboard navigation
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape' && onClose) {
+      onClose();
+    }
+  };
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileLoading(true);
@@ -92,8 +99,20 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
   ];
 
   return (
-    <div className="modal-backdrop backdrop-animate">
-      <div className="modal-content max-w-md max-h-[90vh] overflow-hidden fade-in-up bg-white dark:bg-slate-800/95 backdrop-blur-sm border border-gray-200 dark:border-slate-700">
+    <div 
+      className="modal-backdrop backdrop-animate"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && onClose) {
+          onClose();
+        }
+      }}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profile-title"
+    >
+      <div className="modal-content max-w-md max-h-[90vh] overflow-hidden fade-in-up bg-white dark:bg-slate-800/95 backdrop-blur-sm border border-gray-200 dark:border-slate-700 mobile-overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 p-6 text-white">
           <div className="flex items-center justify-between">
@@ -101,9 +120,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
               <div className="w-12 h-12 bg-white/20 dark:bg-white/30 rounded-full flex items-center justify-center hover-scale transition-smooth">
                 <User className="w-6 h-6" />
               </div>
-              <div>
-                <h3 className="text-xl font-semibold">User Profile</h3>
-                <p className="text-blue-100 dark:text-blue-200 text-sm truncate">{user?.email}</p>
+              <div className="min-w-0">
+                <h3 id="profile-title" className="text-xl font-semibold mobile-text">User Profile</h3>
+                <p className="text-blue-100 dark:text-blue-200 text-sm truncate mobile-text">{user?.email}</p>
               </div>
             </div>
             
@@ -120,7 +139,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-slate-700">
+        <div className="flex border-b border-gray-200 dark:border-slate-700" role="tablist">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
             return (
@@ -133,6 +152,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                     : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700/50'
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`${tab.id}-panel`}
+                tabIndex={activeTab === tab.id ? 0 : -1}
               >
                 <Icon className="w-4 h-4" />
                 {tab.label}
@@ -142,28 +165,28 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+        <div className="p-6 overflow-y-auto max-h-[60vh] mobile-overflow-hidden">
           {activeTab === 'profile' && (
-            <div className="fade-in">
-              <h4 className="text-lg font-semibold text-gray-800 dark:text-slate-100 mb-4">Profile Information</h4>
+            <div className="fade-in" role="tabpanel" id="profile-panel" aria-labelledby="profile-tab">
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-slate-100 mb-4 mobile-text">Profile Information</h4>
               
               {profileSuccess && (
-                <div className="alert alert-success mb-4 fade-in bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/50 text-green-800 dark:text-green-300">
+                <div className="alert alert-success mb-4 fade-in bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/50 text-green-800 dark:text-green-300" role="alert">
                   <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
-                  <span className="text-sm">{profileSuccess}</span>
+                  <span className="text-sm mobile-text">{profileSuccess}</span>
                 </div>
               )}
 
               {profileError && (
-                <div className="alert alert-error mb-4 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
+                <div className="alert alert-error mb-4 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300" role="alert">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">{profileError}</span>
+                  <span className="text-sm mobile-text">{profileError}</span>
                 </div>
               )}
 
               <form onSubmit={handleProfileUpdate} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="form-label text-gray-700 dark:text-slate-300">
+                  <label htmlFor="email" className="form-label text-gray-700 dark:text-slate-300 mobile-text">
                     Email Address
                   </label>
                   <div className="relative">
@@ -173,7 +196,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="form-input pl-10 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400"
+                      className="form-input pl-10 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 mobile-text"
                       placeholder="Enter your email"
                       required
                       disabled={profileLoading}
@@ -184,7 +207,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={profileLoading || email === user?.email}
-                  className="btn-primary w-full hover-lift btn-press"
+                  className="btn-primary w-full hover-lift btn-press mobile-text"
                 >
                   {profileLoading ? (
                     <>
@@ -203,26 +226,26 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
           )}
 
           {activeTab === 'password' && (
-            <div className="fade-in">
-              <h4 className="text-lg font-semibold text-gray-800 dark:text-slate-100 mb-4">Change Password</h4>
+            <div className="fade-in" role="tabpanel" id="password-panel" aria-labelledby="password-tab">
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-slate-100 mb-4 mobile-text">Change Password</h4>
               
               {passwordSuccess && (
-                <div className="alert alert-success mb-4 fade-in bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/50 text-green-800 dark:text-green-300">
+                <div className="alert alert-success mb-4 fade-in bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/50 text-green-800 dark:text-green-300" role="alert">
                   <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
-                  <span className="text-sm">{passwordSuccess}</span>
+                  <span className="text-sm mobile-text">{passwordSuccess}</span>
                 </div>
               )}
 
               {passwordError && (
-                <div className="alert alert-error mb-4 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
+                <div className="alert alert-error mb-4 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300" role="alert">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">{passwordError}</span>
+                  <span className="text-sm mobile-text">{passwordError}</span>
                 </div>
               )}
 
               <form onSubmit={handlePasswordUpdate} className="space-y-4">
                 <div>
-                  <label htmlFor="newPassword" className="form-label text-gray-700 dark:text-slate-300">
+                  <label htmlFor="newPassword" className="form-label text-gray-700 dark:text-slate-300 mobile-text">
                     New Password
                   </label>
                   <div className="relative">
@@ -232,7 +255,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       type={showNewPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="form-input pl-10 pr-12 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400"
+                      className="form-input pl-10 pr-12 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 mobile-text"
                       placeholder="Enter new password"
                       required
                       minLength={6}
@@ -243,6 +266,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       onClick={() => setShowNewPassword(!showNewPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-smooth hover-scale"
                       disabled={passwordLoading}
+                      aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                     >
                       {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -250,7 +274,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="form-label text-gray-700 dark:text-slate-300">
+                  <label htmlFor="confirmPassword" className="form-label text-gray-700 dark:text-slate-300 mobile-text">
                     Confirm New Password
                   </label>
                   <div className="relative">
@@ -260,7 +284,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="form-input pl-10 pr-12 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400"
+                      className="form-input pl-10 pr-12 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 mobile-text"
                       placeholder="Confirm new password"
                       required
                       disabled={passwordLoading}
@@ -270,6 +294,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-smooth hover-scale"
                       disabled={passwordLoading}
+                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                     >
                       {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -279,7 +304,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={passwordLoading || !newPassword || !confirmPassword}
-                  className="btn-primary w-full hover-lift btn-press"
+                  className="btn-primary w-full hover-lift btn-press mobile-text"
                 >
                   {passwordLoading ? (
                     <>
@@ -299,9 +324,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="card-footer fade-in bg-gray-50 dark:bg-slate-700/50 border-t border-gray-200 dark:border-slate-700">
+        <div className="card-footer fade-in bg-gray-50 dark:bg-slate-700/50 border-t border-gray-200 dark:border-slate-700 mobile-overflow-hidden">
           <div className="text-center">
-            <p className="text-xs text-gray-500 dark:text-slate-400">
+            <p className="text-xs text-gray-500 dark:text-slate-400 mobile-text">
               Account created: {new Date(user?.created_at).toLocaleDateString()}
             </p>
           </div>

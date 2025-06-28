@@ -43,6 +43,36 @@ function AppContent({ user }: AppProps) {
     }
   }, [user]);
 
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isUserMenuOpen && !(event.target as Element).closest('.user-menu-container')) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isUserMenuOpen]);
+
+  // Handle keyboard navigation for user menu
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isUserMenuOpen) {
+        if (event.key === 'Escape') {
+          setIsUserMenuOpen(false);
+        }
+      }
+    };
+
+    if (isUserMenuOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isUserMenuOpen]);
+
   const loadEntries = async () => {
     try {
       setError(null);
@@ -112,12 +142,16 @@ function AppContent({ user }: AppProps) {
   const handleSignOut = async () => {
     if (signingOut) return; // Prevent multiple clicks
     
+    console.log('🔄 Starting sign out process...');
     setSigningOut(true);
     
     try {
       // Close any open menus first
       setIsUserMenuOpen(false);
       setShowUserProfile(false);
+      setIsMobileMenuOpen(false);
+      
+      console.log('📱 Closed all menus');
       
       // Clear local state immediately to provide instant feedback
       setEntries([]);
@@ -125,37 +159,68 @@ function AppContent({ user }: AppProps) {
       setCurrentEmotion(null);
       setError(null);
       
+      console.log('🧹 Cleared local state');
+      
       // Clear localStorage
       localStorage.removeItem('diary-entries');
+      localStorage.removeItem('memorify-user-session');
       
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
+      console.log('💾 Cleared localStorage');
+      
+      // Sign out from Supabase with explicit session clearing
+      const { error } = await supabase.auth.signOut({
+        scope: 'global' // This ensures all sessions are cleared
+      });
       
       if (error) {
+        console.error('❌ Supabase sign out error:', error);
         errorHandler.logError(error, {
           userId: user.id,
           action: 'sign_out',
           component: 'App'
         }, 'medium');
-        // Even if Supabase fails, we've cleared local state
-        // The AuthWrapper will handle the redirect
+      } else {
+        console.log('✅ Successfully signed out from Supabase');
       }
       
-      // Force a page reload to ensure clean state
-      window.location.reload();
+      // Force clear any remaining session data
+      await supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          console.log('⚠️ Session still exists, forcing refresh...');
+          window.location.reload();
+        }
+      });
+      
+      console.log('🔄 Sign out process completed');
       
     } catch (error) {
+      console.error('💥 Sign out error:', error);
       errorHandler.logError(error instanceof Error ? error : new Error('Sign out failed'), {
         userId: user.id,
         action: 'sign_out',
         component: 'App'
       }, 'high');
+      
       // Even on error, try to clear everything and reload
       localStorage.clear();
-      window.location.reload();
+      sessionStorage.clear();
+      
+      // Force reload as last resort
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } finally {
       setSigningOut(false);
     }
+  };
+
+  const handleOpenProfile = () => {
+    setShowUserProfile(true);
+    setIsUserMenuOpen(false);
+  };
+
+  const handleCloseProfile = () => {
+    setShowUserProfile(false);
   };
 
   const handleGenerateEntry = async (messages: ChatMessage[], photo?: string) => {
@@ -384,12 +449,14 @@ function AppContent({ user }: AppProps) {
                 <ThemeToggle variant="inline" size="sm" />
 
                 {/* User Menu */}
-                <div className="relative">
+                <div className="relative user-menu-container">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     disabled={signingOut}
-                    className="btn-ghost hover-scale flex items-center gap-2"
+                    className="btn-ghost hover-scale flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="User menu"
+                    aria-expanded={isUserMenuOpen}
+                    aria-haspopup="true"
                   >
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                       <User className="w-4 h-4 text-white" />
@@ -407,11 +474,10 @@ function AppContent({ user }: AppProps) {
                         <p className="text-sm text-gray-600 dark:text-slate-400 truncate mobile-text">{user.email}</p>
                       </div>
                       <button
-                        onClick={() => {
-                          setShowUserProfile(true);
-                          setIsUserMenuOpen(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3"
+                        onClick={handleOpenProfile}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
+                        role="menuitem"
+                        tabIndex={0}
                       >
                         <Settings className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
                         <span className="text-sm text-gray-700 dark:text-slate-300">Profile Settings</span>
@@ -419,11 +485,13 @@ function AppContent({ user }: AppProps) {
                       <button
                         onClick={handleSignOut}
                         disabled={signingOut}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3"
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
+                        role="menuitem"
+                        tabIndex={0}
                       >
                         {signingOut ? (
                           <>
-                            <div className="loading-spinner w-4 h-4"></div>
+                            <div className="loading-spinner w-4 h-4 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
                             <span className="text-sm text-gray-700 dark:text-slate-300">Signing out...</span>
                           </>
                         ) : (
@@ -477,19 +545,11 @@ function AppContent({ user }: AppProps) {
           )}
         </header>
 
-        {/* Click outside to close user menu */}
-        {isUserMenuOpen && !signingOut && (
-          <div 
-            className="fixed inset-0 z-10 backdrop-animate" 
-            onClick={() => setIsUserMenuOpen(false)}
-          />
-        )}
-
         {/* User Profile Modal */}
         {showUserProfile && (
           <UserProfile 
             user={user} 
-            onClose={() => setShowUserProfile(false)} 
+            onClose={handleCloseProfile} 
           />
         )}
 
