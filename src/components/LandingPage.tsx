@@ -100,33 +100,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
   ];
 
   return (
-    <div className="min-h-screen transition-colors duration-500">
-      {/* Enhanced Background for Dark Mode */}
-      <div className="fixed inset-0 bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"></div>
+    <div className="min-h-screen transition-colors duration-500 w-full overflow-x-hidden">
+      {/* Enhanced Background for Dark Mode - Full width coverage */}
+      <div className="fixed inset-0 w-full bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"></div>
       
       {/* Theme Toggle */}
       <ThemeToggle />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Enhanced Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 dark:from-slate-900 dark:via-purple-900/20 dark:to-indigo-900/20">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20 dark:opacity-10"></div>
+      {/* Hero Section - Full width with proper mobile handling */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden w-full">
+        {/* Enhanced Animated Background - Full coverage */}
+        <div className="absolute inset-0 w-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 dark:from-slate-900 dark:via-purple-900/20 dark:to-indigo-900/20">
+          <div className="absolute inset-0 w-full bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20 dark:opacity-10"></div>
           
-          {/* Enhanced Floating Orbs */}
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 dark:bg-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 dark:bg-blue-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500/20 dark:bg-indigo-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+          {/* Enhanced Floating Orbs - Responsive positioning */}
+          <div className="absolute top-1/4 left-1/4 w-32 sm:w-64 h-32 sm:h-64 bg-purple-500/20 dark:bg-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-blue-500/20 dark:bg-blue-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 sm:w-80 h-40 sm:h-80 bg-indigo-500/20 dark:bg-indigo-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
           
-          {/* Additional Dark Mode Orbs */}
-          <div className="absolute top-1/3 right-1/3 w-48 h-48 bg-cyan-500/10 dark:bg-cyan-400/5 rounded-full blur-2xl animate-pulse delay-2000"></div>
-          <div className="absolute bottom-1/3 left-1/3 w-72 h-72 bg-pink-500/10 dark:bg-pink-400/5 rounded-full blur-3xl animate-pulse delay-3000"></div>
+          {/* Additional Dark Mode Orbs - Mobile optimized */}
+          <div className="absolute top-1/3 right-1/3 w-24 sm:w-48 h-24 sm:h-48 bg-cyan-500/10 dark:bg-cyan-400/5 rounded-full blur-2xl animate-pulse delay-2000"></div>
+          <div className="absolute bottom-1/3 left-1/3 w-36 sm:w-72 h-36 sm:h-72 bg-pink-500/10 dark:bg-pink-400/5 rounded-full blur-3xl animate-pulse delay-3000"></div>
         </div>
 
-        {/* 3D AI Bot */}
-        <div className="absolute inset-0 pointer-events-none">
+        {/* 3D AI Bot - Mobile responsive */}
+        <div className="absolute inset-0 pointer-events-none w-full">
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-96 h-96 opacity-80 dark:opacity-60">
+            <div className="w-48 sm:w-96 h-48 sm:h-96 opacity-80 dark:opacity-60">
               <Spline
                 scene="https://prod.spline.design/aB5a6sVScaHOTWjC/scene.splinecode"
                 onLoad={() => setIsLoaded(true)}
@@ -135,8 +135,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
           </div>
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+        {/* Hero Content - Full width with proper mobile padding */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <div className={`transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             {/* Enhanced Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm rounded-full border border-white/20 dark:border-slate-700/50 text-white/90 dark:text-slate-200 text-sm font-medium mb-8 shadow-lg dark:shadow-2xl">
@@ -144,19 +144,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
               AI-Powered Emotional Intelligence
             </div>
 
-            {/* Main Heading */}
-            <h1 className="text-5xl md:text-7xl font-bold text-white dark:text-slate-100 mb-6 leading-tight">
+            {/* Main Heading - Mobile responsive */}
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white dark:text-slate-100 mb-6 leading-tight">
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 dark:from-purple-300 dark:via-pink-300 dark:to-blue-300 bg-clip-text text-transparent">
                 Memorify
               </span>
               <br />
-              <span className="text-3xl md:text-5xl font-medium text-white/90 dark:text-slate-200">
+              <span className="text-2xl sm:text-3xl md:text-5xl font-medium text-white/90 dark:text-slate-200">
                 Your AI-Powered Emotional Diary
               </span>
             </h1>
 
-            {/* Subheading */}
-            <p className="text-xl md:text-2xl text-white/80 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            {/* Subheading - Mobile responsive */}
+            <p className="text-lg sm:text-xl md:text-2xl text-white/80 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed px-4">
               <span className="font-semibold text-purple-300 dark:text-purple-200">Reflect.</span>{' '}
               <span className="font-semibold text-pink-300 dark:text-pink-200">Record.</span>{' '}
               <span className="font-semibold text-blue-300 dark:text-blue-200">Reconnect.</span>
@@ -164,11 +164,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
               Transform your thoughts into meaningful insights with an AI companion that truly understands you.
             </p>
 
-            {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            {/* Enhanced CTA Buttons - Mobile responsive */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 px-4">
               <button
                 onClick={onNavigateToAuth}
-                className="group px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/30 transition-all duration-300 hover:scale-105 flex items-center gap-3"
+                className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/30 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3"
               >
                 <Sparkles className="w-5 h-5" />
                 Get Started Free
@@ -177,7 +177,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
               
               <button
                 onClick={scrollToFeatures}
-                className="group px-8 py-4 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm text-white dark:text-slate-200 font-semibold rounded-2xl border border-white/20 dark:border-slate-700/50 hover:bg-white/20 dark:hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 flex items-center gap-3 shadow-lg dark:shadow-2xl"
+                className="group w-full sm:w-auto px-8 py-4 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm text-white dark:text-slate-200 font-semibold rounded-2xl border border-white/20 dark:border-slate-700/50 hover:bg-white/20 dark:hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3 shadow-lg dark:shadow-2xl"
               >
                 <Play className="w-5 h-5" />
                 Explore Features
@@ -185,7 +185,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </div>
 
             {/* Sign In Link */}
-            <div className="mb-16">
+            <div className="mb-16 px-4">
               <p className="text-white/70 dark:text-slate-400 text-sm">
                 Already have an account?{' '}
                 <button
@@ -197,19 +197,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
               </p>
             </div>
 
-            {/* Enhanced Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            {/* Enhanced Stats - Mobile responsive grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto px-4">
               <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">10K+</div>
-                <div className="text-white/70 dark:text-slate-400">Reflections Created</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">10K+</div>
+                <div className="text-white/70 dark:text-slate-400 text-sm">Reflections Created</div>
               </div>
               <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">95%</div>
-                <div className="text-white/70 dark:text-slate-400">User Satisfaction</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">95%</div>
+                <div className="text-white/70 dark:text-slate-400 text-sm">User Satisfaction</div>
               </div>
               <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">24/7</div>
-                <div className="text-white/70 dark:text-slate-400">AI Companion</div>
+                <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">24/7</div>
+                <div className="text-white/70 dark:text-slate-400 text-sm">AI Companion</div>
               </div>
             </div>
           </div>
@@ -223,28 +223,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
         </div>
       </section>
 
-      {/* Enhanced Features Section */}
-      <section id="features" className="relative py-24 bg-white dark:bg-slate-800/50 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Enhanced Features Section - Full width */}
+      <section id="features" className="relative py-24 bg-white dark:bg-slate-800/50 transition-colors duration-500 w-full overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {/* Section Header */}
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
               Powerful Features for
               <span className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent"> Emotional Growth</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-slate-300 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-slate-300 max-w-3xl mx-auto">
               Discover how Memorify combines cutting-edge AI technology with emotional intelligence to create the most advanced journaling experience.
             </p>
           </div>
 
-          {/* Enhanced Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Enhanced Features Grid - Mobile responsive */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={index}
-                  className={`group p-8 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700/50 dark:to-slate-800/50 dark:backdrop-blur-sm hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-500 hover:scale-105 cursor-pointer border border-gray-200/50 dark:border-slate-600/30 ${
+                  className={`group p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700/50 dark:to-slate-800/50 dark:backdrop-blur-sm hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-500 hover:scale-105 cursor-pointer border border-gray-200/50 dark:border-slate-600/30 ${
                     activeFeature === index ? 'ring-2 ring-purple-500 dark:ring-purple-400' : ''
                   }`}
                   onMouseEnter={() => setActiveFeature(index)}
@@ -253,11 +253,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-slate-100 mb-4">
                     {feature.title}
                   </h3>
                   
-                  <p className="text-gray-600 dark:text-slate-300 leading-relaxed">
+                  <p className="text-gray-600 dark:text-slate-300 leading-relaxed text-sm sm:text-base">
                     {feature.description}
                   </p>
                 </div>
@@ -267,23 +267,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
         </div>
       </section>
 
-      {/* Enhanced Testimonials Section */}
-      <section className="relative py-24 bg-gray-50 dark:bg-slate-900/50 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Enhanced Testimonials Section - Full width */}
+      <section className="relative py-24 bg-gray-50 dark:bg-slate-900/50 transition-colors duration-500 w-full overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
               Loved by Thousands
             </h2>
-            <p className="text-xl text-gray-600 dark:text-slate-300">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-slate-300">
               See what our users say about their journey with Memorify
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="p-8 bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-slate-700/30"
+                className="p-6 sm:p-8 bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-slate-700/30"
               >
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -291,7 +291,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
                   ))}
                 </div>
                 
-                <p className="text-gray-600 dark:text-slate-300 mb-6 leading-relaxed">
+                <p className="text-gray-600 dark:text-slate-300 mb-6 leading-relaxed text-sm sm:text-base">
                   "{testimonial.content}"
                 </p>
                 
@@ -309,20 +309,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
         </div>
       </section>
 
-      {/* Enhanced CTA Section */}
-      <section className="relative py-24 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+      {/* Enhanced CTA Section - Full width */}
+      <section className="relative py-24 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700 w-full overflow-x-hidden">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Begin Your Journey?
           </h2>
-          <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-white/90 mb-12 max-w-2xl mx-auto">
             Join thousands of users who have discovered deeper self-awareness and emotional growth through AI-powered reflection.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <button
               onClick={onNavigateToAuth}
-              className="group px-10 py-5 bg-white dark:bg-slate-100 text-purple-600 dark:text-purple-700 font-bold rounded-2xl shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105 flex items-center gap-3"
+              className="group w-full sm:w-auto px-10 py-5 bg-white dark:bg-slate-100 text-purple-600 dark:text-purple-700 font-bold rounded-2xl shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3"
             >
               <Heart className="w-6 h-6" />
               Start Your Journey
@@ -343,7 +343,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-8 text-white/70 dark:text-white/80 flex-wrap">
+          <div className="flex items-center justify-center gap-4 sm:gap-8 text-white/70 dark:text-white/80 flex-wrap text-sm">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5" />
               <span>Free to start</span>
@@ -360,9 +360,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
         </div>
       </section>
 
-      {/* Enhanced Footer with Developer Links */}
-      <footer className="relative py-12 bg-gray-900 dark:bg-slate-950 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Enhanced Footer with Developer Links - Full width */}
+      <footer className="relative py-12 bg-gray-900 dark:bg-slate-950 transition-colors duration-500 w-full overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             {/* Logo and Description */}
             <div className="flex items-center gap-3 mb-6 md:mb-0">
