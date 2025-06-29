@@ -411,11 +411,11 @@ function AppContent({ user }: AppProps) {
                 <div className="brand-logo hover-scale transition-smooth float">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 hidden sm:block">
                   <h1 className="text-xl md:text-2xl font-bold gradient-text truncate">
                     Memorify
                   </h1>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none truncate hidden sm:block">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none truncate">
                     Your AI-powered companion
                     {import.meta.env.VITE_TOGETHER_API_KEY && (
                       <span className="ml-1 text-green-600 dark:text-green-400">• Together.ai Enhanced</span>
