@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Design System Variables */
 :root {
   /* Color Palette */
@@ -163,6 +159,10 @@
 /* Base Styles */
 @layer base {
   /* Prevent horizontal scroll globally */
+  * {
+    box-sizing: border-box;
+  }
+
   html {
     scroll-behavior: smooth;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -181,6 +181,8 @@
     width: 100%;
     max-width: 100vw;
     position: relative;
+    margin: 0;
+    padding: 0;
   }
 
   /* Enhanced Dark mode support */
@@ -195,6 +197,7 @@
     overflow-x: hidden;
     width: 100%;
     max-width: 100vw;
+    min-height: 100vh;
   }
 
   /* Typography Hierarchy */
@@ -633,6 +636,8 @@
   /* Mobile-specific utilities */
   .mobile-container {
     @apply px-4 sm:px-6;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   .mobile-overflow-hidden {
@@ -644,6 +649,40 @@
     word-break: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
+  }
+
+  /* Mobile-specific layout fixes */
+  @media (max-width: 768px) {
+    /* Ensure no horizontal overflow */
+    .min-h-screen {
+      min-height: 100vh;
+      min-height: 100dvh; /* Dynamic viewport height for mobile */
+    }
+    
+    /* Fix any potential width issues */
+    .w-full {
+      width: 100% !important;
+      max-width: 100vw !important;
+    }
+    
+    /* Ensure proper spacing on mobile */
+    .px-4 {
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    }
+    
+    /* Fix flex containers on mobile */
+    .flex {
+      min-width: 0;
+    }
+    
+    /* Ensure text doesn't overflow */
+    .text-xl,
+    .text-2xl,
+    .text-3xl {
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
   }
 }
 
@@ -838,6 +877,25 @@
   /* Checkmark animation */
   .checkmark-animate {
     animation: checkmark 0.6s ease-out;
+  }
+
+  /* Mobile viewport fixes */
+  @media (max-width: 768px) {
+    /* Prevent horizontal scroll */
+    .overflow-x-hidden {
+      overflow-x: hidden !important;
+    }
+    
+    /* Ensure full width usage */
+    .w-screen {
+      width: 100vw !important;
+    }
+    
+    /* Fix any margin/padding issues */
+    .mx-auto {
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
   }
 }
 
@@ -1056,13 +1114,31 @@
   .max-w-6xl,
   .max-w-4xl,
   .max-w-2xl {
-    max-width: 100vw;
-    overflow-x: hidden;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
   }
   
   /* Mobile-safe positioning for fixed elements */
   .fixed {
-    max-width: calc(100vw - 16px);
+    max-width: calc(100vw - 8px) !important;
+  }
+  
+  /* Ensure body doesn't overflow */
+  body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Fix any flex issues */
+  .flex {
+    min-width: 0 !important;
+  }
+  
+  /* Ensure proper text wrapping */
+  .truncate {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 }
 

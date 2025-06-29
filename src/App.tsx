@@ -383,11 +383,11 @@ function AppContent({ user }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500 overflow-x-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500 overflow-x-hidden w-full max-w-full">
         {/* Error Banner */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4">
-            <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4 w-full">
+            <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6">
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0"></div>
                 <span className="text-sm text-red-700 dark:text-red-300 truncate">{error}</span>
@@ -403,9 +403,9 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Header */}
-        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40 flex-shrink-0 fade-in-down transition-colors duration-500">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center justify-between h-16">
+        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40 flex-shrink-0 fade-in-down transition-colors duration-500 w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+            <div className="flex items-center justify-between h-16 w-full">
               {/* Logo */}
               <div className="flex items-center gap-3 fade-in min-w-0 flex-shrink-0">
                 <div className="brand-logo hover-scale transition-smooth float">
@@ -486,7 +486,7 @@ function AppContent({ user }: AppProps) {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down">
+            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down w-full">
               <nav className="px-4 py-2 space-y-1">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
@@ -567,14 +567,14 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-0">
+        <main className="flex-1 min-h-0 w-full overflow-x-hidden">
           {renderContent()}
         </main>
 
         {/* Stats Footer */}
         {entries.length > 0 && (
-          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500">
-            <div className="max-w-7xl mx-auto px-6">
+          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500 w-full">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
               <div className="flex items-center justify-center gap-4 md:gap-8 text-sm text-gray-600 dark:text-slate-400 flex-wrap">
                 <div className="flex items-center gap-2 hover-scale transition-smooth">
                   <BookOpen className="w-4 h-4 flex-shrink-0" />
@@ -604,8 +604,8 @@ function AppContent({ user }: AppProps) {
         )}
 
         {/* Attribution Footer */}
-        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500">
-          <div className="max-w-7xl mx-auto px-6">
+        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500 w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
             <p className="text-xs text-center text-gray-500 dark:text-slate-500">
               Built with ❤️ using{' '}
               <a 
