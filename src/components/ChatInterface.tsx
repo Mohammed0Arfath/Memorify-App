@@ -261,7 +261,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         <div className="flex-shrink-0 relative z-20">
           {/* Error Message */}
           {error && (
-            <div className="alert alert-error mx-4 md:mx-6 mt-3 fade-in bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
+            <div className="alert alert-error mx-4 md:mx-8 lg:mx-12 xl:mx-16 mt-3 fade-in bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <div className="flex-1">
                 <span className="text-sm">{error}</span>
@@ -277,7 +277,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* API Key Warning */}
           {apiKeyMissing && (
-            <div className="alert alert-warning mx-4 md:mx-6 mt-3 fade-in bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/50 text-amber-800 dark:text-amber-300">
+            <div className="alert alert-warning mx-4 md:mx-8 lg:mx-12 xl:mx-16 mt-3 fade-in bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/50 text-amber-800 dark:text-amber-300">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Key Not Configured</p>
@@ -300,7 +300,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
 
           {/* Quota Exceeded Warning */}
           {quotaExceeded && !apiKeyMissing && (
-            <div className="alert alert-error mx-4 md:mx-6 mt-3 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
+            <div className="alert alert-error mx-4 md:mx-8 lg:mx-12 xl:mx-16 mt-3 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               <div className="text-sm">
                 <p className="font-medium mb-1">Together.ai API Quota Exceeded</p>
@@ -321,9 +321,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           )}
         </div>
 
-        {/* Header - Fixed at top */}
+        {/* Header - Fixed at top with consistent width */}
         <div className="flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 fade-in-down transition-colors duration-500 relative z-20">
-          <div className="px-4 md:px-6 py-3">
+          <div className="mx-4 md:mx-8 lg:mx-12 xl:mx-16 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center hover-scale transition-smooth shadow-lg">
@@ -361,9 +361,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           </div>
         </div>
 
-        {/* Photo Preview - Fixed below header */}
+        {/* Photo Preview - Fixed below header with consistent width */}
         {selectedPhoto && (
-          <div className="flex-shrink-0 mx-4 md:mx-6 mt-3 relative z-20">
+          <div className="flex-shrink-0 mx-4 md:mx-8 lg:mx-12 xl:mx-16 mt-3 relative z-20">
             <div className="alert alert-info fade-in bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-800 dark:text-blue-300">
               <div className="flex items-start gap-3 w-full">
                 <div className="relative">
@@ -391,7 +391,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         {/* Messages Container - Scrollable area with proper bottom padding */}
         <div 
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto px-4 md:px-6 py-4"
+          className="flex-1 overflow-y-auto px-4 md:px-8 lg:px-12 xl:px-16 py-4"
           style={{ 
             paddingBottom: messages.filter(msg => msg.isUser).length > 0 ? '200px' : '160px' // Extra space for generate button
           }}
@@ -499,9 +499,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
         </div>
       </div>
 
-      {/* FIXED INPUT AREA - Positioned at bottom of viewport */}
+      {/* FIXED INPUT AREA - Positioned at bottom of viewport with consistent width */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-t border-gray-200 dark:border-slate-700 z-50 shadow-2xl">
-        <div className="px-4 md:px-6 py-4">
+        <div className="mx-4 md:mx-8 lg:mx-12 xl:mx-16 py-4">
           {/* Generate Entry Button - Above input */}
           {messages.filter(msg => msg.isUser).length > 0 && (
             <div className="flex justify-center mb-3 fade-in">
