@@ -406,16 +406,18 @@ function AppContent({ user }: AppProps) {
         <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40 flex-shrink-0 fade-in-down transition-colors duration-500">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-16">
-              {/* Logo */}
+              {/* Logo and Brand Name - Always Visible */}
               <div className="flex items-center gap-3 fade-in min-w-0 flex-shrink-0">
                 <div className="brand-logo hover-scale transition-smooth float">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <div className="min-w-0 hidden sm:block">
-                  <h1 className="text-xl md:text-2xl font-bold gradient-text truncate">
+                <div className="min-w-0">
+                  {/* Brand Name - Always Visible on All Screens */}
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold gradient-text truncate">
                     Memorify
                   </h1>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none truncate">
+                  {/* Subtitle - Hidden on Mobile, Visible on Desktop */}
+                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none truncate hidden sm:block">
                     Your AI-powered companion
                     {import.meta.env.VITE_TOGETHER_API_KEY && (
                       <span className="ml-1 text-green-600 dark:text-green-400">• Together.ai Enhanced</span>
