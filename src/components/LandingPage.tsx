@@ -100,7 +100,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
   ];
 
   return (
-    <div className="min-h-screen transition-colors duration-500 overflow-x-hidden">
+    <div className="min-h-screen transition-colors duration-500">
       {/* Enhanced Background for Dark Mode */}
       <div className="fixed inset-0 bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"></div>
       
@@ -136,7 +136,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 text-center">
+        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
           <div className={`transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             {/* Enhanced Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm rounded-full border border-white/20 dark:border-slate-700/50 text-white/90 dark:text-slate-200 text-sm font-medium mb-8 shadow-lg dark:shadow-2xl">
@@ -145,18 +145,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white dark:text-slate-100 mb-6 leading-tight px-2">
+            <h1 className="text-5xl md:text-7xl font-bold text-white dark:text-slate-100 mb-6 leading-tight">
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 dark:from-purple-300 dark:via-pink-300 dark:to-blue-300 bg-clip-text text-transparent">
                 Memorify
               </span>
               <br />
-              <span className="text-2xl sm:text-3xl md:text-5xl font-medium text-white/90 dark:text-slate-200">
+              <span className="text-3xl md:text-5xl font-medium text-white/90 dark:text-slate-200">
                 Your AI-Powered Emotional Diary
               </span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-lg sm:text-xl md:text-2xl text-white/80 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed px-4">
+            <p className="text-xl md:text-2xl text-white/80 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
               <span className="font-semibold text-purple-300 dark:text-purple-200">Reflect.</span>{' '}
               <span className="font-semibold text-pink-300 dark:text-pink-200">Record.</span>{' '}
               <span className="font-semibold text-blue-300 dark:text-blue-200">Reconnect.</span>
@@ -165,10 +165,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </p>
 
             {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 px-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
               <button
                 onClick={onNavigateToAuth}
-                className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/30 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3"
+                className="group px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/30 transition-all duration-300 hover:scale-105 flex items-center gap-3"
               >
                 <Sparkles className="w-5 h-5" />
                 Get Started Free
@@ -177,7 +177,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
               
               <button
                 onClick={scrollToFeatures}
-                className="group w-full sm:w-auto px-8 py-4 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm text-white dark:text-slate-200 font-semibold rounded-2xl border border-white/20 dark:border-slate-700/50 hover:bg-white/20 dark:hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3 shadow-lg dark:shadow-2xl"
+                className="group px-8 py-4 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm text-white dark:text-slate-200 font-semibold rounded-2xl border border-white/20 dark:border-slate-700/50 hover:bg-white/20 dark:hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 flex items-center gap-3 shadow-lg dark:shadow-2xl"
               >
                 <Play className="w-5 h-5" />
                 Explore Features
@@ -185,7 +185,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </div>
 
             {/* Sign In Link */}
-            <div className="mb-16 px-4">
+            <div className="mb-16">
               <p className="text-white/70 dark:text-slate-400 text-sm">
                 Already have an account?{' '}
                 <button
@@ -198,18 +198,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </div>
 
             {/* Enhanced Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">10K+</div>
-                <div className="text-sm sm:text-base text-white/70 dark:text-slate-400">Reflections Created</div>
+                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">10K+</div>
+                <div className="text-white/70 dark:text-slate-400">Reflections Created</div>
               </div>
               <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">95%</div>
-                <div className="text-sm sm:text-base text-white/70 dark:text-slate-400">User Satisfaction</div>
+                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">95%</div>
+                <div className="text-white/70 dark:text-slate-400">User Satisfaction</div>
               </div>
               <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">24/7</div>
-                <div className="text-sm sm:text-base text-white/70 dark:text-slate-400">AI Companion</div>
+                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">24/7</div>
+                <div className="text-white/70 dark:text-slate-400">AI Companion</div>
               </div>
             </div>
           </div>
@@ -224,27 +224,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
       </section>
 
       {/* Enhanced Features Section */}
-      <section id="features" className="relative py-16 sm:py-24 bg-white dark:bg-slate-800/50 transition-colors duration-500 overflow-x-hidden">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+      <section id="features" className="relative py-24 bg-white dark:bg-slate-800/50 transition-colors duration-500">
+        <div className="max-w-7xl mx-auto px-6">
           {/* Section Header */}
-          <div className="text-center mb-16 sm:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
               Powerful Features for
               <span className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent"> Emotional Growth</span>
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-slate-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-slate-300 max-w-3xl mx-auto">
               Discover how Memorify combines cutting-edge AI technology with emotional intelligence to create the most advanced journaling experience.
             </p>
           </div>
 
           {/* Enhanced Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={index}
-                  className={`group p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700/50 dark:to-slate-800/50 dark:backdrop-blur-sm hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-500 hover:scale-105 cursor-pointer border border-gray-200/50 dark:border-slate-600/30 ${
+                  className={`group p-8 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700/50 dark:to-slate-800/50 dark:backdrop-blur-sm hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-500 hover:scale-105 cursor-pointer border border-gray-200/50 dark:border-slate-600/30 ${
                     activeFeature === index ? 'ring-2 ring-purple-500 dark:ring-purple-400' : ''
                   }`}
                   onMouseEnter={() => setActiveFeature(index)}
@@ -253,11 +253,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-slate-100 mb-4">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-4">
                     {feature.title}
                   </h3>
                   
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-slate-300 leading-relaxed">
+                  <p className="text-gray-600 dark:text-slate-300 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -268,22 +268,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
       </section>
 
       {/* Enhanced Testimonials Section */}
-      <section className="relative py-16 sm:py-24 bg-gray-50 dark:bg-slate-900/50 transition-colors duration-500 overflow-x-hidden">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16 sm:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
+      <section className="relative py-24 bg-gray-50 dark:bg-slate-900/50 transition-colors duration-500">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6">
               Loved by Thousands
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-slate-300">
+            <p className="text-xl text-gray-600 dark:text-slate-300">
               See what our users say about their journey with Memorify
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="p-6 sm:p-8 bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-slate-700/30"
+                className="p-8 bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-200/50 dark:border-slate-700/30"
               >
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -291,7 +291,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
                   ))}
                 </div>
                 
-                <p className="text-sm sm:text-base text-gray-600 dark:text-slate-300 mb-6 leading-relaxed">
+                <p className="text-gray-600 dark:text-slate-300 mb-6 leading-relaxed">
                   "{testimonial.content}"
                 </p>
                 
@@ -310,19 +310,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
       </section>
 
       {/* Enhanced CTA Section */}
-      <section className="relative py-16 sm:py-24 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700 overflow-x-hidden">
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+      <section className="relative py-24 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 dark:from-purple-700 dark:via-pink-700 dark:to-blue-700">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Begin Your Journey?
           </h2>
-          <p className="text-lg sm:text-xl text-white/90 mb-12 max-w-2xl mx-auto">
+          <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
             Join thousands of users who have discovered deeper self-awareness and emotional growth through AI-powered reflection.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <button
               onClick={onNavigateToAuth}
-              className="group w-full sm:w-auto px-10 py-5 bg-white dark:bg-slate-100 text-purple-600 dark:text-purple-700 font-bold rounded-2xl shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3"
+              className="group px-10 py-5 bg-white dark:bg-slate-100 text-purple-600 dark:text-purple-700 font-bold rounded-2xl shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105 flex items-center gap-3"
             >
               <Heart className="w-6 h-6" />
               Start Your Journey
@@ -343,26 +343,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-4 sm:gap-8 text-white/70 dark:text-white/80 flex-wrap">
+          <div className="flex items-center justify-center gap-8 text-white/70 dark:text-white/80 flex-wrap">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5" />
-              <span className="text-sm sm:text-base">Free to start</span>
+              <span>Free to start</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5" />
-              <span className="text-sm sm:text-base">No credit card required</span>
+              <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5" />
-              <span className="text-sm sm:text-base">Privacy focused</span>
+              <span>Privacy focused</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Enhanced Footer with Developer Links */}
-      <footer className="relative py-8 sm:py-12 bg-gray-900 dark:bg-slate-950 transition-colors duration-500 overflow-x-hidden">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+      <footer className="relative py-12 bg-gray-900 dark:bg-slate-950 transition-colors duration-500">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             {/* Logo and Description */}
             <div className="flex items-center gap-3 mb-6 md:mb-0">
@@ -376,7 +376,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </div>
 
             {/* Developer Links */}
-            <div className="flex items-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-6">
               <a
                 href="https://github.com/Mohammed0Arfath/Memorify-App"
                 target="_blank"
@@ -413,7 +413,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 dark:border-slate-800 mt-6 sm:mt-8 pt-6 sm:pt-8">
+          <div className="border-t border-gray-800 dark:border-slate-800 mt-8 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-400 dark:text-slate-500">
               <div className="mb-4 md:mb-0 text-center md:text-left">
                 <div className="mb-2">
