@@ -100,31 +100,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
   ];
 
   return (
-    <div className="min-h-screen transition-colors duration-500">
-      {/* Enhanced Background for Dark Mode */}
-      <div className="fixed inset-0 bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"></div>
+    <div className="min-h-screen transition-colors duration-500 overflow-x-hidden">
+      {/* Enhanced Background for Dark Mode - Full Width */}
+      <div className="fixed inset-0 w-full bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500"></div>
       
       {/* Theme Toggle */}
       <ThemeToggle />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Enhanced Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 dark:from-slate-900 dark:via-purple-900/20 dark:to-indigo-900/20">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20 dark:opacity-10"></div>
+      {/* Hero Section - Full Width Container */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden w-full">
+        {/* Enhanced Animated Background - Full Width */}
+        <div className="absolute inset-0 w-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 dark:from-slate-900 dark:via-purple-900/20 dark:to-indigo-900/20">
+          <div className="absolute inset-0 w-full bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20 dark:opacity-10"></div>
           
-          {/* Enhanced Floating Orbs */}
+          {/* Enhanced Floating Orbs - Full Width */}
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 dark:bg-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 dark:bg-blue-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500/20 dark:bg-indigo-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
           
-          {/* Additional Dark Mode Orbs */}
+          {/* Additional Dark Mode Orbs - Full Width */}
           <div className="absolute top-1/3 right-1/3 w-48 h-48 bg-cyan-500/10 dark:bg-cyan-400/5 rounded-full blur-2xl animate-pulse delay-2000"></div>
           <div className="absolute bottom-1/3 left-1/3 w-72 h-72 bg-pink-500/10 dark:bg-pink-400/5 rounded-full blur-3xl animate-pulse delay-3000"></div>
         </div>
 
         {/* 3D AI Bot */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none w-full">
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-96 h-96 opacity-80 dark:opacity-60">
               <Spline
@@ -135,81 +135,83 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
           </div>
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-          <div className={`transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            {/* Enhanced Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm rounded-full border border-white/20 dark:border-slate-700/50 text-white/90 dark:text-slate-200 text-sm font-medium mb-8 shadow-lg dark:shadow-2xl">
-              <Sparkles className="w-4 h-4" />
-              AI-Powered Emotional Intelligence
-            </div>
+        {/* Hero Content - Full Width Container with Proper Padding */}
+        <div className="relative z-10 w-full">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+            <div className={`transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+              {/* Enhanced Badge - Full Width */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm rounded-full border border-white/20 dark:border-slate-700/50 text-white/90 dark:text-slate-200 text-sm font-medium mb-8 shadow-lg dark:shadow-2xl">
+                <Sparkles className="w-4 h-4" />
+                AI-Powered Emotional Intelligence
+              </div>
 
-            {/* Main Heading */}
-            <h1 className="text-5xl md:text-7xl font-bold text-white dark:text-slate-100 mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 dark:from-purple-300 dark:via-pink-300 dark:to-blue-300 bg-clip-text text-transparent">
-                Memorify
-              </span>
-              <br />
-              <span className="text-3xl md:text-5xl font-medium text-white/90 dark:text-slate-200">
-                Your AI-Powered Emotional Diary
-              </span>
-            </h1>
+              {/* Main Heading */}
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white dark:text-slate-100 mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 dark:from-purple-300 dark:via-pink-300 dark:to-blue-300 bg-clip-text text-transparent">
+                  Memorify
+                </span>
+                <br />
+                <span className="text-2xl sm:text-3xl md:text-5xl font-medium text-white/90 dark:text-slate-200">
+                  Your AI-Powered Emotional Diary
+                </span>
+              </h1>
 
-            {/* Subheading */}
-            <p className="text-xl md:text-2xl text-white/80 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              <span className="font-semibold text-purple-300 dark:text-purple-200">Reflect.</span>{' '}
-              <span className="font-semibold text-pink-300 dark:text-pink-200">Record.</span>{' '}
-              <span className="font-semibold text-blue-300 dark:text-blue-200">Reconnect.</span>
-              <br />
-              Transform your thoughts into meaningful insights with an AI companion that truly understands you.
-            </p>
+              {/* Subheading */}
+              <p className="text-lg sm:text-xl md:text-2xl text-white/80 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed px-4">
+                <span className="font-semibold text-purple-300 dark:text-purple-200">Reflect.</span>{' '}
+                <span className="font-semibold text-pink-300 dark:text-pink-200">Record.</span>{' '}
+                <span className="font-semibold text-blue-300 dark:text-blue-200">Reconnect.</span>
+                <br />
+                Transform your thoughts into meaningful insights with an AI companion that truly understands you.
+              </p>
 
-            {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <button
-                onClick={onNavigateToAuth}
-                className="group px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/30 transition-all duration-300 hover:scale-105 flex items-center gap-3"
-              >
-                <Sparkles className="w-5 h-5" />
-                Get Started Free
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              
-              <button
-                onClick={scrollToFeatures}
-                className="group px-8 py-4 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm text-white dark:text-slate-200 font-semibold rounded-2xl border border-white/20 dark:border-slate-700/50 hover:bg-white/20 dark:hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 flex items-center gap-3 shadow-lg dark:shadow-2xl"
-              >
-                <Play className="w-5 h-5" />
-                Explore Features
-              </button>
-            </div>
-
-            {/* Sign In Link */}
-            <div className="mb-16">
-              <p className="text-white/70 dark:text-slate-400 text-sm">
-                Already have an account?{' '}
+              {/* Enhanced CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 px-4">
                 <button
                   onClick={onNavigateToAuth}
-                  className="text-purple-300 dark:text-purple-200 hover:text-purple-200 dark:hover:text-purple-100 font-medium underline underline-offset-2 transition-colors duration-300"
+                  className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-400 dark:to-pink-400 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-purple-500/25 dark:hover:shadow-purple-400/30 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3"
                 >
-                  Sign in
+                  <Sparkles className="w-5 h-5" />
+                  Get Started Free
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
-              </p>
-            </div>
+                
+                <button
+                  onClick={scrollToFeatures}
+                  className="group w-full sm:w-auto px-8 py-4 bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm text-white dark:text-slate-200 font-semibold rounded-2xl border border-white/20 dark:border-slate-700/50 hover:bg-white/20 dark:hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3 shadow-lg dark:shadow-2xl"
+                >
+                  <Play className="w-5 h-5" />
+                  Explore Features
+                </button>
+              </div>
 
-            {/* Enhanced Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-              <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">10K+</div>
-                <div className="text-white/70 dark:text-slate-400">Reflections Created</div>
+              {/* Sign In Link */}
+              <div className="mb-16 px-4">
+                <p className="text-white/70 dark:text-slate-400 text-sm">
+                  Already have an account?{' '}
+                  <button
+                    onClick={onNavigateToAuth}
+                    className="text-purple-300 dark:text-purple-200 hover:text-purple-200 dark:hover:text-purple-100 font-medium underline underline-offset-2 transition-colors duration-300"
+                  >
+                    Sign in
+                  </button>
+                </p>
               </div>
-              <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">95%</div>
-                <div className="text-white/70 dark:text-slate-400">User Satisfaction</div>
-              </div>
-              <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
-                <div className="text-3xl font-bold text-white dark:text-slate-100 mb-2">24/7</div>
-                <div className="text-white/70 dark:text-slate-400">AI Companion</div>
+
+              {/* Enhanced Stats - Full Width Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto px-4">
+                <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
+                  <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">10K+</div>
+                  <div className="text-white/70 dark:text-slate-400 text-sm">Reflections Created</div>
+                </div>
+                <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
+                  <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">95%</div>
+                  <div className="text-white/70 dark:text-slate-400 text-sm">User Satisfaction</div>
+                </div>
+                <div className="text-center p-4 rounded-2xl bg-white/5 dark:bg-slate-800/30 backdrop-blur-sm border border-white/10 dark:border-slate-700/30">
+                  <div className="text-2xl sm:text-3xl font-bold text-white dark:text-slate-100 mb-2">24/7</div>
+                  <div className="text-white/70 dark:text-slate-400 text-sm">AI Companion</div>
+                </div>
               </div>
             </div>
           </div>
