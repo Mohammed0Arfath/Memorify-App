@@ -630,6 +630,34 @@
     box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
   }
 
+  /* Link Preview Styles */
+  .link-preview {
+    @apply fade-in;
+  }
+
+  .link-preview-loading {
+    @apply fade-in;
+  }
+
+  .link-preview-error {
+    @apply fade-in;
+  }
+
+  /* Line clamp utilities for link previews */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   /* Mobile-specific utilities */
   .mobile-container {
     @apply px-4 sm:px-6;

@@ -4,6 +4,7 @@ import { ChatMessage, DiaryEntry } from '../types';
 import { generateAIResponse, analyzeEmotionWithAI } from '../utils/mockAI';
 import { EmotionIndicator } from './EmotionIndicator';
 import { VoiceChat } from './VoiceChat';
+import { ChatMessage as ChatMessageComponent } from './ChatMessage';
 import { errorHandler } from '../utils/errorHandler';
 
 interface ChatInterfaceProps {
@@ -268,7 +269,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
               </div>
               <button
                 onClick={() => setError(null)}
-                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors"
+                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors flex-shrink-0 ml-2"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -456,30 +457,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onGenerateEntry, c
           ) : (
             <div className="space-y-4 max-w-4xl mx-auto">
               {messages.map((message, index) => (
-                <div
+                <ChatMessageComponent
                   key={message.id}
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} message-enter`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div
-                    className={`max-w-2xl px-5 py-3 rounded-3xl transition-smooth hover-lift shadow-lg ${
-                      message.isUser
-                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-blue-500/25'
-                        : 'bg-white dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 shadow-gray-500/10 dark:shadow-slate-900/20 backdrop-blur-sm'
-                    }`}
-                  >
-                    <p className={`text-base leading-relaxed ${
-                      message.isUser ? 'text-white' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
-                      {message.text}
-                    </p>
-                    <span className={`text-xs mt-2 block ${
-                      message.isUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'
-                    }`}>
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
+                  message={message}
+                  index={index}
+                />
               ))}
               
               {isTyping && (
