@@ -603,22 +603,7 @@ function AppContent({ user }: AppProps) {
           </footer>
         )}
 
-        {/* Attribution Footer */}
-        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500">
-          <div className="max-w-7xl mx-auto px-6">
-            <p className="text-xs text-center text-gray-500 dark:text-slate-500">
-              Built with ❤️ using{' '}
-              <a 
-                href="https://bolt.new" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline transition-smooth"
-              >
-                Bolt.new
-              </a>
-            </p>
-          </div>
-        </div>
+        {/* Bolt.new attribution removed per request */}
       </div>
     </ErrorBoundary>
   );

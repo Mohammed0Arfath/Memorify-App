@@ -431,18 +431,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToAuth }) =>
                   </a>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-center md:text-right">
-                <span>Built with</span>
-                <a
-                  href="https://bolt.new"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-400 dark:text-purple-300 hover:text-purple-300 dark:hover:text-purple-200 transition-colors duration-300 flex items-center gap-1 font-medium"
-                >
-                  <Zap className="w-4 h-4" />
-                  Bolt.new
-                </a>
-              </div>
+              {/* Bolt.new attribution removed per request */}
             </div>
           </div>
         </div>

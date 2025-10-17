@@ -112,24 +112,24 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
       aria-modal="true"
       aria-labelledby="profile-title"
     >
-      <div className="modal-content max-w-md max-h-[90vh] overflow-hidden fade-in-up bg-white dark:bg-slate-800/95 backdrop-blur-sm border border-gray-200 dark:border-slate-700 mobile-overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 p-6 text-white">
+      <div className="modal-content max-w-md max-h-[90vh] overflow-hidden fade-in-up bg-slate-900/80 backdrop-blur-2xl border border-white/10 mobile-overflow-hidden">
+        {/* Header - Glassmorphic */}
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 backdrop-blur-xl border-b border-white/10 p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/20 dark:bg-white/30 rounded-full flex items-center justify-center hover-scale transition-smooth">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center hover-scale transition-smooth shadow-lg shadow-white/10">
                 <User className="w-6 h-6" />
               </div>
               <div className="min-w-0">
                 <h3 id="profile-title" className="text-xl font-semibold mobile-text">User Profile</h3>
-                <p className="text-blue-100 dark:text-blue-200 text-sm truncate mobile-text">{user?.email}</p>
+                <p className="text-blue-100 text-sm truncate mobile-text">{user?.email}</p>
               </div>
             </div>
             
             {onClose && (
               <button
                 onClick={onClose}
-                className="btn-icon bg-white/20 dark:bg-white/30 hover:bg-white/30 dark:hover:bg-white/40 text-white hover-scale btn-press"
+                className="btn-icon bg-white/20 backdrop-blur-xl hover:bg-white/30 text-white hover-scale btn-press"
                 aria-label="Close profile"
               >
                 <X className="w-5 h-5" />
@@ -138,8 +138,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-slate-700" role="tablist">
+        {/* Tabs - Glassmorphic */}
+        <div className="flex border-b border-white/10" role="tablist">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
             return (
@@ -148,8 +148,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`nav-item flex-1 justify-center py-3 text-sm font-medium transition-all duration-200 hover-lift fade-in ${
                   activeTab === tab.id
-                    ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                    : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700/50'
+                    ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-500/10'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
                 role="tab"
@@ -168,17 +168,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
         <div className="p-6 overflow-y-auto max-h-[60vh] mobile-overflow-hidden">
           {activeTab === 'profile' && (
             <div className="fade-in" role="tabpanel" id="profile-panel" aria-labelledby="profile-tab">
-              <h4 className="text-lg font-semibold text-gray-800 dark:text-slate-100 mb-4 mobile-text">Profile Information</h4>
+              <h4 className="text-lg font-semibold text-slate-100 mb-4 mobile-text">Profile Information</h4>
               
               {profileSuccess && (
-                <div className="alert alert-success mb-4 fade-in bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/50 text-green-800 dark:text-green-300" role="alert">
+                <div className="alert alert-success mb-4 fade-in bg-green-500/10 backdrop-blur-xl border border-green-500/20 text-green-300" role="alert">
                   <CheckCircle className="w-4 h-4 flex-shrink-0 checkmark-animate" />
                   <span className="text-sm mobile-text">{profileSuccess}</span>
                 </div>
               )}
 
               {profileError && (
-                <div className="alert alert-error mb-4 fade-in shake bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-800 dark:text-red-300" role="alert">
+                <div className="alert alert-error mb-4 fade-in shake bg-red-500/10 backdrop-blur-xl border border-red-500/20 text-red-300" role="alert">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span className="text-sm mobile-text">{profileError}</span>
                 </div>
@@ -186,17 +186,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
 
               <form onSubmit={handleProfileUpdate} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="form-label text-gray-700 dark:text-slate-300 mobile-text">
+                  <label htmlFor="email" className="form-label text-slate-300 mobile-text">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 w-5 h-5 transition-smooth" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 transition-smooth" />
                     <input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="form-input pl-10 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-slate-400 mobile-text"
+                      className="form-input pl-10 bg-white/5 backdrop-blur-xl border border-white/10 text-slate-100 placeholder-slate-500 mobile-text focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/30"
                       placeholder="Enter your email"
                       required
                       disabled={profileLoading}
@@ -207,7 +207,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onClose }) => {
                 <button
                   type="submit"
                   disabled={profileLoading || email === user?.email}
-                  className="btn-primary w-full hover-lift btn-press mobile-text"
+                  className="btn-primary w-full hover-lift btn-press mobile-text bg-gradient-to-r from-blue-500 to-purple-500 backdrop-blur-xl border border-blue-400/30 shadow-lg shadow-blue-500/20"
                 >
                   {profileLoading ? (
                     <>

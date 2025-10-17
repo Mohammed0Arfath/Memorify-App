@@ -383,18 +383,25 @@ function AppContent({ user }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-500 overflow-x-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 flex flex-col transition-colors duration-500 overflow-x-hidden relative">
+        {/* Animated Background Orbs */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+        </div>
+
         {/* Error Banner */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/50 p-4">
+          <div className="relative z-50 bg-red-500/10 backdrop-blur-xl border-b border-red-500/20 p-4">
             <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0"></div>
-                <span className="text-sm text-red-700 dark:text-red-300 truncate">{error}</span>
+                <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0 animate-pulse"></div>
+                <span className="text-sm text-red-300 truncate">{error}</span>
               </div>
               <button
                 onClick={() => setError(null)}
-                className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors flex-shrink-0 ml-2"
+                className="text-red-400 hover:text-red-200 transition-colors flex-shrink-0 ml-2"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -402,42 +409,55 @@ function AppContent({ user }: AppProps) {
           </div>
         )}
 
-        {/* Header */}
-        <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40 flex-shrink-0 fade-in-down transition-colors duration-500">
+        {/* Header with Glassmorphism */}
+        <header className="relative z-40 bg-white/5 dark:bg-white/5 backdrop-blur-2xl border-b border-white/10 sticky top-0 flex-shrink-0 fade-in-down transition-all duration-500 shadow-lg shadow-black/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-16">
               {/* Logo and Brand Name - Always Visible */}
               <div className="flex items-center gap-3 fade-in min-w-0 flex-shrink-0">
-                <div className="brand-logo hover-scale transition-smooth float">
-                  <Sparkles className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 p-0.5 shadow-lg shadow-purple-500/50 hover:shadow-purple-500/70 transition-all flex-shrink-0">
+                  <img 
+                    src="/memorify-logo.png" 
+                    alt="Memorify Logo" 
+                    className="w-full h-full object-cover rounded-lg"
+                    onError={(e) => {
+                      // Fallback to Sparkles icon if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const fallback = document.createElement('div');
+                      fallback.className = 'w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg';
+                      fallback.innerHTML = '<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>';
+                      target.parentElement?.appendChild(fallback);
+                    }}
+                  />
                 </div>
                 <div className="min-w-0">
                   {/* Brand Name - Always Visible on All Screens */}
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold gradient-text truncate">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent truncate">
                     Memorify
                   </h1>
                   {/* Subtitle - Hidden on Mobile, Visible on Desktop */}
-                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-none truncate hidden sm:block">
+                  <p className="text-xs text-slate-400 leading-none truncate hidden sm:block">
                     Your AI-powered companion
                     {import.meta.env.VITE_TOGETHER_API_KEY && (
-                      <span className="ml-1 text-green-600 dark:text-green-400">• Together.ai Enhanced</span>
+                      <span className="ml-1 text-emerald-400">• Together.ai Enhanced</span>
                     )}
                   </p>
                 </div>
               </div>
 
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center space-x-1">
+              <nav className="hidden md:flex items-center space-x-2">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
                   return (
                     <button
                       key={item.id}
                       onClick={() => handleViewChange(item.id)}
-                      className={`nav-item hover-lift btn-press fade-in ${
+                      className={`group px-4 py-2 rounded-xl transition-all duration-300 flex items-center gap-2 ${
                         currentView === item.id
-                          ? 'nav-item-active'
-                          : 'nav-item-inactive'
+                          ? 'bg-white/20 backdrop-blur-xl border border-white/30 shadow-lg shadow-purple-500/20 text-white'
+                          : 'bg-white/5 backdrop-blur-xl border border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20 hover:text-white'
                       }`}
                       style={{ animationDelay: `${index * 0.1}s` }}
                       aria-label={`Navigate to ${item.label}`}
@@ -460,15 +480,15 @@ function AppContent({ user }: AppProps) {
                     data-user-menu-button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     disabled={signingOut}
-                    className="btn-ghost hover-scale flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed p-2"
+                    className="bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 rounded-xl px-3 py-2 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="User menu"
                     aria-expanded={isUserMenuOpen}
                     aria-haspopup="true"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
                       <User className="w-4 h-4 text-white" />
                     </div>
-                    <span className="hidden sm:block text-sm text-gray-600 dark:text-slate-300 max-w-32 truncate">
+                    <span className="hidden sm:block text-sm text-slate-200 max-w-32 truncate">
                       {user.email}
                     </span>
                   </button>
@@ -477,10 +497,10 @@ function AppContent({ user }: AppProps) {
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="md:hidden btn-ghost hover-scale p-2"
+                  className="md:hidden bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 rounded-xl p-2 transition-all"
                   aria-label="Toggle mobile menu"
                 >
-                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  {isMobileMenuOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white" />}
                 </button>
               </div>
             </div>
@@ -488,7 +508,7 @@ function AppContent({ user }: AppProps) {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm slide-in-down">
+            <div className="md:hidden border-t border-white/10 bg-white/5 backdrop-blur-2xl slide-in-down">
               <nav className="px-4 py-2 space-y-1">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
@@ -496,10 +516,10 @@ function AppContent({ user }: AppProps) {
                     <button
                       key={item.id}
                       onClick={() => handleViewChange(item.id)}
-                      className={`nav-item w-full hover-lift fade-in ${
+                      className={`w-full px-4 py-3 rounded-xl transition-all duration-300 flex items-center gap-3 ${
                         currentView === item.id
-                          ? 'nav-item-active'
-                          : 'nav-item-inactive'
+                          ? 'bg-white/20 backdrop-blur-xl border border-white/30 text-white shadow-lg'
+                          : 'bg-white/5 backdrop-blur-xl border border-white/10 text-slate-300 hover:bg-white/10'
                       }`}
                       style={{ animationDelay: `${index * 0.1}s` }}
                       aria-label={`Navigate to ${item.label}`}
@@ -514,46 +534,46 @@ function AppContent({ user }: AppProps) {
           )}
         </header>
 
-        {/* User Dropdown Overlay - Mobile-optimized positioning */}
+        {/* User Dropdown Overlay - Glassmorphic */}
         {isUserMenuOpen && !signingOut && (
           <div 
             data-user-menu-dropdown
-            className="fixed top-16 right-2 sm:right-6 w-64 max-w-[calc(100vw-16px)] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-700 py-2 z-50 fade-in-down"
+            className="fixed top-16 right-2 sm:right-6 w-64 max-w-[calc(100vw-16px)] bg-slate-900/80 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/20 py-2 z-50 fade-in-down"
             style={{
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 15px -3px rgba(139, 92, 246, 0.3)',
               transformOrigin: 'top right',
               animation: 'fadeInDown 0.2s ease-out'
             }}
           >
-            <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
-              <p className="text-sm font-medium text-gray-700 dark:text-slate-300">Signed in as</p>
-              <p className="text-sm text-gray-600 dark:text-slate-400 truncate">{user.email}</p>
+            <div className="px-4 py-3 border-b border-white/10">
+              <p className="text-sm font-medium text-slate-200">Signed in as</p>
+              <p className="text-sm text-slate-400 truncate">{user.email}</p>
             </div>
             <button
               onClick={handleOpenProfile}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
+              className="w-full px-4 py-3 text-left hover:bg-white/10 transition-colors flex items-center gap-3 focus:outline-none focus:bg-white/10 rounded-lg mx-2 my-1"
               role="menuitem"
               tabIndex={0}
             >
-              <Settings className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
-              <span className="text-sm text-gray-700 dark:text-slate-300">Profile Settings</span>
+              <Settings className="w-4 h-4 text-slate-400 flex-shrink-0" />
+              <span className="text-sm text-slate-200">Profile Settings</span>
             </button>
             <button
               onClick={handleSignOut}
               disabled={signingOut}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-gray-50 dark:focus:bg-slate-700"
+              className="w-full px-4 py-3 text-left hover:bg-white/10 transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-white/10 rounded-lg mx-2 my-1"
               role="menuitem"
               tabIndex={0}
             >
               {signingOut ? (
                 <>
-                  <div className="loading-spinner w-4 h-4 border-gray-400 dark:border-slate-500 border-t-blue-500"></div>
-                  <span className="text-sm text-gray-700 dark:text-slate-300">Signing out...</span>
+                  <div className="loading-spinner w-4 h-4 border-slate-400 border-t-purple-500"></div>
+                  <span className="text-sm text-slate-200">Signing out...</span>
                 </>
               ) : (
                 <>
-                  <LogOut className="w-4 h-4 text-gray-500 dark:text-slate-400 flex-shrink-0" />
-                  <span className="text-sm text-gray-700 dark:text-slate-300">Sign Out</span>
+                  <LogOut className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <span className="text-sm text-slate-200">Sign Out</span>
                 </>
               )}
             </button>
@@ -573,29 +593,29 @@ function AppContent({ user }: AppProps) {
           {renderContent()}
         </main>
 
-        {/* Stats Footer */}
+        {/* Stats Footer with Glassmorphism */}
         {entries.length > 0 && (
-          <footer className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 py-4 flex-shrink-0 fade-in-up transition-colors duration-500">
+          <footer className="relative z-10 bg-white/5 backdrop-blur-2xl border-t border-white/10 py-4 flex-shrink-0 fade-in-up transition-all duration-500">
             <div className="max-w-7xl mx-auto px-6">
-              <div className="flex items-center justify-center gap-4 md:gap-8 text-sm text-gray-600 dark:text-slate-400 flex-wrap">
-                <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <BookOpen className="w-4 h-4 flex-shrink-0" />
+              <div className="flex items-center justify-center gap-4 md:gap-8 text-sm text-slate-300 flex-wrap">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 hover:bg-white/10 transition-all">
+                  <BookOpen className="w-4 h-4 flex-shrink-0 text-blue-400" />
                   <span>{entries.length} entries</span>
                 </div>
-                <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <Calendar className="w-4 h-4 flex-shrink-0" />
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 hover:bg-white/10 transition-all">
+                  <Calendar className="w-4 h-4 flex-shrink-0 text-purple-400" />
                   <span>
                     {entries.length > 0 && 
                       Math.ceil((new Date().getTime() - new Date(entries[entries.length - 1].date).getTime()) / (1000 * 60 * 60 * 24))
                     } days journaling
                   </span>
                 </div>
-                <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <Brain className="w-4 h-4 flex-shrink-0" />
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 hover:bg-white/10 transition-all">
+                  <Brain className="w-4 h-4 flex-shrink-0 text-pink-400" />
                   <span>AI companion active</span>
                 </div>
-                <div className="flex items-center gap-2 hover-scale transition-smooth">
-                  <Sparkles className="w-4 h-4 flex-shrink-0" />
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10 hover:bg-white/10 transition-all">
+                  <Sparkles className="w-4 h-4 flex-shrink-0 text-emerald-400" />
                   <span>
                     {import.meta.env.VITE_TOGETHER_API_KEY ? 'Together.ai powered insights' : 'AI-powered insights'}
                   </span>
@@ -605,22 +625,7 @@ function AppContent({ user }: AppProps) {
           </footer>
         )}
 
-        {/* Attribution Footer */}
-        <div className="bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 py-2 flex-shrink-0 transition-colors duration-500">
-          <div className="max-w-7xl mx-auto px-6">
-            <p className="text-xs text-center text-gray-500 dark:text-slate-500">
-              Built with ❤️ using{' '}
-              <a 
-                href="https://bolt.new" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline transition-smooth"
-              >
-                Bolt.new
-              </a>
-            </p>
-          </div>
-        </div>
+        {/* Bolt.new attribution removed per request */}
       </div>
     </ErrorBoundary>
   );

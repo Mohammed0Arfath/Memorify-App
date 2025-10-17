@@ -140,8 +140,8 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex space-x-1 mb-6 bg-gray-100 dark:bg-slate-800/50 rounded-xl p-1 border border-gray-200 dark:border-slate-700/50 mobile-overflow-hidden overflow-x-auto">
+      {/* Tabs - Glassmorphic */}
+      <div className="flex space-x-1 mb-6 bg-white/5 backdrop-blur-xl rounded-xl p-1 border border-white/10 mobile-overflow-hidden overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -150,14 +150,14 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap mobile-text ${
                 activeTab === tab.id
-                  ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-sm border border-gray-200 dark:border-slate-600'
-                  : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700/50'
+                  ? 'bg-purple-500/20 backdrop-blur-xl text-purple-400 shadow-sm border border-purple-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
               }`}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
               <span className="font-medium">{tab.label}</span>
               {tab.count > 0 && (
-                <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-xs px-2 py-1 rounded-full border border-purple-200 dark:border-purple-700/50 flex-shrink-0">
+                <span className="bg-purple-500/20 backdrop-blur-xl text-purple-400 text-xs px-2 py-1 rounded-full border border-purple-500/30 flex-shrink-0">
                   {tab.count}
                 </span>
               )}
@@ -166,8 +166,8 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
         })}
       </div>
 
-      {/* Content */}
-      <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-slate-700/50 backdrop-blur-sm mobile-overflow-hidden">
+      {/* Content - Glassmorphic */}
+      <div className="bg-white/5 backdrop-blur-2xl rounded-2xl shadow-lg shadow-purple-500/10 overflow-hidden border border-white/10 mobile-overflow-hidden">
         {activeTab === 'checkins' && (
           <div className="p-4 md:p-6">
             {checkins.length === 0 ? (
@@ -268,7 +268,7 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
             ) : (
               <div className="space-y-6">
                 {insights.map((insight) => (
-                  <div key={insight.id} className="border border-gray-200 dark:border-slate-700 rounded-xl p-4 md:p-6 bg-white dark:bg-slate-700/30 backdrop-blur-sm mobile-overflow-hidden">
+                  <div key={insight.id} className="border border-white/10 rounded-xl p-4 md:p-6 bg-white/5 backdrop-blur-xl mobile-overflow-hidden">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
                       <h4 className="text-lg font-semibold text-gray-800 dark:text-slate-100 mobile-text">
                         Week of {insight.week_start.toLocaleDateString()}
@@ -378,13 +378,13 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
                   <select
                     value={settings.personality_type}
                     onChange={(e) => handleSettingsUpdate({ personality_type: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 mobile-text"
+                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/30 text-slate-100 mobile-text"
                   >
-                    <option value="therapist" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Therapist - Warm and professional</option>
-                    <option value="poet" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Poet - Lyrical and metaphorical</option>
-                    <option value="coach" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Coach - Motivating and empowering</option>
-                    <option value="friend" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Friend - Casual and supportive</option>
-                    <option value="philosopher" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Philosopher - Wise and contemplative</option>
+                    <option value="therapist" className="bg-slate-900 text-slate-100">Therapist - Warm and professional</option>
+                    <option value="poet" className="bg-slate-900 text-slate-100">Poet - Lyrical and metaphorical</option>
+                    <option value="coach" className="bg-slate-900 text-slate-100">Coach - Motivating and empowering</option>
+                    <option value="friend" className="bg-slate-900 text-slate-100">Friend - Casual and supportive</option>
+                    <option value="philosopher" className="bg-slate-900 text-slate-100">Philosopher - Wise and contemplative</option>
                   </select>
                 </div>
 
@@ -393,12 +393,12 @@ export const AgentBoard: React.FC<AgentBoardProps> = ({ entries, onRefresh }) =>
                   <select
                     value={settings.check_in_frequency}
                     onChange={(e) => handleSettingsUpdate({ check_in_frequency: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 mobile-text"
+                    className="w-full px-3 py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/30 text-slate-100 mobile-text"
                   >
-                    <option value="daily" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Daily</option>
-                    <option value="every_2_days" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Every 2 days</option>
-                    <option value="weekly" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">Weekly</option>
-                    <option value="as_needed" className="bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100">As needed</option>
+                    <option value="daily" className="bg-slate-900 text-slate-100">Daily</option>
+                    <option value="every_2_days" className="bg-slate-900 text-slate-100">Every 2 days</option>
+                    <option value="weekly" className="bg-slate-900 text-slate-100">Weekly</option>
+                    <option value="as_needed" className="bg-slate-900 text-slate-100">As needed</option>
                   </select>
                 </div>
 
